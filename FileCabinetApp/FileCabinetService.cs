@@ -9,8 +9,27 @@ namespace FileCabinetApp
 
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth)
         {
-            // TODO: добавьте реализацию метода
-            return 0;
+            if (firstName == null || lastName == null || dateOfBirth == null)
+            {
+                throw new ArgumentNullException($"The {nameof(firstName)}, the {nameof(lastName)} or the {nameof(dateOfBirth)} can't be null.");
+            }
+
+            if (firstName.Length == 0 || lastName.Length == 0)
+            {
+                throw new ArgumentException($"The {nameof(firstName)} and the {nameof(lastName)} can't be empty.");
+            }
+
+            var record = new FileCabinetRecord
+            {
+                Id = this.list.Count + 1,
+                FirstName = firstName,
+                LastName = lastName,
+                DateOfBirth = dateOfBirth,
+            };
+
+            this.list.Add(record);
+
+            return record.Id;
         }
 
         public FileCabinetRecord[] GetRecords()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -17,6 +18,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("help", PrintHelp),
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("stat", Stat),
+            new Tuple<string, Action<string>>("create", Create),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -24,6 +26,7 @@ namespace FileCabinetApp
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "shows statistics by records", "The 'stat' command shows statistics by records" },
+            new string[] { "create", "creates a new record", "The 'create' command creates a new record." },
         };
 
         private static FileCabinetService fileCabinetService = new FileCabinetService();
@@ -66,6 +69,42 @@ namespace FileCabinetApp
         {
             var recordsCount = Program.fileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
+        }
+
+        private static void Create(string parameters)
+        {
+            Console.WriteLine("First name: ");
+            string firstName = Console.ReadLine();
+            Console.WriteLine("Last name: ");
+            string lastName = Console.ReadLine();
+            Console.WriteLine("Date of birth month/day/year: ");
+            string date = Console.ReadLine();
+
+            DateTime dateOfBirth = default(DateTime);
+            try
+            {
+                dateOfBirth = DateTime.Parse(date, CultureInfo.CreateSpecificCulture("en-US"));
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine($"The string '{date}' wasn't recognized as a valid date.");
+                Console.WriteLine("Record wasn't created.");
+                return;
+            }
+
+            int recordId = default(int);
+            try
+            {
+                recordId = fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth);
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine("All fields are required.");
+                Console.WriteLine("Record wasn't created.");
+                return;
+            }
+
+            Console.WriteLine($"Record #{recordId} is created.");
         }
 
         private static void PrintMissedCommandInfo(string command)
