@@ -19,6 +19,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("create", Create),
+            new Tuple<string, Action<string>>("list", List),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -27,6 +28,7 @@ namespace FileCabinetApp
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "shows statistics by records", "The 'stat' command shows statistics by records" },
             new string[] { "create", "creates a new record", "The 'create' command creates a new record." },
+            new string[] { "list", "returns a list of records added to the service", "The 'list' command return a list of records added to the service." },
         };
 
         private static FileCabinetService fileCabinetService = new FileCabinetService();
@@ -105,6 +107,17 @@ namespace FileCabinetApp
             }
 
             Console.WriteLine($"Record #{recordId} is created.");
+        }
+
+        private static void List(string parameters)
+        {
+            var list = fileCabinetService.GetRecords();
+
+            foreach (var item in list)
+            {
+                string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
+                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}");
+            }
         }
 
         private static void PrintMissedCommandInfo(string command)
