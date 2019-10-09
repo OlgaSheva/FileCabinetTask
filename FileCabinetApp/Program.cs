@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using FileCabinetApp.Enums;
 
 namespace FileCabinetApp
@@ -89,6 +88,7 @@ namespace FileCabinetApp
             {
                 Console.WriteLine($"The string '{data}' wasn't recognized as a valid date.");
                 Console.WriteLine("Record wasn't created.");
+                Console.WriteLine(Program.HintMessage);
                 return;
             }
 
@@ -98,6 +98,7 @@ namespace FileCabinetApp
             {
                 Console.WriteLine($"The symbol '{data}' wasn't recognized as a valid gender.");
                 Console.WriteLine("Record wasn't created.");
+                Console.WriteLine(Program.HintMessage);
                 return;
             }
 
@@ -107,17 +108,18 @@ namespace FileCabinetApp
             {
                 Console.WriteLine($"The symbol '{data}' wasn't recognized as a valid material status.");
                 Console.WriteLine("Record wasn't created.");
+                Console.WriteLine(Program.HintMessage);
                 return;
             }
 
             Console.WriteLine("How many cats do you have?");
             short catsCount = 0;
             var age = DateTime.Today.Year - dateOfBirth.Year;
-            if (age > 30 && gender == Gender.Female)
+            if (age > 30 && gender == Gender.Female && status == 'U')
             {
                 catsCount = 30;
                 Console.WriteLine(30);
-                Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^.^)");
+                Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^-.-^)");
             }
             else
             {
@@ -126,7 +128,13 @@ namespace FileCabinetApp
                 {
                     Console.WriteLine($"The number '{catsCount}' is not like the truth.");
                     Console.WriteLine("Record wasn't created.");
+                    Console.WriteLine(Program.HintMessage);
                     return;
+                }
+
+                if (catsCount > 50)
+                {
+                    Console.WriteLine("Are you seriously??? 0_o");
                 }
             }
 
@@ -139,7 +147,13 @@ namespace FileCabinetApp
                 {
                     Console.WriteLine($"The number '{catsBudget}' is not like the truth.");
                     Console.WriteLine("Record wasn't created.");
+                    Console.WriteLine(Program.HintMessage);
                     return;
+                }
+
+                if (catsBudget < 10)
+                {
+                    Console.WriteLine("You need to pamper your cats more!");
                 }
             }
 
@@ -152,6 +166,7 @@ namespace FileCabinetApp
             {
                 Console.WriteLine("All fields are required.");
                 Console.WriteLine("Record wasn't created.");
+                Console.WriteLine(Program.HintMessage);
                 return;
             }
 
