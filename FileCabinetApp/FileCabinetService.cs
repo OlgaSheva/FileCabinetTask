@@ -51,9 +51,9 @@ namespace FileCabinetApp
                 throw new ArgumentException($"The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.");
             }
 
-            if (gender != Gender.Female || gender != Gender.Male || gender != Gender.Other || gender != Gender.Unknown)
+            if (gender != Gender.M && gender != Gender.F && gender != Gender.O && gender != Gender.U)
             {
-                throw new ArgumentException($"The {nameof(gender)} can be only 'Male', 'Female', 'Other' or 'Unknown'.");
+                throw new ArgumentException($"The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.");
             }
 
             if (materialStatus != 'M' && materialStatus != 'U')

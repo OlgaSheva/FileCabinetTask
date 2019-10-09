@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using FileCabinetApp.Enums;
 
 namespace FileCabinetApp
@@ -11,6 +12,8 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+        private static readonly DateTime MinDate = new DateTime(1950, 1, 1);
+        private static readonly string NamePattern = @"^[a-zA-Z '.-]*$";
 
         private static bool isRunning = true;
 
@@ -76,84 +79,152 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            Console.WriteLine("First name: ");
-            string firstName = Console.ReadLine();
-
-            Console.WriteLine("Last name: ");
-            string lastName = Console.ReadLine();
-
-            Console.WriteLine("Date of birth month/day/year: ");
-            string data = Console.ReadLine();
-            if (!DateTime.TryParse(data, out DateTime dateOfBirth))
+            bool flag = true;
+            string firstName = default(string);
+            while (flag)
             {
-                Console.WriteLine($"The string '{data}' wasn't recognized as a valid date.");
-                Console.WriteLine("Record wasn't created.");
-                Console.WriteLine(Program.HintMessage);
-                return;
+                Console.WriteLine("First name: ");
+                firstName = Console.ReadLine();
+                if (firstName != null && firstName.Length > 2 && firstName.Length < 60 && Regex.IsMatch(firstName, NamePattern))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    if (firstName.Length < 2 || firstName.Length > 60)
+                    {
+                        Console.WriteLine("Please try again. The name length can't be less than 2 symbols and larger than 60 symbols.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Please try again. The {firstName} isn't a valid name.");
+                    }
+                }
             }
 
-            Console.WriteLine("Gender Male / Female / Other / Unknown:");
-            data = Console.ReadLine();
-            if (!Enum.TryParse<Gender>(data, out Gender gender))
+            flag = true;
+            string lastName = default(string);
+            while (flag)
             {
-                Console.WriteLine($"The symbol '{data}' wasn't recognized as a valid gender.");
-                Console.WriteLine("Record wasn't created.");
-                Console.WriteLine(Program.HintMessage);
-                return;
+                Console.WriteLine("Last name: ");
+                lastName = Console.ReadLine();
+                if (lastName != null && lastName.Length > 2 && lastName.Length < 60 && Regex.IsMatch(lastName, NamePattern))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    if (firstName.Length < 2 || firstName.Length > 60)
+                    {
+                        Console.WriteLine("Please try again. The name length can't be less than 2 symbols and larger than 60 symbols.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Please try again. The {lastName} isn't a valid name.");
+                    }
+                }
             }
 
-            Console.WriteLine("Material status M (married) / U (unmarried)");
-            data = Console.ReadLine();
-            if (!char.TryParse(data, out char status) || (status != 'M' && status != 'U'))
+            flag = true;
+            string data = default(string);
+            DateTime dateOfBirth = default(DateTime);
+            while (flag)
             {
-                Console.WriteLine($"The symbol '{data}' wasn't recognized as a valid material status.");
-                Console.WriteLine("Record wasn't created.");
-                Console.WriteLine(Program.HintMessage);
-                return;
+                Console.WriteLine("Date of birth month/day/year: ");
+                data = Console.ReadLine();
+                if (DateTime.TryParse(data, out dateOfBirth) && (dateOfBirth <= DateTime.Today || dateOfBirth >= MinDate))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    Console.WriteLine($"Please try again. The {data} isn't a valid date.");
+                }
             }
 
-            Console.WriteLine("How many cats do you have?");
+            flag = true;
+            Gender gender = default(Gender);
+            while (flag)
+            {
+                Console.WriteLine("Gender M (male) / F (female) / O (other) / U (unknown):");
+                data = Console.ReadLine();
+                if (Enum.TryParse<Gender>(data, out gender) && (gender == Gender.F || gender == Gender.M || gender == Gender.O || gender == Gender.U))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    Console.WriteLine($"Please try again. The symbol '{data}' wasn't recognized as a valid gender.");
+                }
+            }
+
+            flag = true;
+            char status = default(char);
+            while (flag)
+            {
+                Console.WriteLine("Material status M (married) / U (unmarried)");
+                data = Console.ReadLine();
+                if (char.TryParse(data, out status) && (status == 'M' || status == 'U'))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    Console.WriteLine($"Please try again. The symbol '{data}' wasn't recognized as a valid material status.");
+                }
+            }
+
+            flag = true;
             short catsCount = 0;
             var age = DateTime.Today.Year - dateOfBirth.Year;
-            if (age > 30 && gender == Gender.Female && status == 'U')
+            while (flag)
             {
-                catsCount = 30;
-                Console.WriteLine(30);
-                Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^-.-^)");
-            }
-            else
-            {
-                data = Console.ReadLine();
-                if (!short.TryParse(data, out catsCount))
+                Console.WriteLine("How many cats do you have?");
+                if (age > 30 && gender == Gender.F && status == 'U')
                 {
-                    Console.WriteLine($"The number '{catsCount}' is not like the truth.");
-                    Console.WriteLine("Record wasn't created.");
-                    Console.WriteLine(Program.HintMessage);
-                    return;
+                    catsCount = 30;
+                    Console.WriteLine(30);
+                    Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^-.-^)");
+                    flag = false;
                 }
-
-                if (catsCount > 50)
+                else
                 {
-                    Console.WriteLine("Are you seriously??? 0_o");
+                    data = Console.ReadLine();
+                    if (short.TryParse(data, out catsCount) && catsCount >= 0 && catsCount <= 100)
+                    {
+                        flag = false;
+                        if (catsCount > 10)
+                        {
+                            Console.WriteLine("Are you seriously??? 0_o");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Please try again. The number '{catsCount}' is not like the truth.");
+                    }
                 }
             }
 
+            flag = true;
             decimal catsBudget = 0;
             if (catsCount != 0)
             {
-                Console.WriteLine("How much do you spend per month on cats?");
-                data = Console.ReadLine();
-                if (!decimal.TryParse(data, out catsBudget))
+                while (flag)
                 {
-                    Console.WriteLine($"The number '{catsBudget}' is not like the truth.");
-                    Console.WriteLine("Record wasn't created.");
-                    Console.WriteLine(Program.HintMessage);
-                    return;
-                }
-
-                if (catsBudget < 10)
-                {
-                    Console.WriteLine("You need to pamper your cats more!");
+                    Console.WriteLine("How much do you spend per month on cats?");
+                    data = Console.ReadLine();
+                    if (decimal.TryParse(data, out catsBudget) && catsBudget > 0)
+                    {
+                        flag = false;
+                        if (catsBudget < 10)
+                        {
+                            Console.WriteLine("You need to pamper your cats more!");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Please try again. The number '{catsBudget}' is not like the truth.");
+                    }
                 }
             }
 

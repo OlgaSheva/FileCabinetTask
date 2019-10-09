@@ -5,21 +5,21 @@
         /// <summary>
         /// The male.
         /// </summary>
-        Male = 'M',
+        M,
 
         /// <summary>
         /// The female.
         /// </summary>
-        Female = 'F',
+        F,
 
         /// <summary>
         /// The other.
         /// </summary>
-        Other = 'O',
+        O,
 
         /// <summary>
         /// The unknown.
         /// </summary>
-        Unknown = 'U',
+        U,
     }
 }
