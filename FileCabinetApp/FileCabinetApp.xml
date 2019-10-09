@@ -4,5 +4,25 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="F:FileCabinetApp.Enums.Gender.Male">
+            <summary>
+            The male.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.Gender.Female">
+            <summary>
+            The female.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.Gender.Other">
+            <summary>
+            The other.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.Gender.Unknown">
+            <summary>
+            The unknown.
+            </summary>
+        </member>
     </members>
 </doc>

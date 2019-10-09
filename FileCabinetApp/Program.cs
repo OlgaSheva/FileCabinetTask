@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
+using FileCabinetApp.Enums;
 
 namespace FileCabinetApp
 {
@@ -77,27 +79,74 @@ namespace FileCabinetApp
         {
             Console.WriteLine("First name: ");
             string firstName = Console.ReadLine();
+
             Console.WriteLine("Last name: ");
             string lastName = Console.ReadLine();
-            Console.WriteLine("Date of birth month/day/year: ");
-            string date = Console.ReadLine();
 
-            DateTime dateOfBirth = default(DateTime);
-            try
+            Console.WriteLine("Date of birth month/day/year: ");
+            string data = Console.ReadLine();
+            if (!DateTime.TryParse(data, out DateTime dateOfBirth))
             {
-                dateOfBirth = DateTime.Parse(date, CultureInfo.CreateSpecificCulture("en-US"));
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine($"The string '{date}' wasn't recognized as a valid date.");
+                Console.WriteLine($"The string '{data}' wasn't recognized as a valid date.");
                 Console.WriteLine("Record wasn't created.");
                 return;
+            }
+
+            Console.WriteLine("Gender Male / Female / Other / Unknown:");
+            data = Console.ReadLine();
+            if (!Enum.TryParse<Gender>(data, out Gender gender))
+            {
+                Console.WriteLine($"The symbol '{data}' wasn't recognized as a valid gender.");
+                Console.WriteLine("Record wasn't created.");
+                return;
+            }
+
+            Console.WriteLine("Material status M (married) / U (unmarried)");
+            data = Console.ReadLine();
+            if (!char.TryParse(data, out char status) || (status != 'M' && status != 'U'))
+            {
+                Console.WriteLine($"The symbol '{data}' wasn't recognized as a valid material status.");
+                Console.WriteLine("Record wasn't created.");
+                return;
+            }
+
+            Console.WriteLine("How many cats do you have?");
+            short catsCount = 0;
+            var age = DateTime.Today.Year - dateOfBirth.Year;
+            if (age > 30 && gender == Gender.Female)
+            {
+                catsCount = 30;
+                Console.WriteLine(30);
+                Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^.^)");
+            }
+            else
+            {
+                data = Console.ReadLine();
+                if (!short.TryParse(data, out catsCount))
+                {
+                    Console.WriteLine($"The number '{catsCount}' is not like the truth.");
+                    Console.WriteLine("Record wasn't created.");
+                    return;
+                }
+            }
+
+            decimal catsBudget = 0;
+            if (catsCount != 0)
+            {
+                Console.WriteLine("How much do you spend per month on cats?");
+                data = Console.ReadLine();
+                if (!decimal.TryParse(data, out catsBudget))
+                {
+                    Console.WriteLine($"The number '{catsBudget}' is not like the truth.");
+                    Console.WriteLine("Record wasn't created.");
+                    return;
+                }
             }
 
             int recordId = default(int);
             try
             {
-                recordId = fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth);
+                recordId = fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
             }
             catch (ArgumentException)
             {
@@ -116,7 +165,8 @@ namespace FileCabinetApp
             foreach (var item in list)
             {
                 string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
-                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}");
+                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
+                    $"{item.MaritalStatus}, {item.CatsCount}, {item.CatsBudget}");
             }
         }
 
