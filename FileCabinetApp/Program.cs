@@ -122,7 +122,7 @@ namespace FileCabinetApp
             }
             else
             {
-                Console.WriteLine("#id record is not found.");
+                Console.WriteLine($"#{id} record is not found.");
             }
         }
 
