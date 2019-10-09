@@ -4,22 +4,22 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
-        <member name="F:FileCabinetApp.Enums.Gender.Male">
+        <member name="F:FileCabinetApp.Enums.Gender.M">
             <summary>
             The male.
             </summary>
         </member>
-        <member name="F:FileCabinetApp.Enums.Gender.Female">
+        <member name="F:FileCabinetApp.Enums.Gender.F">
             <summary>
             The female.
             </summary>
         </member>
-        <member name="F:FileCabinetApp.Enums.Gender.Other">
+        <member name="F:FileCabinetApp.Enums.Gender.O">
             <summary>
             The other.
             </summary>
         </member>
-        <member name="F:FileCabinetApp.Enums.Gender.Unknown">
+        <member name="F:FileCabinetApp.Enums.Gender.U">
             <summary>
             The unknown.
             </summary>

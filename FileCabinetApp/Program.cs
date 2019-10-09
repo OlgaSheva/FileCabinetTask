@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using System.Text.RegularExpressions;
 using FileCabinetApp.Enums;
 
 namespace FileCabinetApp
@@ -12,6 +13,8 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+        private static readonly DateTime MinDate = new DateTime(1950, 1, 1);
+        private static readonly string NamePattern = @"^[a-zA-Z '.-]*$";
 
         private static bool isRunning = true;
 
@@ -21,6 +24,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("create", Create),
+            new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("list", List),
         };
 
@@ -30,10 +34,12 @@ namespace FileCabinetApp
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "shows statistics by records", "The 'stat' command shows statistics by records" },
             new string[] { "create", "creates a new record", "The 'create' command creates a new record." },
+            new string[] { "edit", "edits an existing entry", "The 'edit' command edits an existing entry."},
             new string[] { "list", "returns a list of records added to the service", "The 'list' command return a list of records added to the service." },
         };
 
         private static FileCabinetService fileCabinetService = new FileCabinetService();
+        private static IEnumerable<object> list;
 
         public static void Main(string[] args)
         {
@@ -77,71 +83,7 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            Console.WriteLine("First name: ");
-            string firstName = Console.ReadLine();
-
-            Console.WriteLine("Last name: ");
-            string lastName = Console.ReadLine();
-
-            Console.WriteLine("Date of birth month/day/year: ");
-            string data = Console.ReadLine();
-            if (!DateTime.TryParse(data, out DateTime dateOfBirth))
-            {
-                Console.WriteLine($"The string '{data}' wasn't recognized as a valid date.");
-                Console.WriteLine("Record wasn't created.");
-                return;
-            }
-
-            Console.WriteLine("Gender Male / Female / Other / Unknown:");
-            data = Console.ReadLine();
-            if (!Enum.TryParse<Gender>(data, out Gender gender))
-            {
-                Console.WriteLine($"The symbol '{data}' wasn't recognized as a valid gender.");
-                Console.WriteLine("Record wasn't created.");
-                return;
-            }
-
-            Console.WriteLine("Material status M (married) / U (unmarried)");
-            data = Console.ReadLine();
-            if (!char.TryParse(data, out char status) || (status != 'M' && status != 'U'))
-            {
-                Console.WriteLine($"The symbol '{data}' wasn't recognized as a valid material status.");
-                Console.WriteLine("Record wasn't created.");
-                return;
-            }
-
-            Console.WriteLine("How many cats do you have?");
-            short catsCount = 0;
-            var age = DateTime.Today.Year - dateOfBirth.Year;
-            if (age > 30 && gender == Gender.Female)
-            {
-                catsCount = 30;
-                Console.WriteLine(30);
-                Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^.^)");
-            }
-            else
-            {
-                data = Console.ReadLine();
-                if (!short.TryParse(data, out catsCount))
-                {
-                    Console.WriteLine($"The number '{catsCount}' is not like the truth.");
-                    Console.WriteLine("Record wasn't created.");
-                    return;
-                }
-            }
-
-            decimal catsBudget = 0;
-            if (catsCount != 0)
-            {
-                Console.WriteLine("How much do you spend per month on cats?");
-                data = Console.ReadLine();
-                if (!decimal.TryParse(data, out catsBudget))
-                {
-                    Console.WriteLine($"The number '{catsBudget}' is not like the truth.");
-                    Console.WriteLine("Record wasn't created.");
-                    return;
-                }
-            }
+            var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
 
             int recordId = default(int);
             try
@@ -152,10 +94,190 @@ namespace FileCabinetApp
             {
                 Console.WriteLine("All fields are required.");
                 Console.WriteLine("Record wasn't created.");
+                Console.WriteLine(Program.HintMessage);
                 return;
             }
 
             Console.WriteLine($"Record #{recordId} is created.");
+        }
+
+        private static void Edit(string parameters)
+        {
+            int id = int.Parse(parameters);
+            var list = fileCabinetService.GetRecords();
+
+            bool flag = true;
+            foreach (var item in list)
+            {
+                if (item.Id == id)
+                {
+                    flag = false;
+                }
+            }
+
+            if (!flag)
+            {
+                var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
+                fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+            }
+            else
+            {
+                Console.WriteLine("#id record is not found.");
+            }
+        }
+
+        private static (string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget) ParameterEntry() //Create<string, string, DateTime, Gender, char, short, decimal>(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget){
+        {
+            bool flag = true;
+            string firstName = default(string);
+            while (flag)
+            {
+                Console.WriteLine("First name: ");
+                firstName = Console.ReadLine();
+                if (firstName != null && firstName.Length > 2 && firstName.Length < 60 && Regex.IsMatch(firstName, NamePattern))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    if (firstName.Length < 2 || firstName.Length > 60)
+                    {
+                        Console.WriteLine("Please try again. The name length can't be less than 2 symbols and larger than 60 symbols.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Please try again. The {firstName} isn't a valid name.");
+                    }
+                }
+            }
+
+            flag = true;
+            string lastName = default(string);
+            while (flag)
+            {
+                Console.WriteLine("Last name: ");
+                lastName = Console.ReadLine();
+                if (lastName != null && lastName.Length > 2 && lastName.Length < 60 && Regex.IsMatch(lastName, NamePattern))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    if (firstName.Length < 2 || firstName.Length > 60)
+                    {
+                        Console.WriteLine("Please try again. The name length can't be less than 2 symbols and larger than 60 symbols.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Please try again. The {lastName} isn't a valid name.");
+                    }
+                }
+            }
+
+            flag = true;
+            string data = default(string);
+            DateTime dateOfBirth = default(DateTime);
+            while (flag)
+            {
+                Console.WriteLine("Date of birth month/day/year: ");
+                data = Console.ReadLine();
+                if (DateTime.TryParse(data, out dateOfBirth) && (dateOfBirth <= DateTime.Today || dateOfBirth >= MinDate))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    Console.WriteLine($"Please try again. The {data} isn't a valid date.");
+                }
+            }
+
+            flag = true;
+            Gender gender = default(Gender);
+            while (flag)
+            {
+                Console.WriteLine("Gender M (male) / F (female) / O (other) / U (unknown):");
+                data = Console.ReadLine();
+                if (Enum.TryParse<Gender>(data, out gender) && (gender == Gender.F || gender == Gender.M || gender == Gender.O || gender == Gender.U))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    Console.WriteLine($"Please try again. The symbol '{data}' wasn't recognized as a valid gender.");
+                }
+            }
+
+            flag = true;
+            char status = default(char);
+            while (flag)
+            {
+                Console.WriteLine("Material status M (married) / U (unmarried)");
+                data = Console.ReadLine();
+                if (char.TryParse(data, out status) && (status == 'M' || status == 'U'))
+                {
+                    flag = false;
+                }
+                else
+                {
+                    Console.WriteLine($"Please try again. The symbol '{data}' wasn't recognized as a valid material status.");
+                }
+            }
+
+            flag = true;
+            short catsCount = 0;
+            var age = DateTime.Today.Year - dateOfBirth.Year;
+            while (flag)
+            {
+                Console.WriteLine("How many cats do you have?");
+                if (age > 30 && gender == Gender.F && status == 'U')
+                {
+                    catsCount = 30;
+                    Console.WriteLine(30);
+                    Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^-.-^)");
+                    flag = false;
+                }
+                else
+                {
+                    data = Console.ReadLine();
+                    if (short.TryParse(data, out catsCount) && catsCount >= 0 && catsCount <= 100)
+                    {
+                        flag = false;
+                        if (catsCount > 10)
+                        {
+                            Console.WriteLine("Are you seriously??? 0_o");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Please try again. The number '{catsCount}' is not like the truth.");
+                    }
+                }
+            }
+
+            flag = true;
+            decimal catsBudget = 0;
+            if (catsCount != 0)
+            {
+                while (flag)
+                {
+                    Console.WriteLine("How much do you spend per month on cats?");
+                    data = Console.ReadLine();
+                    if (decimal.TryParse(data, out catsBudget) && catsBudget > 0)
+                    {
+                        flag = false;
+                        if (catsBudget < 10)
+                        {
+                            Console.WriteLine("You need to pamper your cats more!");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Please try again. The number '{catsBudget}' is not like the truth.");
+                    }
+                }
+            }
+
+            return (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
         }
 
         private static void List(string parameters)
