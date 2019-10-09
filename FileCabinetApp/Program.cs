@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using FileCabinetApp.Enums;
@@ -23,6 +24,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("create", Create),
+            new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("list", List),
         };
 
@@ -32,10 +34,12 @@ namespace FileCabinetApp
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "shows statistics by records", "The 'stat' command shows statistics by records" },
             new string[] { "create", "creates a new record", "The 'create' command creates a new record." },
+            new string[] { "edit", "edits an existing entry", "The 'edit' command edits an existing entry."},
             new string[] { "list", "returns a list of records added to the service", "The 'list' command return a list of records added to the service." },
         };
 
         private static FileCabinetService fileCabinetService = new FileCabinetService();
+        private static IEnumerable<object> list;
 
         public static void Main(string[] args)
         {
@@ -78,6 +82,51 @@ namespace FileCabinetApp
         }
 
         private static void Create(string parameters)
+        {
+            var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
+
+            int recordId = default(int);
+            try
+            {
+                recordId = fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine("All fields are required.");
+                Console.WriteLine("Record wasn't created.");
+                Console.WriteLine(Program.HintMessage);
+                return;
+            }
+
+            Console.WriteLine($"Record #{recordId} is created.");
+        }
+
+        private static void Edit(string parameters)
+        {
+            int id = int.Parse(parameters);
+            var list = fileCabinetService.GetRecords();
+
+            bool flag = true;
+            foreach (var item in list)
+            {
+                if (item.Id == id)
+                {
+                    flag = false;
+                }
+            }
+
+            if (!flag)
+            {
+                var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
+                fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+            }
+            else
+            {
+                Console.WriteLine("#id record is not found.");
+            }
+        }
+
+        private static (string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget) ParameterEntry() //Create<string, string, DateTime, Gender, char, short, decimal>(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget){
         {
             bool flag = true;
             string firstName = default(string);
@@ -228,20 +277,7 @@ namespace FileCabinetApp
                 }
             }
 
-            int recordId = default(int);
-            try
-            {
-                recordId = fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
-            }
-            catch (ArgumentException)
-            {
-                Console.WriteLine("All fields are required.");
-                Console.WriteLine("Record wasn't created.");
-                Console.WriteLine(Program.HintMessage);
-                return;
-            }
-
-            Console.WriteLine($"Record #{recordId} is created.");
+            return (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
         }
 
         private static void List(string parameters)
