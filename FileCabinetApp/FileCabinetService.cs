@@ -10,6 +10,7 @@ namespace FileCabinetApp
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget)
         {
@@ -34,13 +35,19 @@ namespace FileCabinetApp
                 this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>());
             }
 
-            if (!this.lastNameDictionary.ContainsKey(firstName))
+            if (!this.lastNameDictionary.ContainsKey(lastName))
             {
                 this.lastNameDictionary.Add(lastName, new List<FileCabinetRecord>());
             }
 
+            if (!this.dateOfBirthDictionary.ContainsKey(dateOfBirth))
+            {
+                this.dateOfBirthDictionary.Add(dateOfBirth, new List<FileCabinetRecord>());
+            }
+
             this.firstNameDictionary[firstName].Add(record);
             this.lastNameDictionary[lastName].Add(record);
+            this.dateOfBirthDictionary[dateOfBirth].Add(record);
 
             return record.Id;
         }
@@ -82,6 +89,8 @@ namespace FileCabinetApp
             this.Validation(firstName, lastName, dateOfBirth, gender, materialStatus, catsCount, catsBudget);
 
             this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
+            this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
+            this.dateOfBirthDictionary[this.list[index].DateOfBirth].Remove(this.list[index]);
 
             this.list[index].FirstName = firstName;
             this.list[index].LastName = lastName;
@@ -96,7 +105,19 @@ namespace FileCabinetApp
                 this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>());
             }
 
+            if (!this.lastNameDictionary.ContainsKey(lastName))
+            {
+                this.lastNameDictionary.Add(lastName, new List<FileCabinetRecord>());
+            }
+
+            if (!this.dateOfBirthDictionary.ContainsKey(dateOfBirth))
+            {
+                this.dateOfBirthDictionary.Add(dateOfBirth, new List<FileCabinetRecord>());
+            }
+
             this.firstNameDictionary[firstName].Add(this.list[index]);
+            this.lastNameDictionary[lastName].Add(this.list[index]);
+            this.dateOfBirthDictionary[dateOfBirth].Add(this.list[index]);
         }
 
         public FileCabinetRecord[] FindByFirstName(string firstName)
