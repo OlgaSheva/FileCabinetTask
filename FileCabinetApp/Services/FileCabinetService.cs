@@ -15,6 +15,16 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
+        private readonly IRecordValidator validator;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
+        /// </summary>
+        /// <param name="validator">The validator.</param>
+        public FileCabinetService(IRecordValidator validator)
+        {
+            this.validator = validator;
+        }
 
         /// <summary>
         /// Creates the record.
@@ -23,7 +33,7 @@ namespace FileCabinetApp
         /// <returns>New file cabinet record.</returns>
         public int CreateRecord(Record rec)
         {
-            this.CreateValidator().ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
+            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
 
             var record = new FileCabinetRecord
             {
@@ -102,7 +112,7 @@ namespace FileCabinetApp
                 throw new ArgumentException($"The {nameof(id)} doesn't exist.");
             }
 
-            this.CreateValidator().ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
+            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
 
             this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
             this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
@@ -177,13 +187,7 @@ namespace FileCabinetApp
 
             return findList;
         }
-
-        /// <summary>
-        /// Validates the parameters.
-        /// </summary>
-        /// <returns>The validator.</returns>
-        public abstract IRecordValidator CreateValidator();
-
+        
         /// <summary>
         /// Determines whether [is there a record with this identifier] [the specified identifier].
         /// </summary>

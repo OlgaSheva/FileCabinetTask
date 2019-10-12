@@ -192,32 +192,32 @@
             </summary>
             <seealso cref="T:FileCabinetApp.FileCabinetService" />
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetCustomService.CreateValidator">
+        <member name="M:FileCabinetApp.Services.FileCabinetCustomService.#ctor">
             <summary>
-            Validates the parameters.
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.FileCabinetCustomService"/> class.
             </summary>
-            <returns>
-            The validator.
-            </returns>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetDefaultService">
             <summary>
-            The file cabinet custom service with default validation.
+            The file cabinet service with default validation.
             </summary>
             <seealso cref="T:FileCabinetApp.FileCabinetService" />
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetDefaultService.CreateValidator">
+        <member name="M:FileCabinetApp.Services.FileCabinetDefaultService.#ctor">
             <summary>
-            Validates the parameters.
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.FileCabinetDefaultService"/> class.
             </summary>
-            <returns>
-            The validator.
-            </returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
             The file cabinet service.
             </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.Validators.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
+            </summary>
+            <param name="validator">The validator.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.Record)">
             <summary>
@@ -258,12 +258,6 @@
             <returns>All records with specified parameters.</returns>
             <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
             <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateValidator">
-            <summary>
-            Validates the parameters.
-            </summary>
-            <returns>The validator.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
             <summary>
