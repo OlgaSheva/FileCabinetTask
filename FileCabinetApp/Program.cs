@@ -6,6 +6,9 @@ using FileCabinetApp.Enums;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// The main class.
+    /// </summary>
     public static class Program
     {
         private const string DeveloperName = "Olga Kripulevich";
@@ -42,6 +45,10 @@ namespace FileCabinetApp
 
         private static FileCabinetService fileCabinetService = new FileCabinetService();
 
+        /// <summary>
+        /// Defines the entry point of the application.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");

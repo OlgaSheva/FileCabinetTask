@@ -4,6 +4,11 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.Enums.Gender">
+            <summary>
+            The gender enum.
+            </summary>
+        </member>
         <member name="F:FileCabinetApp.Enums.Gender.M">
             <summary>
             The male.
@@ -23,6 +28,153 @@
             <summary>
             The unknown.
             </summary>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetRecord">
+            <summary>
+            The class to subscribe file cabinet record.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Id">
+            <summary>
+            Gets or sets the identifier.
+            </summary>
+            <value>
+            The identifier.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+            <value>
+            The first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+            <value>
+            The last name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.DateOfBirth">
+            <summary>
+            Gets or sets the date of birth.
+            </summary>
+            <value>
+            The date of birth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Gender">
+            <summary>
+            Gets or sets the gender.
+            </summary>
+            <value>
+            The gender.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.MaritalStatus">
+            <summary>
+            Gets or sets the marital status.
+            </summary>
+            <value>
+            The marital status.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.CatsCount">
+            <summary>
+            Gets or sets the cats count.
+            </summary>
+            <value>
+            The cats count.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.CatsBudget">
+            <summary>
+            Gets or sets the cats budget.
+            </summary>
+            <value>
+            The cats budget.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetService">
+            <summary>
+            The file cabinet service.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
+            <returns>New record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>All existing records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetStat">
+            <summary>
+            Gets the stat.
+            </summary>
+            <returns>The quantity of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(System.Int32,System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Edits the record.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
+            <exception cref="T:System.ArgumentException">
+            The {nameof(id)} can't be less than zero.
+            or
+            The {nameof(id)} doesn't exist.
+            </exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.Find(System.String)">
+            <summary>
+            Finds the specified parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+            <returns>All records with specified parameters.</returns>
+            <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
+            <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
+            <summary>
+            Determines whether [is there a record with this identifier] [the specified identifier].
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="index">The index.</param>
+            <returns>
+              <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.Program">
+            <summary>
+            The main class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Program.Main(System.String[])">
+            <summary>
+            Defines the entry point of the application.
+            </summary>
+            <param name="args">The arguments.</param>
         </member>
     </members>
 </doc>

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+
 using FileCabinetApp.Enums;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// The file cabinet service.
+    /// </summary>
     public class FileCabinetService
     {
         private static readonly DateTime MinDate = new DateTime(1950, 1, 1);
@@ -13,6 +17,17 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
+        /// <summary>
+        /// Creates the record.
+        /// </summary>
+        /// <param name="firstName">The first name.</param>
+        /// <param name="lastName">The last name.</param>
+        /// <param name="dateOfBirth">The date of birth.</param>
+        /// <param name="gender">The gender.</param>
+        /// <param name="materialStatus">The material status.</param>
+        /// <param name="catsCount">The cats count.</param>
+        /// <param name="catsBudget">The cats budget.</param>
+        /// <returns>New record.</returns>
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount = 0, decimal catsBudget = 0)
         {
             this.Validation(firstName, lastName, dateOfBirth, gender, materialStatus, catsCount, catsBudget);
@@ -53,17 +68,41 @@ namespace FileCabinetApp
             return record.Id;
         }
 
+        /// <summary>
+        /// Gets the records.
+        /// </summary>
+        /// <returns>All existing records.</returns>
         public FileCabinetRecord[] GetRecords()
         {
             var copy = new List<FileCabinetRecord>(this.list);
             return copy.ToArray();
         }
 
+        /// <summary>
+        /// Gets the stat.
+        /// </summary>
+        /// <returns>The quantity of records.</returns>
         public int GetStat()
         {
             return this.list.Count;
         }
 
+        /// <summary>
+        /// Edits the record.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="firstName">The first name.</param>
+        /// <param name="lastName">The last name.</param>
+        /// <param name="dateOfBirth">The date of birth.</param>
+        /// <param name="gender">The gender.</param>
+        /// <param name="materialStatus">The material status.</param>
+        /// <param name="catsCount">The cats count.</param>
+        /// <param name="catsBudget">The cats budget.</param>
+        /// <exception cref="ArgumentException">
+        /// The {nameof(id)} can't be less than zero.
+        /// or
+        /// The {nameof(id)} doesn't exist.
+        /// </exception>
         public void EditRecord(int id, string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget)
         {
             if (id < 0)
@@ -110,6 +149,13 @@ namespace FileCabinetApp
             this.dateOfBirthDictionary[dateOfBirth].Add(this.list[index]);
         }
 
+        /// <summary>
+        /// Finds the specified parameters.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>All records with specified parameters.</returns>
+        /// <exception cref="InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
+        /// <exception cref="ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
         public FileCabinetRecord[] Find(string parameters)
         {
             var param = parameters.Split(' ');
@@ -145,6 +191,14 @@ namespace FileCabinetApp
             return findList;
         }
 
+        /// <summary>
+        /// Determines whether [is there a record with this identifier] [the specified identifier].
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>
+        ///   <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+        /// </returns>
         internal bool IsThereARecordWithThisId(int id, out int index)
         {
             index = -1;

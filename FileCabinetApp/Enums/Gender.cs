@@ -1,5 +1,8 @@
 ﻿namespace FileCabinetApp.Enums
 {
+    /// <summary>
+    /// The gender enum.
+    /// </summary>
     public enum Gender
     {
         /// <summary>
