@@ -8,6 +8,7 @@ namespace FileCabinetApp
     {
         private static readonly DateTime MinDate = new DateTime(1950, 1, 1);
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
 
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget)
         {
@@ -26,6 +27,13 @@ namespace FileCabinetApp
             };
 
             this.list.Add(record);
+
+            if (!this.firstNameDictionary.ContainsKey(firstName))
+            {
+                this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>());
+            }
+
+            this.firstNameDictionary[firstName].Add(record);
 
             return record.Id;
         }
@@ -66,6 +74,8 @@ namespace FileCabinetApp
 
             this.Validation(firstName, lastName, dateOfBirth, gender, materialStatus, catsCount, catsBudget);
 
+            this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
+
             this.list[index].FirstName = firstName;
             this.list[index].LastName = lastName;
             this.list[index].DateOfBirth = dateOfBirth;
@@ -73,20 +83,18 @@ namespace FileCabinetApp
             this.list[index].MaritalStatus = materialStatus;
             this.list[index].CatsCount = catsCount;
             this.list[index].CatsBudget = catsBudget;
+
+            if (!this.firstNameDictionary.ContainsKey(firstName))
+            {
+                this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>());
+            }
+
+            this.firstNameDictionary[firstName].Add(this.list[index]);
         }
 
         public FileCabinetRecord[] FindByFirstName(string firstName)
         {
-            var nameList = new List<FileCabinetRecord>();
-            foreach (var item in this.list)
-            {
-                if (item.FirstName.ToLower() == firstName.ToLower())
-                {
-                    nameList.Add(item);
-                }
-            }
-
-            return nameList.ToArray();
+            return this.firstNameDictionary[firstName].ToArray();
         }
 
         public FileCabinetRecord[] FindByLastName(string lastName)
