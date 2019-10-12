@@ -9,7 +9,7 @@ namespace FileCabinetApp
     /// <summary>
     /// The file cabinet service.
     /// </summary>
-    public abstract class FileCabinetService
+    public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
@@ -187,7 +187,7 @@ namespace FileCabinetApp
 
             return findList;
         }
-        
+
         /// <summary>
         /// Determines whether [is there a record with this identifier] [the specified identifier].
         /// </summary>

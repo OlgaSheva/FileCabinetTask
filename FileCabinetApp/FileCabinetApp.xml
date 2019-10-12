@@ -186,28 +186,6 @@
             The cats budget.
             </value>
         </member>
-        <member name="T:FileCabinetApp.Services.FileCabinetCustomService">
-            <summary>
-            The file cabinet service with custom validation.
-            </summary>
-            <seealso cref="T:FileCabinetApp.FileCabinetService" />
-        </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetCustomService.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.FileCabinetCustomService"/> class.
-            </summary>
-        </member>
-        <member name="T:FileCabinetApp.Services.FileCabinetDefaultService">
-            <summary>
-            The file cabinet service with default validation.
-            </summary>
-            <seealso cref="T:FileCabinetApp.FileCabinetService" />
-        </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetDefaultService.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.FileCabinetDefaultService"/> class.
-            </summary>
-        </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
             The file cabinet service.

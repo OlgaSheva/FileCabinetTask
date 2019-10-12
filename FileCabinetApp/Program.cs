@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 
 using FileCabinetApp.Enums;
-using FileCabinetApp.Services;
+using FileCabinetApp.Validators;
 
 namespace FileCabinetApp
 {
@@ -80,11 +80,11 @@ namespace FileCabinetApp
 
             if (validationRules.Equals("custom"))
             {
-                fileCabinetService = new FileCabinetCustomService();
+                fileCabinetService = new FileCabinetService(new CustomValidator());
             }
             else
             {
-                fileCabinetService = new FileCabinetDefaultService();
+                fileCabinetService = new FileCabinetService(new DefaultValidator());
             }
 
             do
