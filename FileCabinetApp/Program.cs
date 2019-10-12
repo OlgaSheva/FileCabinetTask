@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -182,7 +183,7 @@ namespace FileCabinetApp
         {
             try
             {
-                var findList = fileCabinetService.Find(parameters);
+                ReadOnlyCollection<FileCabinetRecord> findList = fileCabinetService.Find(parameters);
                 Print(findList);
             }
             catch (InvalidOperationException ioex)
@@ -351,7 +352,7 @@ namespace FileCabinetApp
 
         private static void List(string parameters)
         {
-            var fileCabinetRecords = fileCabinetService.GetRecords();
+            ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = fileCabinetService.GetRecords();
             Print(fileCabinetRecords);
         }
 
@@ -394,7 +395,7 @@ namespace FileCabinetApp
             isRunning = false;
         }
 
-        private static void Print(FileCabinetRecord[] fileCabinetRecords)
+        private static void Print(ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords)
         {
             foreach (var item in fileCabinetRecords)
             {
