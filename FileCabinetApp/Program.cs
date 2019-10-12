@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 
 using FileCabinetApp.Enums;
+using FileCabinetApp.Services;
 
 namespace FileCabinetApp
 {
@@ -46,7 +47,7 @@ namespace FileCabinetApp
         /// <summary>
         /// The file cabinet service.
         /// </summary>
-        private static FileCabinetService fileCabinetService = new FileCabinetService();
+        private static FileCabinetService fileCabinetService = new FileCabinetCustomService();
 
         /// <summary>
         /// Defines the entry point of the application.

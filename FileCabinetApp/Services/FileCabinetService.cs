@@ -9,9 +9,8 @@ namespace FileCabinetApp
     /// <summary>
     /// The file cabinet service.
     /// </summary>
-    public class FileCabinetService
+    public abstract class FileCabinetService
     {
-        private static readonly DateTime MinDate = new DateTime(1950, 1, 1);
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
@@ -24,7 +23,7 @@ namespace FileCabinetApp
         /// <returns>New file cabinet record.</returns>
         public int CreateRecord(Record rec)
         {
-            this.Validation(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
+            this.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
 
             var record = new FileCabinetRecord
             {
@@ -103,7 +102,7 @@ namespace FileCabinetApp
                 throw new ArgumentException($"The {nameof(id)} doesn't exist.");
             }
 
-            this.Validation(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
+            this.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
 
             this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
             this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
@@ -180,6 +179,18 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Validates the parameters.
+        /// </summary>
+        /// <param name="firstName">The first name.</param>
+        /// <param name="lastName">The last name.</param>
+        /// <param name="dateOfBirth">The date of birth.</param>
+        /// <param name="gender">The gender.</param>
+        /// <param name="materialStatus">The material status.</param>
+        /// <param name="catsCount">The cats count.</param>
+        /// <param name="catsBudget">The cats budget.</param>
+        public abstract void ValidateParameters(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget);
+
+        /// <summary>
         /// Determines whether [is there a record with this identifier] [the specified identifier].
         /// </summary>
         /// <param name="id">The identifier.</param>
@@ -202,19 +213,6 @@ namespace FileCabinetApp
             return false;
         }
 
-        private static bool ConsistsOfSpaces(string @string)
-        {
-            foreach (var item in @string)
-            {
-                if (item != ' ')
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         private FileCabinetRecord[] FindByDateOfBirth(string dateOfBirth)
         {
             var nameList = new List<FileCabinetRecord>();
@@ -230,69 +228,6 @@ namespace FileCabinetApp
             }
 
             return nameList.ToArray();
-        }
-
-        private void Validation(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget)
-        {
-            if (firstName == null)
-            {
-                throw new ArgumentNullException($"The {nameof(firstName)} can't be null.");
-            }
-
-            if (lastName == null)
-            {
-                throw new ArgumentNullException($"The {nameof(lastName)} can't be null.");
-            }
-
-            if (firstName.Length < 2 || firstName.Length > 60)
-            {
-                throw new ArgumentException($"The {nameof(firstName)} length can't be less than 2 symbols and larger than 60 symbols.");
-            }
-
-            if (ConsistsOfSpaces(firstName))
-            {
-                throw new ArgumentException($"The {nameof(firstName)} can't consists only from spases.");
-            }
-
-            if (lastName.Length < 2 || lastName.Length > 60)
-            {
-                throw new ArgumentException($"The {nameof(lastName)} length can't be less than 2 symbols and larger than 60 symbols.");
-            }
-
-            if (ConsistsOfSpaces(lastName))
-            {
-                throw new ArgumentException($"The {nameof(lastName)} can't consists only from spases.");
-            }
-
-            if (dateOfBirth == null)
-            {
-                throw new ArgumentNullException($"The {nameof(dateOfBirth)} can't be null.");
-            }
-
-            if (dateOfBirth > DateTime.Today || dateOfBirth < MinDate)
-            {
-                throw new ArgumentException($"The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.");
-            }
-
-            if (gender != Gender.M && gender != Gender.F && gender != Gender.O && gender != Gender.U)
-            {
-                throw new ArgumentException($"The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.");
-            }
-
-            if (materialStatus != 'M' && materialStatus != 'U')
-            {
-                throw new ArgumentNullException($"The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.");
-            }
-
-            if (catsCount < 0 || catsCount > 100)
-            {
-                throw new ArgumentException($"The {nameof(catsCount)} can't be less than 0 or larger than 50.");
-            }
-
-            if (catsBudget < 0)
-            {
-                throw new ArgumentException($"The {nameof(catsBudget)} can't be less than zero.");
-            }
         }
     }
 }
