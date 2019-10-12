@@ -43,6 +43,9 @@ namespace FileCabinetApp
             new string[] { "find <parameter name> <parameter value>", "returns a list of records with the given parameter", "The 'find firstname' command returns a list of records with the given parameter." },
         };
 
+        /// <summary>
+        /// The file cabinet service.
+        /// </summary>
         private static FileCabinetService fileCabinetService = new FileCabinetService();
 
         /// <summary>
@@ -96,7 +99,8 @@ namespace FileCabinetApp
             int recordId = default(int);
             try
             {
-                recordId = fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                Record record = new Record(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                recordId = fileCabinetService.CreateRecord(record);
                 Console.WriteLine($"Record #{recordId} is created.");
             }
             catch (ArgumentNullException anex)
@@ -125,7 +129,8 @@ namespace FileCabinetApp
                 var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
                 try
                 {
-                    fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                    Record record = new Record(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                    fileCabinetService.EditRecord(id, record);
                 }
                 catch (ArgumentNullException anex)
                 {

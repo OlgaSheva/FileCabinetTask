@@ -20,50 +20,44 @@ namespace FileCabinetApp
         /// <summary>
         /// Creates the record.
         /// </summary>
-        /// <param name="firstName">The first name.</param>
-        /// <param name="lastName">The last name.</param>
-        /// <param name="dateOfBirth">The date of birth.</param>
-        /// <param name="gender">The gender.</param>
-        /// <param name="materialStatus">The material status.</param>
-        /// <param name="catsCount">The cats count.</param>
-        /// <param name="catsBudget">The cats budget.</param>
-        /// <returns>New record.</returns>
-        public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount = 0, decimal catsBudget = 0)
+        /// <param name="rec">The record.</param>
+        /// <returns>New file cabinet record.</returns>
+        public int CreateRecord(Record rec)
         {
-            this.Validation(firstName, lastName, dateOfBirth, gender, materialStatus, catsCount, catsBudget);
+            this.Validation(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
 
             var record = new FileCabinetRecord
             {
                 Id = this.list.Count + 1,
-                FirstName = firstName,
-                LastName = lastName,
-                DateOfBirth = dateOfBirth,
-                Gender = gender,
-                MaritalStatus = materialStatus,
-                CatsCount = catsCount,
-                CatsBudget = catsBudget,
+                FirstName = rec.FirstName,
+                LastName = rec.LastName,
+                DateOfBirth = rec.DateOfBirth,
+                Gender = rec.Gender,
+                MaritalStatus = rec.MaterialStatus,
+                CatsCount = rec.CatsCount,
+                CatsBudget = rec.CatsBudget,
             };
 
             this.list.Add(record);
 
-            if (!this.firstNameDictionary.ContainsKey(firstName))
+            if (!this.firstNameDictionary.ContainsKey(rec.FirstName))
             {
-                this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>());
+                this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>());
             }
 
-            if (!this.lastNameDictionary.ContainsKey(lastName))
+            if (!this.lastNameDictionary.ContainsKey(rec.LastName))
             {
-                this.lastNameDictionary.Add(lastName, new List<FileCabinetRecord>());
+                this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>());
             }
 
-            if (!this.dateOfBirthDictionary.ContainsKey(dateOfBirth))
+            if (!this.dateOfBirthDictionary.ContainsKey(rec.DateOfBirth))
             {
-                this.dateOfBirthDictionary.Add(dateOfBirth, new List<FileCabinetRecord>());
+                this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>());
             }
 
-            this.firstNameDictionary[firstName].Add(record);
-            this.lastNameDictionary[lastName].Add(record);
-            this.dateOfBirthDictionary[dateOfBirth].Add(record);
+            this.firstNameDictionary[rec.FirstName].Add(record);
+            this.lastNameDictionary[rec.LastName].Add(record);
+            this.dateOfBirthDictionary[rec.DateOfBirth].Add(record);
 
             return record.Id;
         }
@@ -91,19 +85,13 @@ namespace FileCabinetApp
         /// Edits the record.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="firstName">The first name.</param>
-        /// <param name="lastName">The last name.</param>
-        /// <param name="dateOfBirth">The date of birth.</param>
-        /// <param name="gender">The gender.</param>
-        /// <param name="materialStatus">The material status.</param>
-        /// <param name="catsCount">The cats count.</param>
-        /// <param name="catsBudget">The cats budget.</param>
+        /// <param name="rec">The record.</param>
         /// <exception cref="ArgumentException">
         /// The {nameof(id)} can't be less than zero.
         /// or
         /// The {nameof(id)} doesn't exist.
         /// </exception>
-        public void EditRecord(int id, string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget)
+        public void EditRecord(int id, Record rec)
         {
             if (id < 0)
             {
@@ -115,38 +103,38 @@ namespace FileCabinetApp
                 throw new ArgumentException($"The {nameof(id)} doesn't exist.");
             }
 
-            this.Validation(firstName, lastName, dateOfBirth, gender, materialStatus, catsCount, catsBudget);
+            this.Validation(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
 
             this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
             this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
             this.dateOfBirthDictionary[this.list[index].DateOfBirth].Remove(this.list[index]);
 
-            this.list[index].FirstName = firstName;
-            this.list[index].LastName = lastName;
-            this.list[index].DateOfBirth = dateOfBirth;
-            this.list[index].Gender = gender;
-            this.list[index].MaritalStatus = materialStatus;
-            this.list[index].CatsCount = catsCount;
-            this.list[index].CatsBudget = catsBudget;
+            this.list[index].FirstName = rec.FirstName;
+            this.list[index].LastName = rec.LastName;
+            this.list[index].DateOfBirth = rec.DateOfBirth;
+            this.list[index].Gender = rec.Gender;
+            this.list[index].MaritalStatus = rec.MaterialStatus;
+            this.list[index].CatsCount = rec.CatsCount;
+            this.list[index].CatsBudget = rec.CatsBudget;
 
-            if (!this.firstNameDictionary.ContainsKey(firstName))
+            if (!this.firstNameDictionary.ContainsKey(rec.FirstName))
             {
-                this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>());
+                this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>());
             }
 
-            if (!this.lastNameDictionary.ContainsKey(lastName))
+            if (!this.lastNameDictionary.ContainsKey(rec.LastName))
             {
-                this.lastNameDictionary.Add(lastName, new List<FileCabinetRecord>());
+                this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>());
             }
 
-            if (!this.dateOfBirthDictionary.ContainsKey(dateOfBirth))
+            if (!this.dateOfBirthDictionary.ContainsKey(rec.DateOfBirth))
             {
-                this.dateOfBirthDictionary.Add(dateOfBirth, new List<FileCabinetRecord>());
+                this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>());
             }
 
-            this.firstNameDictionary[firstName].Add(this.list[index]);
-            this.lastNameDictionary[lastName].Add(this.list[index]);
-            this.dateOfBirthDictionary[dateOfBirth].Add(this.list[index]);
+            this.firstNameDictionary[rec.FirstName].Add(this.list[index]);
+            this.lastNameDictionary[rec.LastName].Add(this.list[index]);
+            this.dateOfBirthDictionary[rec.DateOfBirth].Add(this.list[index]);
         }
 
         /// <summary>

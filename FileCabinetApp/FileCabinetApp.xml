@@ -103,18 +103,12 @@
             The file cabinet service.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.Record)">
             <summary>
             Creates the record.
             </summary>
-            <param name="firstName">The first name.</param>
-            <param name="lastName">The last name.</param>
-            <param name="dateOfBirth">The date of birth.</param>
-            <param name="gender">The gender.</param>
-            <param name="materialStatus">The material status.</param>
-            <param name="catsCount">The cats count.</param>
-            <param name="catsBudget">The cats budget.</param>
-            <returns>New record.</returns>
+            <param name="rec">The record.</param>
+            <returns>New file cabinet record.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
             <summary>
@@ -128,18 +122,12 @@
             </summary>
             <returns>The quantity of records.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(System.Int32,System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(System.Int32,FileCabinetApp.Record)">
             <summary>
             Edits the record.
             </summary>
             <param name="id">The identifier.</param>
-            <param name="firstName">The first name.</param>
-            <param name="lastName">The last name.</param>
-            <param name="dateOfBirth">The date of birth.</param>
-            <param name="gender">The gender.</param>
-            <param name="materialStatus">The material status.</param>
-            <param name="catsCount">The cats count.</param>
-            <param name="catsBudget">The cats budget.</param>
+            <param name="rec">The record.</param>
             <exception cref="T:System.ArgumentException">
             The {nameof(id)} can't be less than zero.
             or
@@ -170,11 +158,89 @@
             The main class.
             </summary>
         </member>
+        <member name="F:FileCabinetApp.Program.fileCabinetService">
+            <summary>
+            The file cabinet service.
+            </summary>
+        </member>
         <member name="M:FileCabinetApp.Program.Main(System.String[])">
             <summary>
             Defines the entry point of the application.
             </summary>
             <param name="args">The arguments.</param>
+        </member>
+        <member name="T:FileCabinetApp.Record">
+            <summary>
+            Class record for transmission to FileCabinetService.CreateRecord and FileCabinetService.EditRecord.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Record.#ctor(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Record"/> class.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
+        </member>
+        <member name="P:FileCabinetApp.Record.FirstName">
+            <summary>
+            Gets the first name.
+            </summary>
+            <value>
+            The first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.LastName">
+            <summary>
+            Gets the last name.
+            </summary>
+            <value>
+            The last name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.DateOfBirth">
+            <summary>
+            Gets the date of birth.
+            </summary>
+            <value>
+            The date of birth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.Gender">
+            <summary>
+            Gets the gender.
+            </summary>
+            <value>
+            The gender.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.MaterialStatus">
+            <summary>
+            Gets the material status.
+            </summary>
+            <value>
+            The material status.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.CatsCount">
+            <summary>
+            Gets the cats count.
+            </summary>
+            <value>
+            The cats count.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.CatsBudget">
+            <summary>
+            Gets the cats budget.
+            </summary>
+            <value>
+            The cats budget.
+            </value>
         </member>
     </members>
 </doc>
