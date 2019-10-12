@@ -26,6 +26,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("list", List),
+            new Tuple<string, Action<string>>("find", FindFirstName),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -34,12 +35,12 @@ namespace FileCabinetApp
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "shows statistics by records", "The 'stat' command shows statistics by records" },
             new string[] { "create", "creates a new record", "The 'create' command creates a new record." },
-            new string[] { "edit", "edits an existing entry", "The 'edit' command edits an existing entry."},
-            new string[] { "list", "returns a list of records added to the service", "The 'list' command return a list of records added to the service." },
+            new string[] { "edit", "edits an existing entry", "The 'edit' command edits an existing entry." },
+            new string[] { "list", "returns a list of records added to the service", "The 'list' command returns a list of records added to the service." },
+            new string[] { "find firstname", "returns a list of records with the given first name", "The 'find firstname' command returns a list of records with the given first name." },
         };
 
         private static FileCabinetService fileCabinetService = new FileCabinetService();
-        private static IEnumerable<object> list;
 
         public static void Main(string[] args)
         {
@@ -90,9 +91,9 @@ namespace FileCabinetApp
             {
                 recordId = fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
             }
-            catch (ArgumentException)
+            catch (Exception ex)
             {
-                Console.WriteLine("All fields are required.");
+                Console.WriteLine(ex.Message);
                 Console.WriteLine("Record wasn't created.");
                 Console.WriteLine(Program.HintMessage);
                 return;
@@ -126,7 +127,37 @@ namespace FileCabinetApp
             }
         }
 
-        private static (string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget) ParameterEntry() //Create<string, string, DateTime, Gender, char, short, decimal>(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget){
+        private static void FindFirstName(string parameters)
+        {
+            var firstName = parameters.Split(' ')[1];
+            if (firstName[0] == '"')
+            {
+                firstName = firstName.Trim('"');
+            }
+
+            FileCabinetRecord[] findList = null;
+            if (parameters.Split(' ')[0].ToLower() == "firstname")
+            {
+                findList = fileCabinetService.FindByFirstName(firstName);
+            }
+            else if (parameters.Split(' ')[0].ToLower() == "lastname")
+            {
+                findList = fileCabinetService.FindByLastName(firstName);
+            }
+            else if (parameters.Split(' ')[0].ToLower() == "dateofbirth")
+            {
+                findList = fileCabinetService.FindByDateOfBirth(firstName);
+            }
+
+            foreach (var item in findList)
+            {
+                string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
+                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
+                    $"{item.MaritalStatus}, {item.CatsCount}, {item.CatsBudget}");
+            }
+        }
+
+        private static (string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget) ParameterEntry()
         {
             bool flag = true;
             string firstName = default(string);
@@ -265,10 +296,6 @@ namespace FileCabinetApp
                     if (decimal.TryParse(data, out catsBudget) && catsBudget > 0)
                     {
                         flag = false;
-                        if (catsBudget < 10)
-                        {
-                            Console.WriteLine("You need to pamper your cats more!");
-                        }
                     }
                     else
                     {
