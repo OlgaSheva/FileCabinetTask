@@ -247,6 +247,44 @@
               <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:FileCabinetApp.Services.IFileCabinetService">
+            <summary>
+            File cabinet service.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.CreateRecord(FileCabinetApp.Record)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="record">The record.</param>
+            <returns>New file cabinet record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>All existing records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetStat">
+            <summary>
+            Gets the stat.
+            </summary>
+            <returns>The quantity of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.Record)">
+            <summary>
+            Edits the record.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="record">The record.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Find(System.String)">
+            <summary>
+            Finds the specified parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+            <returns>All records with specified parameters.</returns>
+        </member>
         <member name="T:FileCabinetApp.Validators.CustomValidator">
             <summary>
             Custom validator class.
