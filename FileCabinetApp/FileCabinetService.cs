@@ -89,6 +89,20 @@ namespace FileCabinetApp
             return nameList.ToArray();
         }
 
+        public FileCabinetRecord[] FindByLastName(string lastName)
+        {
+            var nameList = new List<FileCabinetRecord>();
+            foreach (var item in this.list)
+            {
+                if (item.LastName.ToLower() == lastName.ToLower())
+                {
+                    nameList.Add(item);
+                }
+            }
+
+            return nameList.ToArray();
+        }
+
         private static bool ConsistsOfSpaces(string @string)
         {
             foreach (var item in @string)

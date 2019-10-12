@@ -135,9 +135,17 @@ namespace FileCabinetApp
                 firstName = firstName.Trim('"');
             }
 
-            var firstNameArray = fileCabinetService.FindByFirstName(firstName);
+            FileCabinetRecord[] findList = null;
+            if (parameters.Split(' ')[0].ToLower() == "firstname")
+            {
+                findList = fileCabinetService.FindByFirstName(firstName);
+            }
+            else if (parameters.Split(' ')[0].ToLower() == "lastname")
+            {
+                findList = fileCabinetService.FindByLastName(firstName);
+            }
 
-            foreach (var item in firstNameArray)
+            foreach (var item in findList)
             {
                 string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
                 Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
