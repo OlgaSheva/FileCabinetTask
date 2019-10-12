@@ -192,43 +192,13 @@
             </summary>
             <seealso cref="T:FileCabinetApp.FileCabinetService" />
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetCustomService.ValidateParameters(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+        <member name="M:FileCabinetApp.Services.FileCabinetCustomService.CreateValidator">
             <summary>
             Validates the parameters.
             </summary>
-            <param name="firstName">The first name.</param>
-            <param name="lastName">The last name.</param>
-            <param name="dateOfBirth">The date of birth.</param>
-            <param name="gender">The gender.</param>
-            <param name="materialStatus">The material status.</param>
-            <param name="catsCount">The cats count.</param>
-            <param name="catsBudget">The cats budget.</param>
-            <exception cref="T:System.ArgumentNullException">
-            The {nameof(firstName)} can't be null.
-            or
-            The {nameof(lastName)} can't be null.
-            or
-            The {nameof(dateOfBirth)} can't be null.
-            or
-            The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.
-            </exception>
-            <exception cref="T:System.ArgumentException">
-            The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.
-            or
-            The {nameof(firstName)} can't consists only from spases.
-            or
-            The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.
-            or
-            The {nameof(lastName)} can't consists only from spases.
-            or
-            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
-            or
-            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
-            or
-            The {nameof(catsCount)} can't be less than 0 or larger than 50.
-            or
-            The {nameof(catsBudget)} can't be less than zero.
-            </exception>
+            <returns>
+            The validator.
+            </returns>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetDefaultService">
             <summary>
@@ -236,43 +206,13 @@
             </summary>
             <seealso cref="T:FileCabinetApp.FileCabinetService" />
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetDefaultService.ValidateParameters(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+        <member name="M:FileCabinetApp.Services.FileCabinetDefaultService.CreateValidator">
             <summary>
             Validates the parameters.
             </summary>
-            <param name="firstName">The first name.</param>
-            <param name="lastName">The last name.</param>
-            <param name="dateOfBirth">The date of birth.</param>
-            <param name="gender">The gender.</param>
-            <param name="materialStatus">The material status.</param>
-            <param name="catsCount">The cats count.</param>
-            <param name="catsBudget">The cats budget.</param>
-            <exception cref="T:System.ArgumentNullException">
-            The {nameof(firstName)} can't be null.
-            or
-            The {nameof(lastName)} can't be null.
-            or
-            The {nameof(dateOfBirth)} can't be null.
-            or
-            The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.
-            </exception>
-            <exception cref="T:System.ArgumentException">
-            The {nameof(firstName)} length can't be less than 2 symbols and larger than 60 symbols.
-            or
-            The {nameof(firstName)} can't consists only from spases.
-            or
-            The {nameof(lastName)} length can't be less than 2 symbols and larger than 60 symbols.
-            or
-            The {nameof(lastName)} can't consists only from spases.
-            or
-            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
-            or
-            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
-            or
-            The {nameof(catsCount)} can't be less than 0 or larger than 50.
-            or
-            The {nameof(catsBudget)} can't be less than zero.
-            </exception>
+            <returns>
+            The validator.
+            </returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
@@ -319,17 +259,11 @@
             <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
             <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.ValidateParameters(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+        <member name="M:FileCabinetApp.FileCabinetService.CreateValidator">
             <summary>
             Validates the parameters.
             </summary>
-            <param name="firstName">The first name.</param>
-            <param name="lastName">The last name.</param>
-            <param name="dateOfBirth">The date of birth.</param>
-            <param name="gender">The gender.</param>
-            <param name="materialStatus">The material status.</param>
-            <param name="catsCount">The cats count.</param>
-            <param name="catsBudget">The cats budget.</param>
+            <returns>The validator.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
             <summary>
@@ -340,6 +274,111 @@
             <returns>
               <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.CustomValidator">
+            <summary>
+            Custom validator class.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
+        </member>
+        <member name="M:FileCabinetApp.Validators.CustomValidator.ValidateParameters(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Validates the parameters.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
+            <exception cref="T:System.ArgumentNullException">
+            The {nameof(firstName)} can't be null.
+            or
+            The {nameof(lastName)} can't be null.
+            or
+            The {nameof(dateOfBirth)} can't be null.
+            or
+            The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.
+            or
+            The {nameof(firstName)} can't consists only from spases.
+            or
+            The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.
+            or
+            The {nameof(lastName)} can't consists only from spases.
+            or
+            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
+            or
+            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
+            or
+            The {nameof(catsCount)} can't be less than 0 or larger than 50.
+            or
+            The {nameof(catsBudget)} can't be less than zero.
+            </exception>
+        </member>
+        <member name="T:FileCabinetApp.Validators.DefaultValidator">
+            <summary>
+            Default validator class.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
+        </member>
+        <member name="M:FileCabinetApp.Validators.DefaultValidator.ValidateParameters(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Validates the parameters.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
+            <exception cref="T:System.ArgumentNullException">
+            The {nameof(firstName)} can't be null.
+            or
+            The {nameof(lastName)} can't be null.
+            or
+            The {nameof(dateOfBirth)} can't be null.
+            or
+            The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            The {nameof(firstName)} length can't be less than 2 symbols and larger than 60 symbols.
+            or
+            The {nameof(firstName)} can't consists only from spases.
+            or
+            The {nameof(lastName)} length can't be less than 2 symbols and larger than 60 symbols.
+            or
+            The {nameof(lastName)} can't consists only from spases.
+            or
+            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
+            or
+            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
+            or
+            The {nameof(catsCount)} can't be less than 0 or larger than 50.
+            or
+            The {nameof(catsBudget)} can't be less than zero.
+            </exception>
+        </member>
+        <member name="T:FileCabinetApp.Validators.IRecordValidator">
+            <summary>
+            Validator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.IRecordValidator.ValidateParameters(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Validates the parameters.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
         </member>
     </members>
 </doc>

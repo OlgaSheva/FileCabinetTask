@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 
-using FileCabinetApp.Enums;
+using FileCabinetApp.Validators;
 
 namespace FileCabinetApp
 {
@@ -23,7 +23,7 @@ namespace FileCabinetApp
         /// <returns>New file cabinet record.</returns>
         public int CreateRecord(Record rec)
         {
-            this.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
+            this.CreateValidator().ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
 
             var record = new FileCabinetRecord
             {
@@ -102,7 +102,7 @@ namespace FileCabinetApp
                 throw new ArgumentException($"The {nameof(id)} doesn't exist.");
             }
 
-            this.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
+            this.CreateValidator().ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
 
             this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
             this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
@@ -181,14 +181,8 @@ namespace FileCabinetApp
         /// <summary>
         /// Validates the parameters.
         /// </summary>
-        /// <param name="firstName">The first name.</param>
-        /// <param name="lastName">The last name.</param>
-        /// <param name="dateOfBirth">The date of birth.</param>
-        /// <param name="gender">The gender.</param>
-        /// <param name="materialStatus">The material status.</param>
-        /// <param name="catsCount">The cats count.</param>
-        /// <param name="catsBudget">The cats budget.</param>
-        public abstract void ValidateParameters(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget);
+        /// <returns>The validator.</returns>
+        public abstract IRecordValidator CreateValidator();
 
         /// <summary>
         /// Determines whether [is there a record with this identifier] [the specified identifier].
