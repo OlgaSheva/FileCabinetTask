@@ -108,11 +108,10 @@
             The file cabinet service.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Program.Main(System.String[])">
+        <member name="M:FileCabinetApp.Program.Main">
             <summary>
             Defines the entry point of the application.
             </summary>
-            <param name="args">The arguments.</param>
         </member>
         <member name="T:FileCabinetApp.Record">
             <summary>

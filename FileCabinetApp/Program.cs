@@ -47,17 +47,45 @@ namespace FileCabinetApp
         /// <summary>
         /// The file cabinet service.
         /// </summary>
-        private static FileCabinetService fileCabinetService = new FileCabinetCustomService();
+        private static FileCabinetService fileCabinetService;
 
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
-        /// <param name="args">The arguments.</param>
-        public static void Main(string[] args)
+        public static void Main()
         {
+            string[] args = Environment.GetCommandLineArgs();
+            string validationRules = "default";
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].Contains("--"))
+                {
+                    var parameters = args[i].Split('=');
+                    if (parameters[0].Equals("--validation-rules"))
+                    {
+                        validationRules = parameters[1].ToLower();
+                    }
+                }
+                else if (args[i].StartsWith('-'))
+                {
+                    validationRules = args[2].ToLower();
+                }
+            }
+
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
+            Console.WriteLine($"Using {validationRules} validation rules.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
+
+            if (validationRules.Equals("custom"))
+            {
+                fileCabinetService = new FileCabinetCustomService();
+            }
+            else
+            {
+                fileCabinetService = new FileCabinetDefaultService();
+            }
 
             do
             {
@@ -106,12 +134,12 @@ namespace FileCabinetApp
             }
             catch (ArgumentNullException anex)
             {
-                Console.WriteLine("Record wasn't created.", anex.Message);
+                Console.WriteLine($"Record wasn't created. {anex.Message}");
                 Console.WriteLine(Program.HintMessage);
             }
             catch (ArgumentException aex)
             {
-                Console.WriteLine("Record wasn't created.", aex.Message);
+                Console.WriteLine($"Record wasn't created. {aex.Message}");
                 Console.WriteLine(Program.HintMessage);
             }
         }
