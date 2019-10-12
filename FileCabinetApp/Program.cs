@@ -144,6 +144,10 @@ namespace FileCabinetApp
             {
                 findList = fileCabinetService.FindByLastName(firstName);
             }
+            else if (parameters.Split(' ')[0].ToLower() == "dateofbirth")
+            {
+                findList = fileCabinetService.FindByDateOfBirth(firstName);
+            }
 
             foreach (var item in findList)
             {

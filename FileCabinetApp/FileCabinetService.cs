@@ -103,6 +103,23 @@ namespace FileCabinetApp
             return nameList.ToArray();
         }
 
+        public FileCabinetRecord[] FindByDateOfBirth(string dateOfBirth)
+        {
+            var nameList = new List<FileCabinetRecord>();
+            foreach (var item in this.list)
+            {
+                if (DateTime.TryParse(dateOfBirth, out DateTime date))
+                {
+                    if (item.DateOfBirth == date)
+                    {
+                        nameList.Add(item);
+                    }
+                }
+            }
+
+            return nameList.ToArray();
+        }
+
         private static bool ConsistsOfSpaces(string @string)
         {
             foreach (var item in @string)
