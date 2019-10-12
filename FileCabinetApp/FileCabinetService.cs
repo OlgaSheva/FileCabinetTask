@@ -75,6 +75,20 @@ namespace FileCabinetApp
             this.list[index].CatsBudget = catsBudget;
         }
 
+        public FileCabinetRecord[] FindByFirstName(string firstName)
+        {
+            var nameList = new List<FileCabinetRecord>();
+            foreach (var item in this.list)
+            {
+                if (item.FirstName.ToLower() == firstName.ToLower())
+                {
+                    nameList.Add(item);
+                }
+            }
+
+            return nameList.ToArray();
+        }
+
         private static bool ConsistsOfSpaces(string @string)
         {
             foreach (var item in @string)
