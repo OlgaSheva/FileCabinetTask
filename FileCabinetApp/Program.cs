@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+
 using FileCabinetApp.Enums;
 
 namespace FileCabinetApp
@@ -26,7 +26,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("list", List),
-            new Tuple<string, Action<string>>("find", FindFirstName),
+            new Tuple<string, Action<string>>("find", FindByParameter),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -35,9 +35,9 @@ namespace FileCabinetApp
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "shows statistics by records", "The 'stat' command shows statistics by records" },
             new string[] { "create", "creates a new record", "The 'create' command creates a new record." },
-            new string[] { "edit", "edits an existing entry", "The 'edit' command edits an existing entry." },
+            new string[] { "edit <ID>", "edits an existing entry", "The 'edit' command edits an existing entry." },
             new string[] { "list", "returns a list of records added to the service", "The 'list' command returns a list of records added to the service." },
-            new string[] { "find firstname", "returns a list of records with the given first name", "The 'find firstname' command returns a list of records with the given first name." },
+            new string[] { "find <parameter name> <parameter value>", "returns a list of records with the given parameter", "The 'find firstname' command returns a list of records with the given parameter." },
         };
 
         private static FileCabinetService fileCabinetService = new FileCabinetService();
@@ -90,36 +90,46 @@ namespace FileCabinetApp
             try
             {
                 recordId = fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                Console.WriteLine($"Record #{recordId} is created.");
             }
-            catch (Exception ex)
+            catch (ArgumentNullException anex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Record wasn't created.");
+                Console.WriteLine("Record wasn't created.", anex.Message);
                 Console.WriteLine(Program.HintMessage);
-                return;
             }
-
-            Console.WriteLine($"Record #{recordId} is created.");
+            catch (ArgumentException aex)
+            {
+                Console.WriteLine("Record wasn't created.", aex.Message);
+                Console.WriteLine(Program.HintMessage);
+            }
         }
 
         private static void Edit(string parameters)
         {
-            int id = int.Parse(parameters);
-            var list = fileCabinetService.GetRecords();
-
-            bool flag = true;
-            foreach (var item in list)
+            int.TryParse(parameters, out int id);
+            if (id == 0)
             {
-                if (item.Id == id)
-                {
-                    flag = false;
-                }
+                Console.WriteLine($"The '{parameters}' isn't an ID.");
+                return;
             }
 
-            if (!flag)
+            if (fileCabinetService.IsThereARecordWithThisId(id, out int index))
             {
                 var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
-                fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                try
+                {
+                    fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    Console.WriteLine("Record wasn't edited.", anex.Message);
+                    Console.WriteLine(Program.HintMessage);
+                }
+                catch (ArgumentException aex)
+                {
+                    Console.WriteLine("Record wasn't edited.", aex.Message);
+                    Console.WriteLine(Program.HintMessage);
+                }
             }
             else
             {
@@ -127,38 +137,27 @@ namespace FileCabinetApp
             }
         }
 
-        private static void FindFirstName(string parameters)
+        private static void FindByParameter(string parameters)
         {
-            var firstName = parameters.Split(' ')[1];
-            if (firstName[0] == '"')
+            try
             {
-                firstName = firstName.Trim('"');
+                var findList = fileCabinetService.Find(parameters);
+                Print(findList);
             }
-
-            FileCabinetRecord[] findList = null;
-            if (parameters.Split(' ')[0].ToLower() == "firstname")
+            catch (InvalidOperationException ioex)
             {
-                findList = fileCabinetService.FindByFirstName(firstName);
+                Console.WriteLine("The record didn't find.", ioex.Message);
             }
-            else if (parameters.Split(' ')[0].ToLower() == "lastname")
+            catch (ArgumentException aex)
             {
-                findList = fileCabinetService.FindByLastName(firstName);
-            }
-            else if (parameters.Split(' ')[0].ToLower() == "dateofbirth")
-            {
-                findList = fileCabinetService.FindByDateOfBirth(firstName);
-            }
-
-            foreach (var item in findList)
-            {
-                string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
-                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
-                    $"{item.MaritalStatus}, {item.CatsCount}, {item.CatsBudget}");
+                Console.WriteLine("The record didn't find.", aex.Message);
             }
         }
 
         private static (string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget) ParameterEntry()
         {
+            var firstAndLastName = new CultureInfo("ru-RU").TextInfo;
+
             bool flag = true;
             string firstName = default(string);
             while (flag)
@@ -167,6 +166,7 @@ namespace FileCabinetApp
                 firstName = Console.ReadLine();
                 if (firstName != null && firstName.Length > 2 && firstName.Length < 60 && Regex.IsMatch(firstName, NamePattern))
                 {
+                    firstName = firstAndLastName.ToTitleCase(firstAndLastName.ToLower(firstName));
                     flag = false;
                 }
                 else
@@ -190,6 +190,7 @@ namespace FileCabinetApp
                 lastName = Console.ReadLine();
                 if (lastName != null && lastName.Length > 2 && lastName.Length < 60 && Regex.IsMatch(lastName, NamePattern))
                 {
+                    lastName = firstAndLastName.ToTitleCase(firstAndLastName.ToLower(lastName));
                     flag = false;
                 }
                 else
@@ -259,7 +260,7 @@ namespace FileCabinetApp
             var age = DateTime.Today.Year - dateOfBirth.Year;
             while (flag)
             {
-                Console.WriteLine("How many cats do you have?");
+                Console.WriteLine($"How many cats does {firstName} {lastName} have?");
                 if (age > 30 && gender == Gender.F && status == 'U')
                 {
                     catsCount = 30;
@@ -291,7 +292,7 @@ namespace FileCabinetApp
             {
                 while (flag)
                 {
-                    Console.WriteLine("How much do you spend per month on cats?");
+                    Console.WriteLine($"How much does {firstName} {lastName} spend per month on cats?");
                     data = Console.ReadLine();
                     if (decimal.TryParse(data, out catsBudget) && catsBudget > 0)
                     {
@@ -309,14 +310,8 @@ namespace FileCabinetApp
 
         private static void List(string parameters)
         {
-            var list = fileCabinetService.GetRecords();
-
-            foreach (var item in list)
-            {
-                string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
-                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
-                    $"{item.MaritalStatus}, {item.CatsCount}, {item.CatsBudget}");
-            }
+            var fileCabinetRecords = fileCabinetService.GetRecords();
+            Print(fileCabinetRecords);
         }
 
         private static void PrintMissedCommandInfo(string command)
@@ -356,6 +351,16 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Exiting an application...");
             isRunning = false;
+        }
+
+        private static void Print(FileCabinetRecord[] fileCabinetRecords)
+        {
+            foreach (var item in fileCabinetRecords)
+            {
+                string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
+                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
+                    $"{item.MaritalStatus}, {item.CatsCount}, {item.CatsBudget}");
+            }
         }
     }
 }

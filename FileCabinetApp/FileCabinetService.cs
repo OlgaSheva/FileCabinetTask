@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using FileCabinetApp.Enums;
 
 namespace FileCabinetApp
@@ -12,7 +13,7 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
-        public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget)
+        public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount = 0, decimal catsBudget = 0)
         {
             this.Validation(firstName, lastName, dateOfBirth, gender, materialStatus, catsCount, catsBudget);
 
@@ -70,18 +71,7 @@ namespace FileCabinetApp
                 throw new ArgumentException($"The {nameof(id)} can't be less than zero.");
             }
 
-            bool flag = false;
-            int index = 0;
-            for (int i = 0; i < this.list.Count; i++)
-            {
-                if (this.list[i].Id == id)
-                {
-                    flag = true;
-                    index = i;
-                }
-            }
-
-            if (!flag)
+            if (!this.IsThereARecordWithThisId(id, out int index))
             {
                 throw new ArgumentException($"The {nameof(id)} doesn't exist.");
             }
@@ -120,31 +110,54 @@ namespace FileCabinetApp
             this.dateOfBirthDictionary[dateOfBirth].Add(this.list[index]);
         }
 
-        public FileCabinetRecord[] FindByFirstName(string firstName)
+        public FileCabinetRecord[] Find(string parameters)
         {
-            return this.firstNameDictionary[firstName].ToArray();
-        }
+            var param = parameters.Split(' ');
+            string parameterName = param[0];
+            string parameterValue = param[1].Trim('"');
 
-        public FileCabinetRecord[] FindByLastName(string lastName)
-        {
-            return this.lastNameDictionary[lastName].ToArray();
-        }
+            var textInfo = new CultureInfo("ru-RU").TextInfo;
+            parameterValue = textInfo.ToTitleCase(textInfo.ToLower(parameterValue));
 
-        public FileCabinetRecord[] FindByDateOfBirth(string dateOfBirth)
-        {
-            var nameList = new List<FileCabinetRecord>();
-            foreach (var item in this.list)
+            FileCabinetRecord[] findList = null;
+            try
             {
-                if (DateTime.TryParse(dateOfBirth, out DateTime date))
+                switch (parameterName.ToLower())
                 {
-                    if (item.DateOfBirth == date)
-                    {
-                        nameList.Add(item);
-                    }
+                    case "firstname":
+                        findList = this.firstNameDictionary[parameterValue].ToArray();
+                        break;
+                    case "lastname":
+                        findList = this.lastNameDictionary[parameterValue].ToArray();
+                        break;
+                    case "dateofbirth":
+                        findList = this.FindByDateOfBirth(parameterValue);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new ArgumentException($"The record with {parameterName} '{parameterValue}' doesn't exist.");
+            }
+
+            return findList;
+        }
+
+        internal bool IsThereARecordWithThisId(int id, out int index)
+        {
+            index = -1;
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                if (this.list[i].Id == id)
+                {
+                    index = i;
+                    return true;
                 }
             }
 
-            return nameList.ToArray();
+            return false;
         }
 
         private static bool ConsistsOfSpaces(string @string)
@@ -158,6 +171,23 @@ namespace FileCabinetApp
             }
 
             return true;
+        }
+
+        private FileCabinetRecord[] FindByDateOfBirth(string dateOfBirth)
+        {
+            var nameList = new List<FileCabinetRecord>();
+            foreach (var item in this.list)
+            {
+                if (DateTime.TryParse(dateOfBirth, out DateTime date))
+                {
+                    if (DateTime.Compare(item.DateOfBirth, date) == 0)
+                    {
+                        nameList.Add(item);
+                    }
+                }
+            }
+
+            return nameList.ToArray();
         }
 
         private void Validation(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget)
