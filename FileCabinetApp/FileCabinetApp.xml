@@ -4,6 +4,178 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.Converters.CustomInputConverter">
+            <summary>
+            Custom input parameters convertor.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Converters.IInputConverter" />
+        </member>
+        <member name="M:FileCabinetApp.Converters.CustomInputConverter.StringConverter(System.String)">
+            <summary>
+            Strings the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            String representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.CustomInputConverter.DateConverter(System.String)">
+            <summary>
+            Dates the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            DateTime representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.CustomInputConverter.GenderConverter(System.String)">
+            <summary>
+            Genders the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            Gender enum representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.CustomInputConverter.CharConverter(System.String)">
+            <summary>
+            Characters the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            Char representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.CustomInputConverter.ShortConverter(System.String)">
+            <summary>
+            Shorts the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            Short representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.CustomInputConverter.DecimalConverter(System.String)">
+            <summary>
+            Decimals the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            Decimal representation.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.Converters.DefaultInputConverter">
+            <summary>
+            Default input parameters convertor.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Converters.IInputConverter" />
+        </member>
+        <member name="M:FileCabinetApp.Converters.DefaultInputConverter.StringConverter(System.String)">
+            <summary>
+            Strings the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            String representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.DefaultInputConverter.DateConverter(System.String)">
+            <summary>
+            Dates the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            DateTime representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.DefaultInputConverter.GenderConverter(System.String)">
+            <summary>
+            Genders the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            Gender enum representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.DefaultInputConverter.CharConverter(System.String)">
+            <summary>
+            Characters the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            Char representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.DefaultInputConverter.ShortConverter(System.String)">
+            <summary>
+            Shorts the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            Short representation.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.DefaultInputConverter.DecimalConverter(System.String)">
+            <summary>
+            Decimals the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>
+            Decimal representation.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.Converters.IInputConverter">
+            <summary>
+            Input parameters convertor.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Converters.IInputConverter.StringConverter(System.String)">
+            <summary>
+            Strings the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>String representation.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.IInputConverter.DateConverter(System.String)">
+            <summary>
+            Dates the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>DateTime representation.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.IInputConverter.GenderConverter(System.String)">
+            <summary>
+            Genders the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>Gender enum representation.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.IInputConverter.CharConverter(System.String)">
+            <summary>
+            Characters the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>Char representation.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.IInputConverter.ShortConverter(System.String)">
+            <summary>
+            Shorts the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>Short representation.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.IInputConverter.DecimalConverter(System.String)">
+            <summary>
+            Decimals the converter.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>Decimal representation.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Enums.Gender">
+            <summary>
+            The gender enum.
+            </summary>
+        </member>
         <member name="F:FileCabinetApp.Enums.Gender.M">
             <summary>
             The male.
@@ -23,6 +195,559 @@
             <summary>
             The unknown.
             </summary>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetRecord">
+            <summary>
+            The class to subscribe file cabinet record.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Id">
+            <summary>
+            Gets or sets the identifier.
+            </summary>
+            <value>
+            The identifier.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+            <value>
+            The first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+            <value>
+            The last name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.DateOfBirth">
+            <summary>
+            Gets or sets the date of birth.
+            </summary>
+            <value>
+            The date of birth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Gender">
+            <summary>
+            Gets or sets the gender.
+            </summary>
+            <value>
+            The gender.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.MaritalStatus">
+            <summary>
+            Gets or sets the marital status.
+            </summary>
+            <value>
+            The marital status.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.CatsCount">
+            <summary>
+            Gets or sets the cats count.
+            </summary>
+            <value>
+            The cats count.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.CatsBudget">
+            <summary>
+            Gets or sets the cats budget.
+            </summary>
+            <value>
+            The cats budget.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Program">
+            <summary>
+            The main class.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Program.fileCabinetService">
+            <summary>
+            The file cabinet service.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Program.Main">
+            <summary>
+            Defines the entry point of the application.
+            </summary>
+        </member>
+        <member name="T:FileCabinetApp.Record">
+            <summary>
+            Class record for transmission to FileCabinetService.CreateRecord and FileCabinetService.EditRecord.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Record.#ctor(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Record"/> class.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
+        </member>
+        <member name="P:FileCabinetApp.Record.FirstName">
+            <summary>
+            Gets the first name.
+            </summary>
+            <value>
+            The first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.LastName">
+            <summary>
+            Gets the last name.
+            </summary>
+            <value>
+            The last name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.DateOfBirth">
+            <summary>
+            Gets the date of birth.
+            </summary>
+            <value>
+            The date of birth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.Gender">
+            <summary>
+            Gets the gender.
+            </summary>
+            <value>
+            The gender.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.MaterialStatus">
+            <summary>
+            Gets the material status.
+            </summary>
+            <value>
+            The material status.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.CatsCount">
+            <summary>
+            Gets the cats count.
+            </summary>
+            <value>
+            The cats count.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Record.CatsBudget">
+            <summary>
+            Gets the cats budget.
+            </summary>
+            <value>
+            The cats budget.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetService">
+            <summary>
+            The file cabinet service.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.Validators.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
+            </summary>
+            <param name="validator">The validator.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.Record)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="rec">The record.</param>
+            <returns>New file cabinet record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>All existing records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetStat">
+            <summary>
+            Gets the stat.
+            </summary>
+            <returns>The quantity of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(System.Int32,FileCabinetApp.Record)">
+            <summary>
+            Edits the record.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="rec">The record.</param>
+            <exception cref="T:System.ArgumentException">
+            The {nameof(id)} can't be less than zero.
+            or
+            The {nameof(id)} doesn't exist.
+            </exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.Find(System.String)">
+            <summary>
+            Finds the specified parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+            <returns>All records with specified parameters.</returns>
+            <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
+            <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
+            <summary>
+            Determines whether [is there a record with this identifier] [the specified identifier].
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="index">The index.</param>
+            <returns>
+              <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.Services.IFileCabinetService">
+            <summary>
+            File cabinet service.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.CreateRecord(FileCabinetApp.Record)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="record">The record.</param>
+            <returns>New file cabinet record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>All existing records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetStat">
+            <summary>
+            Gets the stat.
+            </summary>
+            <returns>The quantity of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.Record)">
+            <summary>
+            Edits the record.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="record">The record.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Find(System.String)">
+            <summary>
+            Finds the specified parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+            <returns>All records with specified parameters.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.InputValidator.CustomInputValidator">
+            <summary>
+            Custom input parameters validator.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Validators.InputValidator.IInputValidator" />
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.FirstNameValidator(System.String)">
+            <summary>
+            Firsts the name validator.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.LastNameValidator(System.String)">
+            <summary>
+            Lasts the name validator.
+            </summary>
+            <param name="lastName">The last name.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.DateOfBirthValidator(System.DateTime)">
+            <summary>
+            Dates the of birth validator.
+            </summary>
+            <param name="dateOfBirth">The date of birth.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.GenderValidator(FileCabinetApp.Enums.Gender)">
+            <summary>
+            Genders the validator.
+            </summary>
+            <param name="gender">The gender.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.MaterialStatusValidator(System.Char)">
+            <summary>
+            Materials the status validator.
+            </summary>
+            <param name="materialStatus">The material status.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.CatsCountValidator(System.Int16)">
+            <summary>
+            Catses the count validator.
+            </summary>
+            <param name="catsCount">The cats count.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.CatsBudgetValidator(System.Decimal)">
+            <summary>
+            Catses the budget validator.
+            </summary>
+            <param name="catsBudget">The cats budget.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.InputValidator.DefaultInputValidator">
+            <summary>
+            Default input parameters validator.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Validators.InputValidator.IInputValidator" />
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.FirstNameValidator(System.String)">
+            <summary>
+            Firsts the name validator.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.LastNameValidator(System.String)">
+            <summary>
+            Lasts the name validator.
+            </summary>
+            <param name="lastName">The last name.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.DateOfBirthValidator(System.DateTime)">
+            <summary>
+            Dates the of birth validator.
+            </summary>
+            <param name="dateOfBirth">The date of birth.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.GenderValidator(FileCabinetApp.Enums.Gender)">
+            <summary>
+            Genders the validator.
+            </summary>
+            <param name="gender">The gender.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.MaterialStatusValidator(System.Char)">
+            <summary>
+            Materials the status validator.
+            </summary>
+            <param name="materialStatus">The material status.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.CatsCountValidator(System.Int16)">
+            <summary>
+            Catses the count validator.
+            </summary>
+            <param name="catsCount">The cats count.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.CatsBudgetValidator(System.Decimal)">
+            <summary>
+            Catses the budget validator.
+            </summary>
+            <param name="catsBudget">The cats budget.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.InputValidator.IInputValidator">
+            <summary>
+            Input parameters validator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.IInputValidator.FirstNameValidator(System.String)">
+            <summary>
+            Firsts the name validator.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <returns>Is parameter valid.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.IInputValidator.LastNameValidator(System.String)">
+            <summary>
+            Lasts the name validator.
+            </summary>
+            <param name="lastName">The last name.</param>
+            <returns>Is parameter valid.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.IInputValidator.DateOfBirthValidator(System.DateTime)">
+            <summary>
+            Dates the of birth validator.
+            </summary>
+            <param name="dateOfBirth">The date of birth.</param>
+            <returns>Is parameter valid.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.IInputValidator.GenderValidator(FileCabinetApp.Enums.Gender)">
+            <summary>
+            Genders the validator.
+            </summary>
+            <param name="gender">The gender.</param>
+            <returns>Is parameter valid.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.IInputValidator.MaterialStatusValidator(System.Char)">
+            <summary>
+            Materials the status validator.
+            </summary>
+            <param name="materialStatus">The material status.</param>
+            <returns>Is parameter valid.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.IInputValidator.CatsCountValidator(System.Int16)">
+            <summary>
+            Catses the count validator.
+            </summary>
+            <param name="catsCount">The cats count.</param>
+            <returns>Is parameter valid.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.IInputValidator.CatsBudgetValidator(System.Decimal)">
+            <summary>
+            Catses the budget validator.
+            </summary>
+            <param name="catsBudget">The cats budget.</param>
+            <returns>Is parameter valid.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.CustomValidator">
+            <summary>
+            Custom validator class.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
+        </member>
+        <member name="M:FileCabinetApp.Validators.CustomValidator.ValidateParameters(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Validates the parameters.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
+            <exception cref="T:System.ArgumentNullException">
+            The {nameof(firstName)} can't be null.
+            or
+            The {nameof(lastName)} can't be null.
+            or
+            The {nameof(dateOfBirth)} can't be null.
+            or
+            The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.
+            or
+            The {nameof(firstName)} can't consists only from spases.
+            or
+            The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.
+            or
+            The {nameof(lastName)} can't consists only from spases.
+            or
+            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
+            or
+            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
+            or
+            The {nameof(catsCount)} can't be less than 0 or larger than 50.
+            or
+            The {nameof(catsBudget)} can't be less than zero.
+            </exception>
+        </member>
+        <member name="T:FileCabinetApp.Validators.DefaultValidator">
+            <summary>
+            Default validator class.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
+        </member>
+        <member name="M:FileCabinetApp.Validators.DefaultValidator.ValidateParameters(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Validates the parameters.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
+            <exception cref="T:System.ArgumentNullException">
+            The {nameof(firstName)} can't be null.
+            or
+            The {nameof(lastName)} can't be null.
+            or
+            The {nameof(dateOfBirth)} can't be null.
+            or
+            The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            The {nameof(firstName)} length can't be less than 2 symbols and larger than 60 symbols.
+            or
+            The {nameof(firstName)} can't consists only from spases.
+            or
+            The {nameof(lastName)} length can't be less than 2 symbols and larger than 60 symbols.
+            or
+            The {nameof(lastName)} can't consists only from spases.
+            or
+            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
+            or
+            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
+            or
+            The {nameof(catsCount)} can't be less than 0 or larger than 50.
+            or
+            The {nameof(catsBudget)} can't be less than zero.
+            </exception>
+        </member>
+        <member name="T:FileCabinetApp.Validators.IRecordValidator">
+            <summary>
+            Validator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.IRecordValidator.ValidateParameters(System.String,System.String,System.DateTime,FileCabinetApp.Enums.Gender,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Validates the parameters.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="materialStatus">The material status.</param>
+            <param name="catsCount">The cats count.</param>
+            <param name="catsBudget">The cats budget.</param>
         </member>
     </members>
 </doc>
