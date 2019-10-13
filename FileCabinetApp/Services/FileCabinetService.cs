@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 
+using FileCabinetApp.Services;
 using FileCabinetApp.Validators;
 
 namespace FileCabinetApp
@@ -10,7 +11,7 @@ namespace FileCabinetApp
     /// <summary>
     /// The file cabinet service.
     /// </summary>
-    public class FileCabinetService
+    public class FileCabinetService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();

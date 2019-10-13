@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Text.RegularExpressions;
-
+using FileCabinetApp.Converters;
 using FileCabinetApp.Enums;
 using FileCabinetApp.Validators;
+using FileCabinetApp.Validators.InputValidator;
 
 namespace FileCabinetApp
 {
@@ -18,8 +18,6 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-        private static readonly DateTime MinDate = new DateTime(1950, 1, 1);
-        private static readonly string NamePattern = @"^[a-zA-Z '.-]*$";
 
         private static bool isRunning = true;
 
@@ -49,6 +47,9 @@ namespace FileCabinetApp
         /// The file cabinet service.
         /// </summary>
         private static FileCabinetService fileCabinetService;
+
+        private static IInputConverter converter;
+        private static IInputValidator validator;
 
         /// <summary>
         /// Defines the entry point of the application.
@@ -82,10 +83,14 @@ namespace FileCabinetApp
             if (validationRules.Equals("custom"))
             {
                 fileCabinetService = new FileCabinetService(new CustomValidator());
+                validator = new CustomInputValidator();
+                converter = new CustomInputConverter();
             }
             else
             {
                 fileCabinetService = new FileCabinetService(new DefaultValidator());
+                validator = new DefaultInputValidator();
+                converter = new DefaultInputConverter();
             }
 
             do
@@ -196,158 +201,91 @@ namespace FileCabinetApp
             }
         }
 
-        private static (string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget) ParameterEntry()
+        private static (string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget)
+            ParameterEntry()
         {
             var firstAndLastName = new CultureInfo("ru-RU").TextInfo;
 
-            bool flag = true;
-            string firstName = default(string);
-            while (flag)
-            {
-                Console.WriteLine("First name: ");
-                firstName = Console.ReadLine();
-                if (firstName != null && firstName.Length > 2 && firstName.Length < 60 && Regex.IsMatch(firstName, NamePattern))
-                {
-                    firstName = firstAndLastName.ToTitleCase(firstAndLastName.ToLower(firstName));
-                    flag = false;
-                }
-                else
-                {
-                    if (firstName.Length < 2 || firstName.Length > 60)
-                    {
-                        Console.WriteLine("Please try again. The name length can't be less than 2 symbols and larger than 60 symbols.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Please try again. The {firstName} isn't a valid name.");
-                    }
-                }
-            }
+            Func<string, Tuple<bool, string>> firstNameValidator = validator.FirstNameValidator;
+            Func<string, Tuple<bool, string>> lastNameValidator = validator.LastNameValidator;
+            Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = validator.DateOfBirthValidator;
+            Func<Gender, Tuple<bool, string>> genderValidator = validator.GenderValidator;
+            Func<char, Tuple<bool, string>> materialStatusValidator = validator.MaterialStatusValidator;
+            Func<short, Tuple<bool, string>> catsCountValidator = validator.CatsCountValidator;
+            Func<decimal, Tuple<bool, string>> catsBudgetValidator = validator.CatsBudgetValidator;
 
-            flag = true;
-            string lastName = default(string);
-            while (flag)
-            {
-                Console.WriteLine("Last name: ");
-                lastName = Console.ReadLine();
-                if (lastName != null && lastName.Length > 2 && lastName.Length < 60 && Regex.IsMatch(lastName, NamePattern))
-                {
-                    lastName = firstAndLastName.ToTitleCase(firstAndLastName.ToLower(lastName));
-                    flag = false;
-                }
-                else
-                {
-                    if (firstName.Length < 2 || firstName.Length > 60)
-                    {
-                        Console.WriteLine("Please try again. The name length can't be less than 2 symbols and larger than 60 symbols.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Please try again. The {lastName} isn't a valid name.");
-                    }
-                }
-            }
+            Func<string, Tuple<bool, string, string>> stringConverter = converter.StringConverter;
+            Func<string, Tuple<bool, string, DateTime>> dateConverter = converter.DateConverter;
+            Func<string, Tuple<bool, string, Gender>> genderConverter = converter.GenderConverter;
+            Func<string, Tuple<bool, string, char>> charConverter = converter.CharConverter;
+            Func<string, Tuple<bool, string, short>> shortConverter = converter.ShortConverter;
+            Func<string, Tuple<bool, string, decimal>> decimalConverter = converter.DecimalConverter;
 
-            flag = true;
-            string data = default(string);
-            DateTime dateOfBirth = default(DateTime);
-            while (flag)
-            {
-                Console.WriteLine("Date of birth month/day/year: ");
-                data = Console.ReadLine();
-                if (DateTime.TryParse(data, out dateOfBirth) && (dateOfBirth <= DateTime.Today || dateOfBirth >= MinDate))
-                {
-                    flag = false;
-                }
-                else
-                {
-                    Console.WriteLine($"Please try again. The {data} isn't a valid date.");
-                }
-            }
+            Console.Write("First name: ");
+            var firstName = ReadInput(stringConverter, firstNameValidator);
 
-            flag = true;
-            Gender gender = default(Gender);
-            while (flag)
-            {
-                Console.WriteLine("Gender M (male) / F (female) / O (other) / U (unknown):");
-                data = Console.ReadLine();
-                if (Enum.TryParse<Gender>(data, out gender) && (gender == Gender.F || gender == Gender.M || gender == Gender.O || gender == Gender.U))
-                {
-                    flag = false;
-                }
-                else
-                {
-                    Console.WriteLine($"Please try again. The symbol '{data}' wasn't recognized as a valid gender.");
-                }
-            }
+            Console.Write("Last name: ");
+            var lastName = ReadInput(stringConverter, lastNameValidator);
 
-            flag = true;
-            char status = default(char);
-            while (flag)
-            {
-                Console.WriteLine("Material status M (married) / U (unmarried)");
-                data = Console.ReadLine();
-                if (char.TryParse(data, out status) && (status == 'M' || status == 'U'))
-                {
-                    flag = false;
-                }
-                else
-                {
-                    Console.WriteLine($"Please try again. The symbol '{data}' wasn't recognized as a valid material status.");
-                }
-            }
+            Console.Write("Date of birth: ");
+            var dateOfBirth = ReadInput(dateConverter, dateOfBirthValidator);
 
-            flag = true;
+            Console.Write("Gender M (male) / F (female) / O (other) / U (unknown): ");
+            var gender = ReadInput(genderConverter, genderValidator);
+
+            Console.Write("Material status M (married) / U (unmarried): ");
+            var materialStatus = ReadInput(charConverter, materialStatusValidator);
+
             short catsCount = 0;
-            var age = DateTime.Today.Year - dateOfBirth.Year;
-            while (flag)
-            {
-                Console.WriteLine($"How many cats does {firstName} {lastName} have?");
-                if (age > 30 && gender == Gender.F && status == 'U')
-                {
-                    catsCount = 30;
-                    Console.WriteLine(30);
-                    Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^-.-^)");
-                    flag = false;
-                }
-                else
-                {
-                    data = Console.ReadLine();
-                    if (short.TryParse(data, out catsCount) && catsCount >= 0 && catsCount <= 100)
-                    {
-                        flag = false;
-                        if (catsCount > 10)
-                        {
-                            Console.WriteLine("Are you seriously??? 0_o");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Please try again. The number '{catsCount}' is not like the truth.");
-                    }
-                }
-            }
-
-            flag = true;
             decimal catsBudget = 0;
-            if (catsCount != 0)
+            var age = DateTime.Today.Year - dateOfBirth.Year;
+            if (age > 30 && gender == Gender.F && materialStatus == 'U')
             {
-                while (flag)
+                catsCount = 30;
+                catsBudget = 100;
+                Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^-.-^)");
+            }
+            else
+            {
+                Console.Write($"How many cats does {firstName} {lastName} have? ");
+                catsCount = ReadInput(shortConverter, catsCountValidator);
+                if (catsCount != 0)
                 {
-                    Console.WriteLine($"How much does {firstName} {lastName} spend per month on cats?");
-                    data = Console.ReadLine();
-                    if (decimal.TryParse(data, out catsBudget) && catsBudget > 0)
-                    {
-                        flag = false;
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Please try again. The number '{catsBudget}' is not like the truth.");
-                    }
+                    Console.Write("What is the budget for cats? ");
+                    catsBudget = ReadInput(decimalConverter, catsBudgetValidator);
                 }
             }
 
-            return (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+            return (firstName, lastName, dateOfBirth, gender, materialStatus, catsCount, catsBudget);
+        }
+
+        private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
+        {
+            do
+            {
+                T value;
+
+                var input = Console.ReadLine();
+                var conversionResult = converter(input);
+
+                if (!conversionResult.Item1)
+                {
+                    Console.WriteLine($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                value = conversionResult.Item3;
+
+                var validationResult = validator(value);
+                if (!validationResult.Item1)
+                {
+                    Console.WriteLine($"Validation failed: {validationResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                return value;
+            }
+            while (true);
         }
 
         private static void List(string parameters)

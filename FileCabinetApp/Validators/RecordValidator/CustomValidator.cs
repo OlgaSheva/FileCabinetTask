@@ -4,12 +4,12 @@ using FileCabinetApp.Enums;
 namespace FileCabinetApp.Validators
 {
     /// <summary>
-    /// Default validator class.
+    /// Custom validator class.
     /// </summary>
     /// <seealso cref="FileCabinetApp.Validators.IRecordValidator" />
-    public class DefaultValidator : IRecordValidator
+    public class CustomValidator : IRecordValidator
     {
-        private static readonly DateTime MinDate = new DateTime(1950, 1, 1);
+        private static readonly DateTime MinDate = new DateTime(1930, 1, 1);
 
         /// <summary>
         /// Validates the parameters.
@@ -31,11 +31,11 @@ namespace FileCabinetApp.Validators
         /// The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// The {nameof(firstName)} length can't be less than 2 symbols and larger than 60 symbols.
+        /// The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.
         /// or
         /// The {nameof(firstName)} can't consists only from spases.
         /// or
-        /// The {nameof(lastName)} length can't be less than 2 symbols and larger than 60 symbols.
+        /// The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.
         /// or
         /// The {nameof(lastName)} can't consists only from spases.
         /// or
@@ -59,9 +59,9 @@ namespace FileCabinetApp.Validators
                 throw new ArgumentNullException($"The {nameof(lastName)} can't be null.");
             }
 
-            if (firstName.Length < 2 || firstName.Length > 60)
+            if (firstName.Length < 2 || firstName.Length > 30)
             {
-                throw new ArgumentException($"The {nameof(firstName)} length can't be less than 2 symbols and larger than 60 symbols.");
+                throw new ArgumentException($"The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.");
             }
 
             if (ConsistsOfSpaces(firstName))
@@ -69,9 +69,9 @@ namespace FileCabinetApp.Validators
                 throw new ArgumentException($"The {nameof(firstName)} can't consists only from spases.");
             }
 
-            if (lastName.Length < 2 || lastName.Length > 60)
+            if (lastName.Length <= 2 || lastName.Length > 30)
             {
-                throw new ArgumentException($"The {nameof(lastName)} length can't be less than 2 symbols and larger than 60 symbols.");
+                throw new ArgumentException($"The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.");
             }
 
             if (ConsistsOfSpaces(lastName))
@@ -99,9 +99,9 @@ namespace FileCabinetApp.Validators
                 throw new ArgumentNullException($"The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.");
             }
 
-            if (catsCount < 0 || catsCount > 100)
+            if (catsCount < 0 || catsCount > 50)
             {
-                throw new ArgumentException($"The {nameof(catsCount)} can't be less than 0 or larger than 100.");
+                throw new ArgumentException($"The {nameof(catsCount)} can't be less than 0 or larger than 50.");
             }
 
             if (catsBudget < 0)
