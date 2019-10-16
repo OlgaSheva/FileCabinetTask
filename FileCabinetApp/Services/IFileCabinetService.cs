@@ -39,5 +39,22 @@ namespace FileCabinetApp.Services
         /// <param name="parameters">The parameters.</param>
         /// <returns>All records with specified parameters.</returns>
         ReadOnlyCollection<FileCabinetRecord> Find(string parameters);
+
+        /// <summary>
+        /// Determines whether [is there a record with this identifier] [the specified identifier].
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>
+        ///   <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+        /// </returns>
+        bool IsThereARecordWithThisId(int id, out int index);
+
+        /// <summary>
+        /// Makes the snapshot.
+        /// </summary>
+        /// <param name="snapshot">The snapshot.</param>
+        /// <returns>The file cabinet service snapshot.</returns>
+        FileCabinetServiceSnapshot MakeSnapshot();
     }
 }
