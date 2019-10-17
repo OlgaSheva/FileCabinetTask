@@ -440,6 +440,12 @@
             </summary>
             <param name="writer">The writer.</param>
         </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.SaveToXML(System.IO.StreamWriter)">
+            <summary>
+            Saves to XML.
+            </summary>
+            <param name="writer">The writer.</param>
+        </member>
         <member name="T:FileCabinetApp.Services.IFileCabinetService">
             <summary>
             File cabinet service.
@@ -808,6 +814,24 @@
             Writes the record to csv file.
             </summary>
             <param name="record">The record.</param>
+        </member>
+        <member name="T:FileCabinetApp.Writers.FileCabinetRecordXmlWriter">
+            <summary>
+            File cabinet record xml writer.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Writers.FileCabinetRecordXmlWriter.#ctor(System.IO.StreamWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Writers.FileCabinetRecordXmlWriter"/> class.
+            </summary>
+            <param name="writer">The writer.</param>
+        </member>
+        <member name="M:FileCabinetApp.Writers.FileCabinetRecordXmlWriter.Write(FileCabinetApp.FileCabinetRecord,System.Xml.Linq.XDocument)">
+            <summary>
+            Writes the specified file cabinet record.
+            </summary>
+            <param name="fileCabinetRecord">The file cabinet record.</param>
+            <param name="doc">The document.</param>
         </member>
     </members>
 </doc>

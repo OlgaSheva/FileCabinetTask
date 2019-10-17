@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Xml.Linq;
 using FileCabinetApp.Writers;
 
 namespace FileCabinetApp.Services
@@ -41,6 +42,26 @@ namespace FileCabinetApp.Services
             {
                 csvWriter.Write(item);
             }
+        }
+
+        /// <summary>
+        /// Saves to XML.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        internal void SaveToXML(StreamWriter writer)
+        {
+            var xmlWriter = new FileCabinetRecordXmlWriter(writer);
+            XElement records = new XElement("records");
+            var doc = new XDocument(
+               new XDeclaration("1.0", "utf-16", "yes"),
+               records);
+
+            foreach (var item in this.fileCabinetRecords)
+            {
+                xmlWriter.Write(item, doc);
+            }
+
+            doc.Save(writer);
         }
     }
 }

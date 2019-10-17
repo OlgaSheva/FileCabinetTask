@@ -125,9 +125,8 @@ namespace FileCabinetApp
         private static void Export(string parameters)
         {
             string[] comands = parameters.Split(' ');
+            string format = comands[0];
             string path = comands[1];
-
-            FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
 
             if (File.Exists(path))
             {
@@ -161,7 +160,22 @@ namespace FileCabinetApp
             {
                 using (streamWriter = new StreamWriter(p))
                 {
-                    snapshot.SaveToCSV(streamWriter);
+                    FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
+
+                    if (format.Equals("csv"))
+                    {
+                        snapshot.SaveToCSV(streamWriter);
+                    }
+                    else if (comands[0].Equals("xml"))
+                    {
+                        snapshot.SaveToXML(streamWriter);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"There is no {commands[0]} command.");
+                        return;
+                    }
+
                     Console.WriteLine($"All records are exported to file {p}.");
                 }
             }
