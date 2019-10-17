@@ -29,6 +29,18 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Makes the snapshot.
+        /// </summary>
+        /// <returns>
+        /// The file cabinet service snapshot.
+        /// </returns>
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            var snapshot = new FileCabinetServiceSnapshot(this.list);
+            return snapshot;
+        }
+
+        /// <summary>
         /// Creates the record.
         /// </summary>
         /// <param name="rec">The record.</param>
@@ -198,7 +210,7 @@ namespace FileCabinetApp
         /// <returns>
         ///   <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
         /// </returns>
-        internal bool IsThereARecordWithThisId(int id, out int index)
+        public bool IsThereARecordWithThisId(int id, out int index)
         {
             index = -1;
             for (int i = 0; i < this.list.Count; i++)

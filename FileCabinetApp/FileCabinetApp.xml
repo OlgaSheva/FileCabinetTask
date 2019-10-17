@@ -265,21 +265,6 @@
             The cats budget.
             </value>
         </member>
-        <member name="T:FileCabinetApp.Program">
-            <summary>
-            The main class.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Program.fileCabinetService">
-            <summary>
-            The file cabinet service.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.Program.Main">
-            <summary>
-            Defines the entry point of the application.
-            </summary>
-        </member>
         <member name="T:FileCabinetApp.Record">
             <summary>
             Class record for transmission to FileCabinetService.CreateRecord and FileCabinetService.EditRecord.
@@ -353,6 +338,16 @@
             The cats budget.
             </value>
         </member>
+        <member name="T:FileCabinetApp.Program">
+            <summary>
+            The main class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Program.Main">
+            <summary>
+            Defines the entry point of the application.
+            </summary>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
             The file cabinet service.
@@ -363,6 +358,14 @@
             Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
             </summary>
             <param name="validator">The validator.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.MakeSnapshot">
+            <summary>
+            Makes the snapshot.
+            </summary>
+            <returns>
+            The file cabinet service snapshot.
+            </returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.Record)">
             <summary>
@@ -414,6 +417,35 @@
               <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
+            <summary>
+            File cabinet service snapshot.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.#ctor(System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.FileCabinetServiceSnapshot"/> class.
+            </summary>
+            <param name="list">The list.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.MakeSnapshot">
+            <summary>
+            Makes the snapshot.
+            </summary>
+            <returns>The file cabinet service snapshot.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.SaveToCSV(System.IO.StreamWriter)">
+            <summary>
+            Saves to CSV.
+            </summary>
+            <param name="writer">The writer.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.SaveToXML(System.IO.StreamWriter)">
+            <summary>
+            Saves to XML.
+            </summary>
+            <param name="writer">The writer.</param>
+        </member>
         <member name="T:FileCabinetApp.Services.IFileCabinetService">
             <summary>
             File cabinet service.
@@ -451,6 +483,23 @@
             </summary>
             <param name="parameters">The parameters.</param>
             <returns>All records with specified parameters.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
+            <summary>
+            Determines whether [is there a record with this identifier] [the specified identifier].
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="index">The index.</param>
+            <returns>
+              <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.MakeSnapshot">
+            <summary>
+            Makes the snapshot.
+            </summary>
+            <param name="snapshot">The snapshot.</param>
+            <returns>The file cabinet service snapshot.</returns>
         </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.CustomInputValidator">
             <summary>
@@ -748,6 +797,41 @@
             <param name="materialStatus">The material status.</param>
             <param name="catsCount">The cats count.</param>
             <param name="catsBudget">The cats budget.</param>
+        </member>
+        <member name="T:FileCabinetApp.Writers.FileCabinetRecordCsvWriter">
+            <summary>
+            File cabinet record csv writer.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Writers.FileCabinetRecordCsvWriter.#ctor(System.IO.StreamWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Writers.FileCabinetRecordCsvWriter"/> class.
+            </summary>
+            <param name="writer">The writer.</param>
+        </member>
+        <member name="M:FileCabinetApp.Writers.FileCabinetRecordCsvWriter.Write(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Writes the record to csv file.
+            </summary>
+            <param name="record">The record.</param>
+        </member>
+        <member name="T:FileCabinetApp.Writers.FileCabinetRecordXmlWriter">
+            <summary>
+            File cabinet record xml writer.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Writers.FileCabinetRecordXmlWriter.#ctor(System.IO.StreamWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Writers.FileCabinetRecordXmlWriter"/> class.
+            </summary>
+            <param name="writer">The writer.</param>
+        </member>
+        <member name="M:FileCabinetApp.Writers.FileCabinetRecordXmlWriter.Write(FileCabinetApp.FileCabinetRecord,System.Xml.Linq.XDocument)">
+            <summary>
+            Writes the specified file cabinet record.
+            </summary>
+            <param name="fileCabinetRecord">The file cabinet record.</param>
+            <param name="doc">The document.</param>
         </member>
     </members>
 </doc>

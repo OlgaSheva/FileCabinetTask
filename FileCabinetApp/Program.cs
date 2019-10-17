@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using FileCabinetApp.Converters;
 using FileCabinetApp.Enums;
+using FileCabinetApp.Services;
 using FileCabinetApp.Validators;
 using FileCabinetApp.Validators.InputValidator;
 
@@ -30,6 +32,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("find", FindByParameter),
+            new Tuple<string, Action<string>>("export", Export),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -41,15 +44,13 @@ namespace FileCabinetApp
             new string[] { "edit <ID>", "edits an existing entry", "The 'edit' command edits an existing entry." },
             new string[] { "list", "returns a list of records added to the service", "The 'list' command returns a list of records added to the service." },
             new string[] { "find <parameter name> <parameter value>", "returns a list of records with the given parameter", "The 'find firstname' command returns a list of records with the given parameter." },
+            new string[] { "export csv <file adress>", "export service data to a CSV file", "The 'export csv' command export service data to a CSV file." },
         };
 
-        /// <summary>
-        /// The file cabinet service.
-        /// </summary>
-        private static FileCabinetService fileCabinetService;
-
+        private static IFileCabinetService fileCabinetService;
         private static IInputConverter converter;
         private static IInputValidator validator;
+        private static StreamWriter streamWriter;
 
         /// <summary>
         /// Defines the entry point of the application.
@@ -119,6 +120,65 @@ namespace FileCabinetApp
                 }
             }
             while (isRunning);
+        }
+
+        private static void Export(string parameters)
+        {
+            string[] comands = parameters.Split(' ');
+            string format = comands[0];
+            string path = comands[1];
+
+            if (File.Exists(path))
+            {
+                Console.Write($"File is exist - rewrite {path}? [Y/n] ");
+                if (char.TryParse(Console.ReadLine(), out char answer))
+                {
+                    if (answer == 'Y' || answer == 'y')
+                    {
+                        File.Delete(path);
+                        Write(path);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                try
+                {
+                    Write(path);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Export failed: can't open file {path}.", ex.Message);
+                }
+            }
+
+            void Write(string p)
+            {
+                using (streamWriter = new StreamWriter(p))
+                {
+                    FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
+
+                    if (format.Equals("csv"))
+                    {
+                        snapshot.SaveToCSV(streamWriter);
+                    }
+                    else if (comands[0].Equals("xml"))
+                    {
+                        snapshot.SaveToXML(streamWriter);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"There is no {commands[0]} command.");
+                        return;
+                    }
+
+                    Console.WriteLine($"All records are exported to file {p}.");
+                }
+            }
         }
 
         private static void Stat(string parameters)
