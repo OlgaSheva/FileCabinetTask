@@ -83,13 +83,13 @@ namespace FileCabinetApp
 
             if (validationRules.Equals("custom"))
             {
-                fileCabinetService = new FileCabinetService(new CustomValidator());
+                fileCabinetService = new FileCabinetMemoryService(new CustomValidator());
                 validator = new CustomInputValidator();
                 converter = new CustomInputConverter();
             }
             else
             {
-                fileCabinetService = new FileCabinetService(new DefaultValidator());
+                fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
                 validator = new DefaultInputValidator();
                 converter = new DefaultInputConverter();
             }
