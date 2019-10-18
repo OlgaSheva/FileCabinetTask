@@ -2,6 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+
+using CommandLine;
+
+using FileCabinetApp.CommandLineOptions;
 using FileCabinetApp.Converters;
 using FileCabinetApp.Enums;
 using FileCabinetApp.Services;
@@ -20,6 +24,7 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+        private static readonly string FileStreamName = "cabinet-records.db";
 
         private static bool isRunning = true;
 
@@ -44,52 +49,68 @@ namespace FileCabinetApp
             new string[] { "edit <ID>", "edits an existing entry", "The 'edit' command edits an existing entry." },
             new string[] { "list", "returns a list of records added to the service", "The 'list' command returns a list of records added to the service." },
             new string[] { "find <parameter name> <parameter value>", "returns a list of records with the given parameter", "The 'find firstname' command returns a list of records with the given parameter." },
-            new string[] { "export csv <file adress>", "export service data to a CSV file", "The 'export csv' command export service data to a CSV file." },
+            new string[] { "export <csv/xml> <file adress>", "export service data to a CSV or XML file", "The 'export' command export service data to a CSV or XML file." },
         };
 
         private static IFileCabinetService fileCabinetService;
         private static IInputConverter converter;
         private static IInputValidator validator;
         private static StreamWriter streamWriter;
+        private static FileStream fileStream;
 
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
-        public static void Main()
+        /// <param name="args">Input parameters.</param>
+        public static void Main(string[] args)
         {
-            string[] args = Environment.GetCommandLineArgs();
             string validationRules = "default";
+            string storage = "memory";
 
-            for (int i = 0; i < args.Length; i++)
-            {
-                if (args[i].Contains("--"))
-                {
-                    var parameters = args[i].Split('=');
-                    if (parameters[0].Equals("--validation-rules"))
-                    {
-                        validationRules = parameters[1].ToLower();
-                    }
-                }
-                else if (args[i].StartsWith('-'))
-                {
-                    validationRules = args[2].ToLower();
-                }
-            }
+            var result = Parser.Default.ParseArguments<Options>(args);
+            Parser.Default.ParseArguments<Options>(args)
+                   .WithParsed<Options>(o =>
+                   {
+                       if (o.Validate.Equals("custom", StringComparison.InvariantCultureIgnoreCase))
+                       {
+                           validationRules = "custom";
+                       }
+
+                       if (o.Storage.Equals("file", StringComparison.InvariantCultureIgnoreCase))
+                       {
+                           storage = "file";
+                       }
+                   });
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {validationRules} validation rules.");
+            Console.WriteLine($"The {storage} storage.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
 
+            if (storage == "file")
+            {
+                using (fileStream = new FileStream(FileStreamName, FileMode.OpenOrCreate))
+                {
+                    fileCabinetService = (validationRules == "custom")
+                        ? new FileCabinetFilesystemService(fileStream, new CustomValidator())
+                        : new FileCabinetFilesystemService(fileStream, new DefaultValidator());
+                }
+            }
+            else
+            {
+                fileCabinetService = (validationRules == "custom")
+                    ? new FileCabinetMemoryService(new CustomValidator())
+                    : new FileCabinetMemoryService(new DefaultValidator());
+            }
+
             if (validationRules.Equals("custom"))
             {
-                fileCabinetService = new FileCabinetMemoryService(new CustomValidator());
                 validator = new CustomInputValidator();
                 converter = new CustomInputConverter();
             }
             else
             {
-                fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
                 validator = new DefaultInputValidator();
                 converter = new DefaultInputConverter();
             }

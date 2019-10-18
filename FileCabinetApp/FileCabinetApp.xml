@@ -4,6 +4,27 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.CommandLineOptions.Options">
+            <summary>
+            Command line options.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.CommandLineOptions.Options.Storage">
+            <summary>
+            Gets or sets the storage.
+            </summary>
+            <value>
+            The storage.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.CommandLineOptions.Options.Validate">
+            <summary>
+            Gets or sets the validate.
+            </summary>
+            <value>
+            The validate.
+            </value>
+        </member>
         <member name="T:FileCabinetApp.Converters.CustomInputConverter">
             <summary>
             Custom input parameters convertor.
@@ -343,78 +364,82 @@
             The main class.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Program.Main">
+        <member name="M:FileCabinetApp.Program.Main(System.String[])">
             <summary>
             Defines the entry point of the application.
             </summary>
+            <param name="args">Input parameters.</param>
         </member>
-        <member name="T:FileCabinetApp.FileCabinetService">
+        <member name="T:FileCabinetApp.Services.FileCabinetFilesystemService">
             <summary>
-            The file cabinet service.
+            The file cabinet FileStream service.
             </summary>
+            <seealso cref="T:FileCabinetApp.Services.IFileCabinetService" />
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.Validators.IRecordValidator)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.#ctor(System.IO.FileStream,FileCabinetApp.Validators.IRecordValidator)">
             <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.FileCabinetFilesystemService"/> class.
             </summary>
+            <param name="fileStream">The file stream.</param>
             <param name="validator">The validator.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.MakeSnapshot">
-            <summary>
-            Makes the snapshot.
-            </summary>
-            <returns>
-            The file cabinet service snapshot.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.Record)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.Record)">
             <summary>
             Creates the record.
             </summary>
-            <param name="rec">The record.</param>
-            <returns>New file cabinet record.</returns>
+            <param name="record">The record.</param>
+            <returns>
+            New file cabinet record.
+            </returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
-            <summary>
-            Gets the records.
-            </summary>
-            <returns>All existing records.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.GetStat">
-            <summary>
-            Gets the stat.
-            </summary>
-            <returns>The quantity of records.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(System.Int32,FileCabinetApp.Record)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.EditRecord(System.Int32,FileCabinetApp.Record)">
             <summary>
             Edits the record.
             </summary>
             <param name="id">The identifier.</param>
-            <param name="rec">The record.</param>
-            <exception cref="T:System.ArgumentException">
-            The {nameof(id)} can't be less than zero.
-            or
-            The {nameof(id)} doesn't exist.
-            </exception>
+            <param name="record">The record.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.Find(System.String)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Find(System.String)">
             <summary>
             Finds the specified parameters.
             </summary>
             <param name="parameters">The parameters.</param>
-            <returns>All records with specified parameters.</returns>
-            <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
-            <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
+            <returns>
+            All records with specified parameters.
+            </returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>
+            All existing records.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetStat">
+            <summary>
+            Gets the stat.
+            </summary>
+            <returns>
+            The quantity of records.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
             <summary>
             Determines whether [is there a record with this identifier] [the specified identifier].
             </summary>
             <param name="id">The identifier.</param>
             <param name="index">The index.</param>
             <returns>
-              <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.MakeSnapshot">
+            <summary>
+            Makes the snapshot.
+            </summary>
+            <returns>
+            The file cabinet service snapshot.
             </returns>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
@@ -498,8 +523,76 @@
             <summary>
             Makes the snapshot.
             </summary>
-            <param name="snapshot">The snapshot.</param>
             <returns>The file cabinet service snapshot.</returns>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetMemoryService">
+            <summary>
+            The file cabinet memory service.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.#ctor(FileCabinetApp.Validators.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetMemoryService"/> class.
+            </summary>
+            <param name="validator">The validator.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.MakeSnapshot">
+            <summary>
+            Makes the snapshot.
+            </summary>
+            <returns>
+            The file cabinet service snapshot.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecord(FileCabinetApp.Record)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="rec">The record.</param>
+            <returns>New file cabinet record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>All existing records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetStat">
+            <summary>
+            Gets the stat.
+            </summary>
+            <returns>The quantity of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(System.Int32,FileCabinetApp.Record)">
+            <summary>
+            Edits the record.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="rec">The record.</param>
+            <exception cref="T:System.ArgumentException">
+            The {nameof(id)} can't be less than zero.
+            or
+            The {nameof(id)} doesn't exist.
+            </exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Find(System.String)">
+            <summary>
+            Finds the specified parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+            <returns>All records with specified parameters.</returns>
+            <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
+            <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
+            <summary>
+            Determines whether [is there a record with this identifier] [the specified identifier].
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="index">The index.</param>
+            <returns>
+              <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.CustomInputValidator">
             <summary>

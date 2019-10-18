@@ -53,7 +53,6 @@ namespace FileCabinetApp.Services
         /// <summary>
         /// Makes the snapshot.
         /// </summary>
-        /// <param name="snapshot">The snapshot.</param>
         /// <returns>The file cabinet service snapshot.</returns>
         FileCabinetServiceSnapshot MakeSnapshot();
     }

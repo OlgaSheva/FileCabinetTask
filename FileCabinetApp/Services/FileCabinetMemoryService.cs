@@ -9,7 +9,7 @@ using FileCabinetApp.Validators;
 namespace FileCabinetApp
 {
     /// <summary>
-    /// The file cabinet service.
+    /// The file cabinet memory service.
     /// </summary>
     public class FileCabinetMemoryService : IFileCabinetService
     {
