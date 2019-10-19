@@ -56,7 +56,7 @@ namespace FileCabinetApp
                 LastName = rec.LastName,
                 DateOfBirth = rec.DateOfBirth,
                 Gender = rec.Gender,
-                MateriallStatus = rec.MaterialStatus,
+                MaterialStatus = rec.MaterialStatus,
                 CatsCount = rec.CatsCount,
                 CatsBudget = rec.CatsBudget,
             };
@@ -136,7 +136,7 @@ namespace FileCabinetApp
             this.list[index].LastName = rec.LastName;
             this.list[index].DateOfBirth = rec.DateOfBirth;
             this.list[index].Gender = rec.Gender;
-            this.list[index].MateriallStatus = rec.MaterialStatus;
+            this.list[index].MaterialStatus = rec.MaterialStatus;
             this.list[index].CatsCount = rec.CatsCount;
             this.list[index].CatsBudget = rec.CatsBudget;
 

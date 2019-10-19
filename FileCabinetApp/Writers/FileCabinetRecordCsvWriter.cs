@@ -31,7 +31,7 @@ namespace FileCabinetApp.Writers
                 $"{record.LastName}," +
                 $"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}," +
                 $"{record.Gender}," +
-                $"{record.MateriallStatus}," +
+                $"{record.MaterialStatus}," +
                 $"{record.CatsCount}," +
                 $"{record.CatsBudget}");
         }

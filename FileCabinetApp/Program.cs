@@ -65,7 +65,8 @@ namespace FileCabinetApp
         public static void Main(string[] args)
         {
             string validationRules = "default";
-            string storage = "memory";
+            //string storage = "memory";
+            string storage = "file"; // only for debagging
 
             var result = Parser.Default.ParseArguments<Options>(args);
             Parser.Default.ParseArguments<Options>(args)
@@ -232,7 +233,7 @@ namespace FileCabinetApp
         private static void Edit(string parameters)
         {
             int.TryParse(parameters, out int id);
-            if (id == 0)
+            if (id == 0 || Program.fileCabinetService.GetStat() == 0)
             {
                 Console.WriteLine($"The '{parameters}' isn't an ID.");
                 return;
@@ -418,7 +419,7 @@ namespace FileCabinetApp
             {
                 string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
                 Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
-                    $"{item.MateriallStatus}, {item.CatsCount}, {item.CatsBudget}");
+                    $"{item.MaterialStatus}, {item.CatsCount}, {item.CatsBudget}");
             }
         }
     }

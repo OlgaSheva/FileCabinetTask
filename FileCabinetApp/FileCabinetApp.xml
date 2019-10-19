@@ -262,7 +262,7 @@
             The gender.
             </value>
         </member>
-        <member name="P:FileCabinetApp.FileCabinetRecord.MateriallStatus">
+        <member name="P:FileCabinetApp.FileCabinetRecord.MaterialStatus">
             <summary>
             Gets or sets the marital status.
             </summary>
