@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using FileCabinetApp.Enums;
 using FileCabinetApp.Validators;
 
 namespace FileCabinetApp.Services
@@ -13,6 +14,7 @@ namespace FileCabinetApp.Services
     /// <seealso cref="FileCabinetApp.Services.IFileCabinetService" />
     public class FileCabinetFilesystemService : IFileCabinetService
     {
+        private static readonly int RecordInBytesLength = 280;
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
         private UnicodeEncoding uniEncoding = new UnicodeEncoding();
@@ -41,8 +43,8 @@ namespace FileCabinetApp.Services
 
             var record = new FileCabinetRecord
             {
-                Id = this.fileStream.Length != 0
-                ? (int)(this.fileStream.Length / 280) + 1
+                Id = this.fileStream.Position != 0
+                ? (int)(this.fileStream.Position / RecordInBytesLength) + 1
                 : 1,
                 FirstName = rec.FirstName,
                 LastName = rec.LastName,
@@ -64,7 +66,8 @@ namespace FileCabinetApp.Services
             var byteCatsCount = BitConverter.GetBytes(record.CatsCount);
             var byteCatsBudget = GetBytes(record.CatsBudget);
 
-            BinaryWriter writeBinay = new BinaryWriter(this.fileStream);
+            BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode);
+
             writeBinay.Write(new byte[2], 0, 2); // reserved
             writeBinay.Write(byteId, 0, byteId.Length);
             writeBinay.Write(byteFirstName, 0, byteFirstName.Length);
@@ -110,7 +113,29 @@ namespace FileCabinetApp.Services
         /// </returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
-            throw new NotImplementedException();
+            this.fileStream.Position = 0;
+            BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode);
+            long count = this.fileStream.Length / RecordInBytesLength;
+            List<FileCabinetRecord> records = new List<FileCabinetRecord>();
+
+            while (count-- > 0)
+            {
+                binaryReader.ReadBytes(2);
+                records.Add(new FileCabinetRecord
+                {
+                    Id = binaryReader.ReadInt32(),
+                    FirstName = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim(),
+                    LastName = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim(),
+                    DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
+                    Gender = (Gender)binaryReader.ReadChar(),
+                    MateriallStatus = binaryReader.ReadChar(),
+                    CatsCount = binaryReader.ReadInt16(),
+                    CatsBudget = ToDecimal(binaryReader.ReadBytes(16)),
+                });
+            }
+
+            ReadOnlyCollection<FileCabinetRecord> result = new ReadOnlyCollection<FileCabinetRecord>(records);
+            return result;
         }
 
         /// <summary>
@@ -158,6 +183,22 @@ namespace FileCabinetApp.Services
             }
 
             return bytes.ToArray();
+        }
+
+        private static decimal ToDecimal(byte[] bytes)
+        {
+            if (bytes.Length != 16)
+            {
+                throw new ArgumentException("A decimal must be created from exactly 16 bytes");
+            }
+
+            int[] bits = new int[4];
+            for (int i = 0; i <= 15; i += 4)
+            {
+                bits[i / 4] = BitConverter.ToInt32(bytes, i);
+            }
+
+            return new decimal(bits);
         }
     }
 }
