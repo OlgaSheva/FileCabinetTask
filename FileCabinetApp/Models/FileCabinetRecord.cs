@@ -54,7 +54,7 @@ namespace FileCabinetApp
         /// <value>
         /// The marital status.
         /// </value>
-        public char MaritalStatus { get; set; } // 'M' - married, 'U' - unmarried
+        public char MateriallStatus { get; set; } // 'M' - married, 'U' - unmarried
 
         /// <summary>
         /// Gets or sets the cats count.

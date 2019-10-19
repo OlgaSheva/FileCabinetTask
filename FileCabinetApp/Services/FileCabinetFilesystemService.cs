@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 using FileCabinetApp.Validators;
 
 namespace FileCabinetApp.Services
@@ -13,6 +15,7 @@ namespace FileCabinetApp.Services
     {
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
+        private UnicodeEncoding uniEncoding = new UnicodeEncoding();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
@@ -28,13 +31,53 @@ namespace FileCabinetApp.Services
         /// <summary>
         /// Creates the record.
         /// </summary>
-        /// <param name="record">The record.</param>
+        /// <param name="rec">The record.</param>
         /// <returns>
         /// New file cabinet record.
         /// </returns>
-        public int CreateRecord(Record record)
+        public int CreateRecord(Record rec)
         {
-            throw new NotImplementedException();
+            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
+
+            var record = new FileCabinetRecord
+            {
+                Id = this.fileStream.Length != 0
+                ? (int)(this.fileStream.Length / 280) + 1
+                : 1,
+                FirstName = rec.FirstName,
+                LastName = rec.LastName,
+                DateOfBirth = rec.DateOfBirth,
+                Gender = rec.Gender,
+                MateriallStatus = rec.MaterialStatus,
+                CatsCount = rec.CatsCount,
+                CatsBudget = rec.CatsBudget,
+            };
+
+            var byteId = BitConverter.GetBytes(record.Id);
+            var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.FirstName.PadRight(60));
+            var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.LastName.PadRight(60));
+            var byteYear = BitConverter.GetBytes(record.DateOfBirth.Year);
+            var byteMonth = BitConverter.GetBytes(record.DateOfBirth.Month);
+            var byteDay = BitConverter.GetBytes(record.DateOfBirth.Day);
+            var byteGender = BitConverter.GetBytes((char)record.Gender);
+            var byteStatus = BitConverter.GetBytes(record.MateriallStatus);
+            var byteCatsCount = BitConverter.GetBytes(record.CatsCount);
+            var byteCatsBudget = GetBytes(record.CatsBudget);
+
+            BinaryWriter writeBinay = new BinaryWriter(this.fileStream);
+            writeBinay.Write(new byte[2], 0, 2); // reserved
+            writeBinay.Write(byteId, 0, byteId.Length);
+            writeBinay.Write(byteFirstName, 0, byteFirstName.Length);
+            writeBinay.Write(byteLastName, 0, byteLastName.Length);
+            writeBinay.Write(byteYear, 0, byteYear.Length);
+            writeBinay.Write(byteMonth, 0, byteMonth.Length);
+            writeBinay.Write(byteDay, 0, byteDay.Length);
+            writeBinay.Write(byteGender, 0, byteGender.Length);
+            writeBinay.Write(byteStatus, 0, byteStatus.Length);
+            writeBinay.Write(byteCatsCount, 0, byteCatsCount.Length);
+            writeBinay.Write(byteCatsBudget, 0, byteCatsBudget.Length);
+
+            return record.Id;
         }
 
         /// <summary>
@@ -103,6 +146,18 @@ namespace FileCabinetApp.Services
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             throw new NotImplementedException();
+        }
+
+        private static byte[] GetBytes(decimal dec)
+        {
+            int[] bits = decimal.GetBits(dec);
+            List<byte> bytes = new List<byte>();
+            foreach (int i in bits)
+            {
+                bytes.AddRange(BitConverter.GetBytes(i));
+            }
+
+            return bytes.ToArray();
         }
     }
 }

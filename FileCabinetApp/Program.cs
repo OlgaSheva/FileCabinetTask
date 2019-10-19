@@ -90,12 +90,10 @@ namespace FileCabinetApp
 
             if (storage == "file")
             {
-                using (fileStream = new FileStream(FileStreamName, FileMode.OpenOrCreate))
-                {
-                    fileCabinetService = (validationRules == "custom")
+                fileStream = new FileStream(FileStreamName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                fileCabinetService = (validationRules == "custom")
                         ? new FileCabinetFilesystemService(fileStream, new CustomValidator())
                         : new FileCabinetFilesystemService(fileStream, new DefaultValidator());
-                }
             }
             else
             {
@@ -411,6 +409,7 @@ namespace FileCabinetApp
         private static void Exit(string parameters)
         {
             Console.WriteLine("Exiting an application...");
+            fileStream.Close();
             isRunning = false;
         }
 
@@ -420,7 +419,7 @@ namespace FileCabinetApp
             {
                 string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
                 Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
-                    $"{item.MaritalStatus}, {item.CatsCount}, {item.CatsBudget}");
+                    $"{item.MateriallStatus}, {item.CatsCount}, {item.CatsBudget}");
             }
         }
     }

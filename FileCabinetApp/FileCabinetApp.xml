@@ -262,7 +262,7 @@
             The gender.
             </value>
         </member>
-        <member name="P:FileCabinetApp.FileCabinetRecord.MaritalStatus">
+        <member name="P:FileCabinetApp.FileCabinetRecord.MateriallStatus">
             <summary>
             Gets or sets the marital status.
             </summary>
@@ -387,7 +387,7 @@
             <summary>
             Creates the record.
             </summary>
-            <param name="record">The record.</param>
+            <param name="rec">The record.</param>
             <returns>
             New file cabinet record.
             </returns>

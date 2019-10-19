@@ -38,7 +38,7 @@ namespace FileCabinetApp.Writers
                 new XAttribute("last", fileCabinetRecord.LastName));
             record.Add(new XElement("dateOfBirth", fileCabinetRecord.DateOfBirth.ToShortDateString()));
             record.Add(new XElement("gender", fileCabinetRecord.Gender.ToString()));
-            record.Add(new XElement("materialStatus", fileCabinetRecord.MaritalStatus.ToString()));
+            record.Add(new XElement("materialStatus", fileCabinetRecord.MateriallStatus.ToString()));
             record.Add(new XElement("catsCount", fileCabinetRecord.CatsCount));
             record.Add(new XElement("catsBudget", fileCabinetRecord.CatsBudget.ToString()));
         }
