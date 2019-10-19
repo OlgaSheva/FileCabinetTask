@@ -146,7 +146,7 @@ namespace FileCabinetApp.Services
         /// </returns>
         public int GetStat()
         {
-            throw new NotImplementedException();
+            return (int)(this.fileStream.Position / RecordInBytesLength);
         }
 
         /// <summary>

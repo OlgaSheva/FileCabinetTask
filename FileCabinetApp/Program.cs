@@ -409,7 +409,6 @@ namespace FileCabinetApp
         private static void Exit(string parameters)
         {
             Console.WriteLine("Exiting an application...");
-            fileStream.Close();
             isRunning = false;
         }
 
