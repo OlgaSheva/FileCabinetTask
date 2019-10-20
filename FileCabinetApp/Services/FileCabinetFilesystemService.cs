@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using FileCabinetApp.Enums;
@@ -135,7 +136,37 @@ namespace FileCabinetApp.Services
         /// </returns>
         public ReadOnlyCollection<FileCabinetRecord> Find(string parameters)
         {
-            throw new NotImplementedException();
+            var param = parameters.Split(' ');
+            string parameterName = param[0];
+            string parameterValue = param[1].Trim('"');
+
+            var textInfo = new CultureInfo("ru-RU").TextInfo;
+            parameterValue = textInfo.ToTitleCase(textInfo.ToLower(parameterValue));
+
+            ReadOnlyCollection<FileCabinetRecord> findCollection = null;
+            try
+            {
+                switch (parameterName.ToLower())
+                {
+                    case "firstname":
+                        findCollection = this.FindByFirstName(parameterValue);
+                        break;
+                    case "lastname":
+                        findCollection = this.FindByLastName(parameterValue);
+                        break;
+                    case "dateofbirth":
+                        findCollection = this.FindByDateOfBirth(parameterValue);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new ArgumentException($"The record with {parameterName} '{parameterValue}' doesn't exist.");
+            }
+
+            return findCollection;
         }
 
         /// <summary>
@@ -219,6 +250,111 @@ namespace FileCabinetApp.Services
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             throw new NotImplementedException();
+        }
+
+        private ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        {
+            BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode);
+            var dateList = new List<FileCabinetRecord>();
+            int count = (int)(this.fileStream.Length / RecordInBytesLength);
+            this.fileStream.Position = 6; // first name position
+            string firstNameFromFile;
+            while (count-- > 0)
+            {
+                firstNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim();
+                if (firstNameFromFile.Equals(firstName))
+                {
+                    this.fileStream.Position -= 126;
+                    binaryReader.ReadBytes(2);
+                    dateList.Add(new FileCabinetRecord
+                    {
+                        Id = binaryReader.ReadInt32(),
+                        FirstName = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim(),
+                        LastName = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim(),
+                        DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
+                        Gender = (Gender)binaryReader.ReadChar(),
+                        MaterialStatus = binaryReader.ReadChar(),
+                        CatsCount = binaryReader.ReadInt16(),
+                        CatsBudget = ToDecimal(binaryReader.ReadBytes(16)),
+                    });
+                }
+
+                this.fileStream.Position += RecordInBytesLength - 126 + 6;
+            }
+
+            var dateCollection = new ReadOnlyCollection<FileCabinetRecord>(dateList);
+            return dateCollection;
+        }
+
+        private ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        {
+            BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode);
+            var dateList = new List<FileCabinetRecord>();
+            int count = (int)(this.fileStream.Length / RecordInBytesLength);
+            this.fileStream.Position = 126; // last name position
+            string firstNameFromFile;
+            while (count-- > 0)
+            {
+                firstNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim();
+                if (firstNameFromFile.Equals(lastName))
+                {
+                    this.fileStream.Position -= 246;
+                    binaryReader.ReadBytes(2);
+                    dateList.Add(new FileCabinetRecord
+                    {
+                        Id = binaryReader.ReadInt32(),
+                        FirstName = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim(),
+                        LastName = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim(),
+                        DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
+                        Gender = (Gender)binaryReader.ReadChar(),
+                        MaterialStatus = binaryReader.ReadChar(),
+                        CatsCount = binaryReader.ReadInt16(),
+                        CatsBudget = ToDecimal(binaryReader.ReadBytes(16)),
+                    });
+                }
+
+                this.fileStream.Position += RecordInBytesLength - 246 + 126;
+            }
+
+            var dateCollection = new ReadOnlyCollection<FileCabinetRecord>(dateList);
+            return dateCollection;
+        }
+
+        private ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        {
+            BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode);
+            var dateList = new List<FileCabinetRecord>();
+            int count = (int)(this.fileStream.Length / RecordInBytesLength);
+            this.fileStream.Position = 246; // year position
+            DateTime dateFromFile;
+            while (count-- > 0)
+            {
+                dateFromFile = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32());
+                if (DateTime.TryParse(dateOfBirth, out DateTime date))
+                {
+                    if (DateTime.Compare(dateFromFile, date) == 0)
+                    {
+                        this.fileStream.Position -= 258;
+                        binaryReader.ReadBytes(2);
+                        dateList.Add(new FileCabinetRecord
+                        {
+                            Id = binaryReader.ReadInt32(),
+                            FirstName = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim(),
+                            LastName = System.Text.UnicodeEncoding.Unicode.GetString(binaryReader.ReadBytes(120), 0, 120).Trim(),
+                            DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
+                            Gender = (Gender)binaryReader.ReadChar(),
+                            MaterialStatus = binaryReader.ReadChar(),
+                            CatsCount = binaryReader.ReadInt16(),
+                            CatsBudget = ToDecimal(binaryReader.ReadBytes(16)),
+                        });
+                    }
+                }
+
+                this.fileStream.Position += RecordInBytesLength - 258 + 246;
+            }
+
+            var dateCollection = new ReadOnlyCollection<FileCabinetRecord>(dateList);
+            return dateCollection;
         }
 
         private static byte[] GetBytes(decimal dec)
