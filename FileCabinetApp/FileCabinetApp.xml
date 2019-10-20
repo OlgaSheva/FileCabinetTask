@@ -438,9 +438,7 @@
             <summary>
             Makes the snapshot.
             </summary>
-            <returns>
-            The file cabinet service snapshot.
-            </returns>
+            <returns>The file cabinet service snapshot.</returns>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
             <summary>

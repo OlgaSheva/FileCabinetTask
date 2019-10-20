@@ -244,12 +244,38 @@ namespace FileCabinetApp.Services
         /// <summary>
         /// Makes the snapshot.
         /// </summary>
-        /// <returns>
-        /// The file cabinet service snapshot.
-        /// </returns>
+        /// <returns>The file cabinet service snapshot.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             throw new NotImplementedException();
+        }
+
+        private static byte[] GetBytes(decimal dec)
+        {
+            int[] bits = decimal.GetBits(dec);
+            List<byte> bytes = new List<byte>();
+            foreach (int i in bits)
+            {
+                bytes.AddRange(BitConverter.GetBytes(i));
+            }
+
+            return bytes.ToArray();
+        }
+
+        private static decimal ToDecimal(byte[] bytes)
+        {
+            if (bytes.Length != 16)
+            {
+                throw new ArgumentException("A decimal must be created from exactly 16 bytes");
+            }
+
+            int[] bits = new int[4];
+            for (int i = 0; i <= 15; i += 4)
+            {
+                bits[i / 4] = BitConverter.ToInt32(bytes, i);
+            }
+
+            return new decimal(bits);
         }
 
         private ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
@@ -355,34 +381,6 @@ namespace FileCabinetApp.Services
 
             var dateCollection = new ReadOnlyCollection<FileCabinetRecord>(dateList);
             return dateCollection;
-        }
-
-        private static byte[] GetBytes(decimal dec)
-        {
-            int[] bits = decimal.GetBits(dec);
-            List<byte> bytes = new List<byte>();
-            foreach (int i in bits)
-            {
-                bytes.AddRange(BitConverter.GetBytes(i));
-            }
-
-            return bytes.ToArray();
-        }
-
-        private static decimal ToDecimal(byte[] bytes)
-        {
-            if (bytes.Length != 16)
-            {
-                throw new ArgumentException("A decimal must be created from exactly 16 bytes");
-            }
-
-            int[] bits = new int[4];
-            for (int i = 0; i <= 15; i += 4)
-            {
-                bits[i / 4] = BitConverter.ToInt32(bytes, i);
-            }
-
-            return new decimal(bits);
         }
     }
 }
