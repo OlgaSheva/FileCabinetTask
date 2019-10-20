@@ -65,8 +65,7 @@ namespace FileCabinetApp
         public static void Main(string[] args)
         {
             string validationRules = "default";
-            //string storage = "memory";
-            string storage = "file"; // only for debagging
+            string storage = "memory";
 
             var result = Parser.Default.ParseArguments<Options>(args);
             Parser.Default.ParseArguments<Options>(args)
