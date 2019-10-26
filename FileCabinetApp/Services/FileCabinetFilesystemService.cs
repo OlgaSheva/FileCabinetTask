@@ -51,6 +51,11 @@ namespace FileCabinetApp.Services
         /// </returns>
         public int CreateRecord(Record rec)
         {
+            if (rec == null)
+            {
+                throw new ArgumentNullException(nameof(rec));
+            }
+
             this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
 
             var record = new FileCabinetRecord
@@ -100,14 +105,19 @@ namespace FileCabinetApp.Services
         /// <param name="record">The record.</param>
         public void EditRecord(int id, Record record)
         {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             if (id < 0)
             {
-                throw new ArgumentException(nameof(id), $"The {nameof(id)} can't be less than zero.");
+                throw new ArgumentException($"The {nameof(id)} can't be less than zero.", nameof(id));
             }
 
             if (!this.IsThereARecordWithThisId(id, out int index))
             {
-                throw new ArgumentException(nameof(id), $"The {nameof(id)} doesn't exist.");
+                throw new ArgumentException($"The {nameof(id)} doesn't exist.", nameof(id));
             }
 
             this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
@@ -145,8 +155,13 @@ namespace FileCabinetApp.Services
         /// </returns>
         public ReadOnlyCollection<FileCabinetRecord> Find(string parameters)
         {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
             var param = parameters.Split(' ');
-            string parameterName = param[0];
+            string parameterName = param[0].ToLower(CultureInfo.CurrentCulture);
             string parameterValue = param[1].Trim('"');
 
             var textInfo = new CultureInfo("ru-RU").TextInfo;
@@ -155,7 +170,7 @@ namespace FileCabinetApp.Services
             ReadOnlyCollection<FileCabinetRecord> findCollection = null;
             try
             {
-                switch (parameterName.ToLower())
+                switch (parameterName)
                 {
                     case "firstname":
                         findCollection = this.FindByFirstName(parameterValue);
@@ -279,7 +294,7 @@ namespace FileCabinetApp.Services
         {
             if (bytes.Length != 16)
             {
-                throw new ArgumentException(nameof(bytes), "A decimal must be created from exactly 16 bytes.");
+                throw new ArgumentException("A decimal must be created from exactly 16 bytes.", nameof(bytes));
             }
 
             int[] bits = new int[4];
@@ -303,7 +318,7 @@ namespace FileCabinetApp.Services
                 {
                     firstNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
                         binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
-                    if (firstNameFromFile.Equals(firstName))
+                    if (firstNameFromFile == firstName)
                     {
                         this.fileStream.Position -= LastNamePosition;
                         binaryReader.ReadBytes(2);
@@ -330,7 +345,7 @@ namespace FileCabinetApp.Services
                 {
                     firstNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
                         binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
-                    if (firstNameFromFile.Equals(lastName))
+                    if (firstNameFromFile == lastName)
                     {
                         this.fileStream.Position -= YearPosition;
                         binaryReader.ReadBytes(2);

@@ -76,7 +76,7 @@ namespace FileCabinetApp
             var builder = new StringBuilder();
             builder.Append($"{this.Id}, ");
             builder.Append($"{this.FirstName}, ");
-            builder.Append($"{this.LastName}, ");
+            builder.Append($"{this.LastName},");
             builder.Append($"{this.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
             builder.Append($"{this.Gender}, ");
             builder.Append($"{this.Office}, ");

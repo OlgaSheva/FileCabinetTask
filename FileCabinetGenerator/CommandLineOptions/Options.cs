@@ -31,7 +31,7 @@ namespace FileCabinetGenerator.CommandLineOptions
         /// <value>
         /// The record amount.
         /// </value>
-        [Option('a', "records-amount", Default = 5000, HelpText = "Amount of generated records.")]
+        [Option('a', "records-amount", Default = 0, HelpText = "Amount of generated records.")]
         public int RecordAmount { get; set; }
 
         /// <summary>

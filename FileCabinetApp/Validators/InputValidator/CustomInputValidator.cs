@@ -10,7 +10,7 @@ namespace FileCabinetApp.Validators.InputValidator
     /// <seealso cref="FileCabinetApp.Validators.InputValidator.IInputValidator" />
     public class CustomInputValidator : IInputValidator
     {
-        private static readonly string NamePattern = @"^[a-zA-Z '.-]*$";
+        private const string NamePattern = @"^[a-zA-Z '.-]*$";
         private static readonly DateTime MinDate = new DateTime(1930, 1, 1);
 
         /// <summary>

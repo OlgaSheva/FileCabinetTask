@@ -41,24 +41,12 @@
             The start identifier.
             </value>
         </member>
-        <member name="T:FileCabinetGenerator.FileCabinetRecord">
+        <member name="T:FileCabinetGenerator.Models.FileCabinetRecord">
             <summary>
             The class to subscribe file cabinet record.
             </summary>
         </member>
-        <member name="M:FileCabinetGenerator.FileCabinetRecord.#ctor(System.Int32,System.String,System.String,System.DateTime,System.Char,System.Int16,System.Decimal)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetGenerator.FileCabinetRecord"/> class.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="firstName">The first name.</param>
-            <param name="lastName">The last name.</param>
-            <param name="dateOfBirth">The date of birth.</param>
-            <param name="gender">The gender.</param>
-            <param name="office">The office.</param>
-            <param name="salary">The salary.</param>
-        </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecord.Id">
+        <member name="P:FileCabinetGenerator.Models.FileCabinetRecord.Id">
             <summary>
             Gets or sets the identifier.
             </summary>
@@ -66,23 +54,15 @@
             The identifier.
             </value>
         </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecord.FirstName">
+        <member name="P:FileCabinetGenerator.Models.FileCabinetRecord.FullName">
             <summary>
-            Gets or sets the first name.
+            Gets or sets the name.
             </summary>
             <value>
-            The first name.
+            The name.
             </value>
         </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecord.LastName">
-            <summary>
-            Gets or sets the last name.
-            </summary>
-            <value>
-            The last name.
-            </value>
-        </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecord.DateOfBirth">
+        <member name="P:FileCabinetGenerator.Models.FileCabinetRecord.DateOfBirth">
             <summary>
             Gets or sets the date of birth.
             </summary>
@@ -90,7 +70,7 @@
             The date of birth.
             </value>
         </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecord.Gender">
+        <member name="P:FileCabinetGenerator.Models.FileCabinetRecord.Gender">
             <summary>
             Gets or sets the marital status.
             </summary>
@@ -98,7 +78,7 @@
             The marital status.
             </value>
         </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecord.Office">
+        <member name="P:FileCabinetGenerator.Models.FileCabinetRecord.Office">
             <summary>
             Gets or sets the cats count.
             </summary>
@@ -106,7 +86,7 @@
             The cats count.
             </value>
         </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecord.Salary">
+        <member name="P:FileCabinetGenerator.Models.FileCabinetRecord.Salary">
             <summary>
             Gets or sets the cats budget.
             </summary>
@@ -114,13 +94,36 @@
             The cats budget.
             </value>
         </member>
-        <member name="M:FileCabinetGenerator.FileCabinetRecord.ToString">
+        <member name="T:FileCabinetGenerator.Models.Name">
             <summary>
-            Converts to string.
+            The full name.
             </summary>
-            <returns>
-            A <see cref="T:System.String" /> that represents this instance.
-            </returns>
+        </member>
+        <member name="P:FileCabinetGenerator.Models.Name.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+            <value>
+            The first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.Models.Name.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+            <value>
+            The last name.
+            </value>
+        </member>
+        <member name="T:FileCabinetGenerator.Models.RecordsOrder">
+            <summary>
+            XML export model.
+            </summary>
+        </member>
+        <member name="F:FileCabinetGenerator.Models.RecordsOrder.FileCabinetRecords">
+            <summary>
+            The file cabinet records.
+            </summary>
         </member>
         <member name="T:FileCabinetGenerator.Program">
             <summary>

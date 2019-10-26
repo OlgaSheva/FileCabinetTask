@@ -1,8 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
+using System.Xml.Serialization;
+
 using CommandLine;
 
 using FileCabinetGenerator.CommandLineOptions;
+using FileCabinetGenerator.Models;
 
 namespace FileCabinetGenerator
 {
@@ -19,7 +22,7 @@ namespace FileCabinetGenerator
         {
             string outputType = "csv";
             string output = "records.csv";
-            int recordAmount = 5000;
+            int recordAmount = 0;
             int startId = 10000;
 
             var result = Parser.Default.ParseArguments<Options>(args);
@@ -31,38 +34,82 @@ namespace FileCabinetGenerator
                        recordAmount = o.RecordAmount;
                        startId = o.StartId;
                    });
-            List<FileCabinetRecord> fileCabinetRecords = FileCabinetRecordGenerator(startId, 10);
-            foreach (var item in fileCabinetRecords)
-            {
-                Console.WriteLine(item.ToString());
-            }
 
-            Console.ReadKey();
+            var records = RecordsOrderGeneration(startId, recordAmount);
+
+            switch (outputType)
+            {
+                case "csv":
+                    ExportCSV(output, records.FileCabinetRecords);
+                    Console.WriteLine($"{recordAmount} records were written to {output}.");
+                    break;
+                case "xml":
+                    ExportXML(output, records);
+                    Console.WriteLine($"{recordAmount} records were written to {output}.");
+                    break;
+                default:
+                    Console.WriteLine($"Records were not written.");
+                    throw new Exception(nameof(outputType));
+            }
         }
 
-        private static List<FileCabinetRecord> FileCabinetRecordGenerator(int startId, int recordAmoutn)
+        private static FileCabinetRecord FileCabinetRecordGenerator(int startId, int index)
         {
-            var recordsList = new List<FileCabinetRecord>(recordAmoutn);
             Random random = new Random();
             string genderChars = "MFOU";
             DateTime minDate = new DateTime(1950, 1, 1);
             DateTime maxDate = new DateTime(2005, 1, 1);
             int daysDiff = Convert.ToInt32(maxDate.Subtract(minDate).TotalDays + 1);
 
-            for (int i = 0; i < recordAmoutn; i++)
+            FileCabinetRecord record = new FileCabinetRecord()
             {
-                FileCabinetRecord record = new FileCabinetRecord(
-                    startId + i,
-                    "fn" + random.Next(0, 10000),
-                    "ln" + random.Next(0, 10000),
-                    minDate.AddDays(random.Next(0, daysDiff)),
-                    genderChars[random.Next(0, genderChars.Length - 1)],
-                    (short)random.Next(0, 500),
-                    (decimal)NextDouble(random, 0, 4000));
-                recordsList.Add(record);
+                Id = startId + index,
+                FullName = new Name()
+                {
+                    FirstName = "fn" + random.Next(0, 10000),
+                    LastName = "ln" + random.Next(0, 10000),
+                },
+                DateOfBirth = minDate.AddDays(random.Next(0, daysDiff)),
+                Gender = genderChars[random.Next(0, genderChars.Length - 1)],
+                Office = (short)random.Next(0, 500),
+                Salary = (decimal)NextDouble(random, 0, 4000),
+            };
+            return record;
+        }
+
+        private static RecordsOrder RecordsOrderGeneration(int startId, int recordAmount)
+        {
+            RecordsOrder recordsOrder = new RecordsOrder
+            {
+                FileCabinetRecords = new FileCabinetRecord[recordAmount],
+            };
+            for (int i = 0; i < recordAmount; i++)
+            {
+                var record = FileCabinetRecordGenerator(startId, i);
+                recordsOrder.FileCabinetRecords[i] = record;
             }
 
-            return recordsList;
+            return recordsOrder;
+        }
+
+        private static void ExportCSV(string filePath, FileCabinetRecord[] recordsArray)
+        {
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                foreach (var record in recordsArray)
+                {
+                    writer.WriteLine(record.ToString());
+                }
+            }
+        }
+
+        private static void ExportXML(string filePath, RecordsOrder recordsOrder)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(RecordsOrder));
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                serializer.Serialize(writer, recordsOrder);
+            }
         }
 
         private static double NextDouble(Random rnd, double min, double max)
