@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FileCabinetGenerator</name>
+    </assembly>
+    <members>
+        <member name="T:FileCabinetGenerator.CommandLineOptions.Options">
+            <summary>
+            Command line options.
+            </summary>
+        </member>
+        <member name="P:FileCabinetGenerator.CommandLineOptions.Options.OutputType">
+            <summary>
+            Gets or sets the type of the output.
+            </summary>
+            <value>
+            The type of the output.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.CommandLineOptions.Options.Output">
+            <summary>
+            Gets or sets the output.
+            </summary>
+            <value>
+            The output.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.CommandLineOptions.Options.RecordAmount">
+            <summary>
+            Gets or sets the record amount.
+            </summary>
+            <value>
+            The record amount.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.CommandLineOptions.Options.StartId">
+            <summary>
+            Gets or sets the start identifier.
+            </summary>
+            <value>
+            The start identifier.
+            </value>
+        </member>
+        <member name="T:FileCabinetGenerator.FileCabinetRecord">
+            <summary>
+            The class to subscribe file cabinet record.
+            </summary>
+        </member>
+        <member name="M:FileCabinetGenerator.FileCabinetRecord.#ctor(System.Int32,System.String,System.String,System.DateTime,System.Char,System.Int16,System.Decimal)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetGenerator.FileCabinetRecord"/> class.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="firstName">The first name.</param>
+            <param name="lastName">The last name.</param>
+            <param name="dateOfBirth">The date of birth.</param>
+            <param name="gender">The gender.</param>
+            <param name="office">The office.</param>
+            <param name="salary">The salary.</param>
+        </member>
+        <member name="P:FileCabinetGenerator.FileCabinetRecord.Id">
+            <summary>
+            Gets or sets the identifier.
+            </summary>
+            <value>
+            The identifier.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.FileCabinetRecord.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+            <value>
+            The first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.FileCabinetRecord.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+            <value>
+            The last name.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.FileCabinetRecord.DateOfBirth">
+            <summary>
+            Gets or sets the date of birth.
+            </summary>
+            <value>
+            The date of birth.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.FileCabinetRecord.Gender">
+            <summary>
+            Gets or sets the marital status.
+            </summary>
+            <value>
+            The marital status.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.FileCabinetRecord.Office">
+            <summary>
+            Gets or sets the cats count.
+            </summary>
+            <value>
+            The cats count.
+            </value>
+        </member>
+        <member name="P:FileCabinetGenerator.FileCabinetRecord.Salary">
+            <summary>
+            Gets or sets the cats budget.
+            </summary>
+            <value>
+            The cats budget.
+            </value>
+        </member>
+        <member name="M:FileCabinetGenerator.FileCabinetRecord.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns>
+            A <see cref="T:System.String" /> that represents this instance.
+            </returns>
+        </member>
+        <member name="T:FileCabinetGenerator.Program">
+            <summary>
+            The main class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetGenerator.Program.Main(System.String[])">
+            <summary>
+            Defines the entry point of the application.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+    </members>
+</doc>
