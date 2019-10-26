@@ -10,7 +10,7 @@ namespace FileCabinetApp.Validators.InputValidator
     /// <seealso cref="FileCabinetApp.Validators.InputValidator.IInputValidator" />
     public class DefaultInputValidator : IInputValidator
     {
-        private static readonly string NamePattern = @"^[a-zA-Z '.-]*$";
+        private const string NamePattern = @"^[a-zA-Z '.-]*$";
         private static readonly DateTime MinDate = new DateTime(1950, 1, 1);
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace FileCabinetApp.Validators.InputValidator
         public Tuple<bool, string> GenderValidator(char gender)
         {
             bool flag = gender == 'M' || gender == 'F' || gender == 'O' || gender == 'U';
-            return new Tuple<bool, string>(flag, gender.ToString());
+            return new Tuple<bool, string>(flag, gender.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace FileCabinetApp.Validators.InputValidator
         public Tuple<bool, string> OfficeValidator(short office)
         {
             bool flag = office >= 0 && office < 500;
-            return new Tuple<bool, string>(flag, office.ToString());
+            return new Tuple<bool, string>(flag, office.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace FileCabinetApp.Validators.InputValidator
         public Tuple<bool, string> SalaryValidator(decimal salary)
         {
             bool flag = salary >= 0;
-            return new Tuple<bool, string>(flag, salary.ToString());
+            return new Tuple<bool, string>(flag, salary.ToString(CultureInfo.InvariantCulture));
         }
 
         private static bool IsTheStringValid(string @string)

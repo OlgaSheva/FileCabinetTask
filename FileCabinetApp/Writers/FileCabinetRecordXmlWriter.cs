@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Xml.Linq;
 
 namespace FileCabinetApp.Writers
@@ -29,16 +30,16 @@ namespace FileCabinetApp.Writers
             XElement record = new XElement("record");
             doc.Root.Add(record);
             record.Add(
-                new XAttribute("id", fileCabinetRecord.Id.ToString()));
+                new XAttribute("id", fileCabinetRecord.Id.ToString(CultureInfo.InvariantCulture)));
             XElement name = new XElement("name");
             record.Add(name);
             name.Add(
                 new XAttribute("first", fileCabinetRecord.FirstName),
                 new XAttribute("last", fileCabinetRecord.LastName));
             record.Add(new XElement("dateOfBirth", fileCabinetRecord.DateOfBirth.ToShortDateString()));
-            record.Add(new XElement("gender", fileCabinetRecord.Gender.ToString()));
+            record.Add(new XElement("gender", fileCabinetRecord.Gender.ToString(CultureInfo.InvariantCulture)));
             record.Add(new XElement("office", fileCabinetRecord.Office));
-            record.Add(new XElement("salary", fileCabinetRecord.Salary.ToString()));
+            record.Add(new XElement("salary", fileCabinetRecord.Salary.ToString(CultureInfo.InvariantCulture)));
         }
     }
 }

@@ -47,6 +47,11 @@ namespace FileCabinetApp
         /// <returns>New file cabinet record.</returns>
         public int CreateRecord(Record rec)
         {
+            if (rec == null)
+            {
+                throw new ArgumentNullException(nameof(rec));
+            }
+
             this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
 
             var record = new FileCabinetRecord
@@ -115,14 +120,19 @@ namespace FileCabinetApp
         /// </exception>
         public void EditRecord(int id, Record rec)
         {
+            if (rec == null)
+            {
+                throw new ArgumentNullException(nameof(rec));
+            }
+
             if (id < 0)
             {
-                throw new ArgumentException(nameof(id), $"The {nameof(id)} can't be less than zero.");
+                throw new ArgumentException($"The {nameof(id)} can't be less than zero.", nameof(id));
             }
 
             if (!this.IsThereARecordWithThisId(id, out int index))
             {
-                throw new ArgumentException(nameof(id), $"The {nameof(id)} doesn't exist.");
+                throw new ArgumentException($"The {nameof(id)} doesn't exist.", nameof(id));
             }
 
             this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
@@ -167,17 +177,23 @@ namespace FileCabinetApp
         /// <exception cref="ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
         public ReadOnlyCollection<FileCabinetRecord> Find(string parameters)
         {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
             var param = parameters.Split(' ');
             string parameterName = param[0];
             string parameterValue = param[1].Trim('"');
 
             var textInfo = new CultureInfo("ru-RU").TextInfo;
             parameterValue = textInfo.ToTitleCase(textInfo.ToLower(parameterValue));
+            parameterName = textInfo.ToTitleCase(textInfo.ToLower(parameterName));
 
             ReadOnlyCollection<FileCabinetRecord> findCollection = null;
             try
             {
-                switch (parameterName.ToLower())
+                switch (parameterName)
                 {
                     case "firstname":
                         findCollection = this.firstNameDictionary[parameterValue].AsReadOnly();

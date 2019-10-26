@@ -40,7 +40,7 @@ namespace FileCabinetGenerator.CommandLineOptions
         /// <value>
         /// The start identifier.
         /// </value>
-        [Option('i', "start-id", Default = 10000, HelpText = "ID value to start.")]
+        [Option('i', "start-id", Default = 0, HelpText = "ID value to start.")]
         public int StartId { get; set; }
     }
 }

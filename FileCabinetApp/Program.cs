@@ -39,6 +39,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("find", FindByParameter),
             new Tuple<string, Action<string>>("export", Export),
+            new Tuple<string, Action<string>>("import", Import),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -50,7 +51,8 @@ namespace FileCabinetApp
             new string[] { "edit <ID>", "edits an existing entry", "The 'edit' command edits an existing entry." },
             new string[] { "list", "returns a list of records added to the service", "The 'list' command returns a list of records added to the service." },
             new string[] { "find <parameter name> <parameter value>", "returns a list of records with the given parameter", "The 'find firstname' command returns a list of records with the given parameter." },
-            new string[] { "export <csv/xml> <file adress>", "export service data to a CSV or XML file", "The 'export' command export service data to a CSV or XML file." },
+            new string[] { "export <csv/xml> <file adress>", "exports service data to a CSV or XML file", "The 'export' command exports service data to a CSV or XML file." },
+            new string[] { "import <csv/xml> <file adress>", "imports service data from a CSV or XML file", "The 'export' command imports service data from a CSV or XML file." },
         };
 
         private static IFileCabinetService fileCabinetService;
@@ -166,7 +168,7 @@ namespace FileCabinetApp
                 Console.Write($"File is exist - rewrite {path}? [Y/n] ");
                 if (char.TryParse(Console.ReadLine(), out char answer))
                 {
-                    if (answer.ToString().Equals(yesAnswer, StringComparison.InvariantCultureIgnoreCase))
+                    if (answer.ToString(CultureInfo.InvariantCulture).Equals(yesAnswer, StringComparison.InvariantCultureIgnoreCase))
                     {
                         File.Delete(path);
                         Write(path);
@@ -183,7 +185,7 @@ namespace FileCabinetApp
                 {
                     Write(path);
                 }
-                catch (Exception ex)
+                catch (FileLoadException ex)
                 {
                     Console.WriteLine($"Export failed: can't open file {path}.", ex.Message);
                 }
@@ -212,6 +214,59 @@ namespace FileCabinetApp
                     Console.WriteLine($"All records are exported to file {p}.");
                 }
             }
+        }
+
+        private static void Import(string parameters)
+        {
+            string[] comands = parameters.Split(' ');
+            string fileFormat = comands[0];
+            string filePath = comands[1];
+            const string csvFormat = "csv";
+            const string xmlFormat = "xml";
+
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine($"File {filePath} didn't found.");
+                return;
+            }
+
+            switch (fileFormat)
+            {
+                case csvFormat:
+                    ImportFromCSVFile(filePath);
+                    break;
+                case xmlFormat:
+                    ImportFromXMLFile(filePath);
+                    break;
+                default:
+                    throw new Exception(nameof(fileFormat));
+            }
+        }
+
+        private static void ImportFromCSVFile(string filePath)
+        {
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var elements = reader.ReadLine().Split(',');
+                    FileCabinetRecord record = new FileCabinetRecord()
+                    {
+                        Id = int.Parse(elements[0], CultureInfo.InvariantCulture),
+                        FirstName = elements[1],
+                        LastName = elements[2],
+                        DateOfBirth = DateTime.Parse(elements[3], CultureInfo.InvariantCulture),
+                        Gender = char.Parse(elements[4]),
+                        Office = short.Parse(elements[5], CultureInfo.InvariantCulture),
+                        Salary = decimal.Parse(elements[6], CultureInfo.InvariantCulture),
+                    };
+                }
+            }
+        }
+
+        private static void ImportFromXMLFile(string filePath)
+        {
+            throw new NotImplementedException();
         }
 
         private static void Stat(string parameters)
@@ -245,7 +300,7 @@ namespace FileCabinetApp
 
         private static void Edit(string parameters)
         {
-            int.TryParse(parameters, out int id);
+            int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out int id);
             if (id == 0 || Program.fileCabinetService.GetStat() == 0)
             {
                 Console.WriteLine($"The '{parameters}' isn't an ID.");
@@ -262,12 +317,12 @@ namespace FileCabinetApp
                 }
                 catch (ArgumentNullException anex)
                 {
-                    Console.WriteLine("Record wasn't edited.", anex.Message);
+                    Console.WriteLine($"Record wasn't edited.", anex.Message);
                     Console.WriteLine(Program.HintMessage);
                 }
                 catch (ArgumentException aex)
                 {
-                    Console.WriteLine("Record wasn't edited.", aex.Message);
+                    Console.WriteLine($"Record wasn't edited.", aex.Message);
                     Console.WriteLine(Program.HintMessage);
                 }
             }
@@ -286,11 +341,11 @@ namespace FileCabinetApp
             }
             catch (InvalidOperationException ioex)
             {
-                Console.WriteLine("The record didn't find.", ioex.Message);
+                Console.WriteLine($"The record didn't find.", ioex.Message);
             }
             catch (ArgumentException aex)
             {
-                Console.WriteLine("The record didn't find.", aex.Message);
+                Console.WriteLine($"The record didn't find.", aex.Message);
             }
         }
 

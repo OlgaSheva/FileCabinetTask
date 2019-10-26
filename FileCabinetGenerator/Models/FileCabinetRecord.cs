@@ -44,7 +44,7 @@ namespace FileCabinetGenerator.Models
         /// <value>
         /// The marital status.
         /// </value>
-        [XmlElement("gender", Type = typeof(char))]
+        [XmlElement("gender")]
         public char Gender { get; set; } // 'M' - male, 'F' - female, 'O' - other, 'U' - unknown
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace FileCabinetGenerator.Models
             builder.Append($"{this.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)},");
             builder.Append($"{this.Gender},");
             builder.Append($"{this.Office},");
-            builder.Append($"{this.Salary}");
+            builder.Append($"{this.Salary.ToString("F", CultureInfo.InvariantCulture)}");
 
             return builder.ToString();
         }
