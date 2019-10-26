@@ -25,7 +25,7 @@ namespace FileCabinetApp
         /// <param name="validator">The validator.</param>
         public FileCabinetMemoryService(IRecordValidator validator)
         {
-            this.validator = validator;
+            this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace FileCabinetApp
         /// <returns>New file cabinet record.</returns>
         public int CreateRecord(Record rec)
         {
-            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
+            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
 
             var record = new FileCabinetRecord
             {
@@ -56,9 +56,8 @@ namespace FileCabinetApp
                 LastName = rec.LastName,
                 DateOfBirth = rec.DateOfBirth,
                 Gender = rec.Gender,
-                MaterialStatus = rec.MaterialStatus,
-                CatsCount = rec.CatsCount,
-                CatsBudget = rec.CatsBudget,
+                Office = rec.Office,
+                Salary = rec.Salary,
             };
 
             this.list.Add(record);
@@ -118,15 +117,15 @@ namespace FileCabinetApp
         {
             if (id < 0)
             {
-                throw new ArgumentException($"The {nameof(id)} can't be less than zero.");
+                throw new ArgumentException(nameof(id), $"The {nameof(id)} can't be less than zero.");
             }
 
             if (!this.IsThereARecordWithThisId(id, out int index))
             {
-                throw new ArgumentException($"The {nameof(id)} doesn't exist.");
+                throw new ArgumentException(nameof(id), $"The {nameof(id)} doesn't exist.");
             }
 
-            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.MaterialStatus, rec.CatsCount, rec.CatsBudget);
+            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
 
             this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
             this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
@@ -136,9 +135,8 @@ namespace FileCabinetApp
             this.list[index].LastName = rec.LastName;
             this.list[index].DateOfBirth = rec.DateOfBirth;
             this.list[index].Gender = rec.Gender;
-            this.list[index].MaterialStatus = rec.MaterialStatus;
-            this.list[index].CatsCount = rec.CatsCount;
-            this.list[index].CatsBudget = rec.CatsBudget;
+            this.list[index].Office = rec.Office;
+            this.list[index].Salary = rec.Salary;
 
             if (!this.firstNameDictionary.ContainsKey(rec.FirstName))
             {

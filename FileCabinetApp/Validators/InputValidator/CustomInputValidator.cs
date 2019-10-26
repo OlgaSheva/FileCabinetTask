@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Validators.InputValidator
 {
@@ -60,68 +59,42 @@ namespace FileCabinetApp.Validators.InputValidator
         /// <returns>
         /// Is parameter valid.
         /// </returns>
-        public Tuple<bool, string> GenderValidator(Gender gender)
+        public Tuple<bool, string> GenderValidator(char gender)
         {
-            bool flag = gender == Gender.M || gender == Gender.F || gender == Gender.O || gender == Gender.U;
+            bool flag = gender == 'M' || gender == 'F' || gender == 'O' || gender == 'U';
             return new Tuple<bool, string>(flag, gender.ToString());
         }
 
         /// <summary>
-        /// Materials the status validator.
+        /// Offices the validator.
         /// </summary>
-        /// <param name="materialStatus">The material status.</param>
+        /// <param name="office">The office.</param>
         /// <returns>
         /// Is parameter valid.
         /// </returns>
-        public Tuple<bool, string> MaterialStatusValidator(char materialStatus)
+        public Tuple<bool, string> OfficeValidator(short office)
         {
-            bool flag = materialStatus == 'M' || materialStatus == 'U';
-            return new Tuple<bool, string>(flag, materialStatus.ToString());
+            bool flag = office >= 0 && office < 300;
+            return new Tuple<bool, string>(flag, office.ToString());
         }
 
         /// <summary>
-        /// Catses the count validator.
+        /// Salaries the validator.
         /// </summary>
-        /// <param name="catsCount">The cats count.</param>
+        /// <param name="salary">The salary.</param>
         /// <returns>
         /// Is parameter valid.
         /// </returns>
-        public Tuple<bool, string> CatsCountValidator(short catsCount)
+        public Tuple<bool, string> SalaryValidator(decimal salary)
         {
-            bool flag = catsCount >= 0 || catsCount < 50;
-            return new Tuple<bool, string>(flag, catsCount.ToString());
-        }
-
-        /// <summary>
-        /// Catses the budget validator.
-        /// </summary>
-        /// <param name="catsBudget">The cats budget.</param>
-        /// <returns>
-        /// Is parameter valid.
-        /// </returns>
-        public Tuple<bool, string> CatsBudgetValidator(decimal catsBudget)
-        {
-            bool flag = catsBudget >= 0;
-            return new Tuple<bool, string>(flag, catsBudget.ToString());
-        }
-
-        private static bool ConsistsOfSpaces(string @string)
-        {
-            foreach (var item in @string)
-            {
-                if (item != ' ')
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            bool flag = salary >= 0;
+            return new Tuple<bool, string>(flag, salary.ToString());
         }
 
         private static bool IsTheStringValid(string @string)
         {
             return (@string != null) && (@string.Length > 2) && (@string.Length <= 30)
-                && Regex.IsMatch(@string, NamePattern) && !ConsistsOfSpaces(@string);
+                && Regex.IsMatch(@string, NamePattern) && !string.IsNullOrWhiteSpace(@string);
         }
     }
 }

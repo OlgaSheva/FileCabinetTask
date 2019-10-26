@@ -37,7 +37,7 @@ namespace FileCabinetApp.Services
         public void SaveToCSV(StreamWriter writer)
         {
             var csvWriter = new FileCabinetRecordCsvWriter(writer);
-            writer.WriteLine("Id,First Name,Last Name,Date of Birth,Gender,Material Status,Cats Count,Cats Budget");
+            writer.WriteLine("Id,First Name,Last Name,Date of Birth,Gender,Office,Salary");
             foreach (var item in this.fileCabinetRecords)
             {
                 csvWriter.Write(item);

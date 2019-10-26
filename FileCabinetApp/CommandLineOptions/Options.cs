@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.CommandLineOptions
 {
@@ -13,8 +14,8 @@ namespace FileCabinetApp.CommandLineOptions
         /// <value>
         /// The storage.
         /// </value>
-        [Option('s', "storage", Default = "memory", HelpText = "Defines storage location: memory or file.")]
-        public string Storage { get; set; }
+        [Option('s', "storage", Default = ServiceType.Memory, HelpText = "Defines storage location: Memory or File.")]
+        public ServiceType Storage { get; set; }
 
         /// <summary>
         /// Gets or sets the validate.

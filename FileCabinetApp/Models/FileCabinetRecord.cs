@@ -1,5 +1,6 @@
 ﻿using System;
-using FileCabinetApp.Enums;
+using System.Globalization;
+using System.Text;
 
 namespace FileCabinetApp
 {
@@ -41,20 +42,12 @@ namespace FileCabinetApp
         public DateTime DateOfBirth { get; set; }
 
         /// <summary>
-        /// Gets or sets the gender.
-        /// </summary>
-        /// <value>
-        /// The gender.
-        /// </value>
-        public Gender Gender { get; set; }
-
-        /// <summary>
         /// Gets or sets the marital status.
         /// </summary>
         /// <value>
         /// The marital status.
         /// </value>
-        public char MaterialStatus { get; set; } // 'M' - married, 'U' - unmarried
+        public char Gender { get; set; } // 'M' - male, 'F' - female, 'O' - other, 'U' - unknown
 
         /// <summary>
         /// Gets or sets the cats count.
@@ -62,7 +55,7 @@ namespace FileCabinetApp
         /// <value>
         /// The cats count.
         /// </value>
-        public short CatsCount { get; set; }
+        public short Office { get; set; }
 
         /// <summary>
         /// Gets or sets the cats budget.
@@ -70,6 +63,25 @@ namespace FileCabinetApp
         /// <value>
         /// The cats budget.
         /// </value>
-        public decimal CatsBudget { get; set; }
+        public decimal Salary { get; set; }
+
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            builder.Append($"{this.Id}, ");
+            builder.Append($"{this.FirstName}, ");
+            builder.Append($"{this.LastName}, ");
+            builder.Append($"{this.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
+            builder.Append($"{this.Gender}, ");
+            builder.Append($"{this.Office}, ");
+            builder.Append($"{this.Salary}");
+            return builder.ToString();
+        }
     }
 }

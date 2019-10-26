@@ -21,10 +21,11 @@ namespace FileCabinetApp
     {
         private const string DeveloperName = "Olga Kripulevich";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+        private const string CustomValidationType = "custom";
+        private const string DefaultValidationRules = "default";
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-        private static readonly string FileStreamName = "cabinet-records.db";
 
         private static bool isRunning = true;
 
@@ -64,54 +65,26 @@ namespace FileCabinetApp
         /// <param name="args">Input parameters.</param>
         public static void Main(string[] args)
         {
-            string validationRules = "default";
-            string storage = "memory";
+            string validationRules = DefaultValidationRules;
+            ServiceType serviceType = ServiceType.Memory;
 
-            var result = Parser.Default.ParseArguments<Options>(args);
+            var parser = new Parser(with => with.CaseInsensitiveEnumValues = true);
+            var result = parser.ParseArguments<Options>(args);
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
                    {
-                       if (o.Validate.Equals("custom", StringComparison.InvariantCultureIgnoreCase))
-                       {
-                           validationRules = "custom";
-                       }
-
-                       if (o.Storage.Equals("file", StringComparison.InvariantCultureIgnoreCase))
-                       {
-                           storage = "file";
-                       }
+                       validationRules = o.Validate.Equals(CustomValidationType, StringComparison.InvariantCultureIgnoreCase)
+                            ? CustomValidationType : DefaultValidationRules;
+                       serviceType = (o.Storage == ServiceType.File)
+                            ? ServiceType.File : ServiceType.Memory;
                    });
+            fileCabinetService = CreateServise(validationRules, serviceType, out converter, out validator);
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {validationRules} validation rules.");
-            Console.WriteLine($"The {storage} storage.");
+            Console.WriteLine($"The {serviceType.ToString()} service.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
-
-            if (storage == "file")
-            {
-                fileStream = new FileStream(FileStreamName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                fileCabinetService = (validationRules == "custom")
-                        ? new FileCabinetFilesystemService(fileStream, new CustomValidator())
-                        : new FileCabinetFilesystemService(fileStream, new DefaultValidator());
-            }
-            else
-            {
-                fileCabinetService = (validationRules == "custom")
-                    ? new FileCabinetMemoryService(new CustomValidator())
-                    : new FileCabinetMemoryService(new DefaultValidator());
-            }
-
-            if (validationRules.Equals("custom"))
-            {
-                validator = new CustomInputValidator();
-                converter = new CustomInputConverter();
-            }
-            else
-            {
-                validator = new DefaultInputValidator();
-                converter = new DefaultInputConverter();
-            }
 
             do
             {
@@ -141,18 +114,59 @@ namespace FileCabinetApp
             while (isRunning);
         }
 
+        private static IFileCabinetService CreateServise(string validationRules, ServiceType serviceType, out IInputConverter converter, out IInputValidator validator)
+        {
+            const string dataFilePath = "cabinet-records.db";
+
+            switch (validationRules)
+            {
+                case CustomValidationType:
+                    validator = new CustomInputValidator();
+                    converter = new CustomInputConverter();
+                    break;
+                case DefaultValidationRules:
+                    validator = new DefaultInputValidator();
+                    converter = new DefaultInputConverter();
+                    break;
+                default:
+                    throw new Exception();
+            }
+
+            switch (serviceType)
+            {
+                case ServiceType.File:
+                    fileStream = new FileStream(dataFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                    fileCabinetService = (validationRules == CustomValidationType)
+                         ? new FileCabinetFilesystemService(fileStream, new CustomValidator())
+                         : new FileCabinetFilesystemService(fileStream, new DefaultValidator());
+                    break;
+                case ServiceType.Memory:
+                    fileCabinetService = (validationRules == CustomValidationType)
+                                ? new FileCabinetMemoryService(new CustomValidator())
+                                : new FileCabinetMemoryService(new DefaultValidator());
+                    break;
+                default:
+                    throw new Exception();
+            }
+
+            return fileCabinetService;
+        }
+
         private static void Export(string parameters)
         {
             string[] comands = parameters.Split(' ');
             string format = comands[0];
             string path = comands[1];
+            const string yesAnswer = "y";
+            const string csvFileType = "csv";
+            const string xmlFileType = "xml";
 
             if (File.Exists(path))
             {
                 Console.Write($"File is exist - rewrite {path}? [Y/n] ");
                 if (char.TryParse(Console.ReadLine(), out char answer))
                 {
-                    if (answer == 'Y' || answer == 'y')
+                    if (answer.ToString().Equals(yesAnswer, StringComparison.InvariantCultureIgnoreCase))
                     {
                         File.Delete(path);
                         Write(path);
@@ -181,11 +195,11 @@ namespace FileCabinetApp
                 {
                     FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
 
-                    if (format.Equals("csv"))
+                    if (format == csvFileType)
                     {
                         snapshot.SaveToCSV(streamWriter);
                     }
-                    else if (comands[0].Equals("xml"))
+                    else if (comands[0] == xmlFileType)
                     {
                         snapshot.SaveToXML(streamWriter);
                     }
@@ -208,12 +222,12 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
+            var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
 
-            int recordId = default(int);
+            int recordId = 0;
             try
             {
-                Record record = new Record(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                Record record = new Record(firstName, lastName, dateOfBirth, gender, office, salary);
                 recordId = fileCabinetService.CreateRecord(record);
                 Console.WriteLine($"Record #{recordId} is created.");
             }
@@ -240,10 +254,10 @@ namespace FileCabinetApp
 
             if (fileCabinetService.IsThereARecordWithThisId(id, out int index))
             {
-                var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
+                var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
                 try
                 {
-                    Record record = new Record(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                    Record record = new Record(firstName, lastName, dateOfBirth, gender, office, salary);
                     fileCabinetService.EditRecord(id, record);
                 }
                 catch (ArgumentNullException anex)
@@ -280,7 +294,7 @@ namespace FileCabinetApp
             }
         }
 
-        private static (string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget)
+        private static (string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
             ParameterEntry()
         {
             var firstAndLastName = new CultureInfo("ru-RU").TextInfo;
@@ -288,14 +302,12 @@ namespace FileCabinetApp
             Func<string, Tuple<bool, string>> firstNameValidator = validator.FirstNameValidator;
             Func<string, Tuple<bool, string>> lastNameValidator = validator.LastNameValidator;
             Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = validator.DateOfBirthValidator;
-            Func<Gender, Tuple<bool, string>> genderValidator = validator.GenderValidator;
-            Func<char, Tuple<bool, string>> materialStatusValidator = validator.MaterialStatusValidator;
-            Func<short, Tuple<bool, string>> catsCountValidator = validator.CatsCountValidator;
-            Func<decimal, Tuple<bool, string>> catsBudgetValidator = validator.CatsBudgetValidator;
+            Func<char, Tuple<bool, string>> genderValidator = validator.GenderValidator;
+            Func<short, Tuple<bool, string>> officeValidator = validator.OfficeValidator;
+            Func<decimal, Tuple<bool, string>> salaryValidator = validator.SalaryValidator;
 
             Func<string, Tuple<bool, string, string>> stringConverter = converter.StringConverter;
             Func<string, Tuple<bool, string, DateTime>> dateConverter = converter.DateConverter;
-            Func<string, Tuple<bool, string, Gender>> genderConverter = converter.GenderConverter;
             Func<string, Tuple<bool, string, char>> charConverter = converter.CharConverter;
             Func<string, Tuple<bool, string, short>> shortConverter = converter.ShortConverter;
             Func<string, Tuple<bool, string, decimal>> decimalConverter = converter.DecimalConverter;
@@ -310,32 +322,15 @@ namespace FileCabinetApp
             var dateOfBirth = ReadInput(dateConverter, dateOfBirthValidator);
 
             Console.Write("Gender M (male) / F (female) / O (other) / U (unknown): ");
-            var gender = ReadInput(genderConverter, genderValidator);
+            var gender = ReadInput(charConverter, genderValidator);
 
-            Console.Write("Material status M (married) / U (unmarried): ");
-            var materialStatus = ReadInput(charConverter, materialStatusValidator);
+            Console.Write("Office: ");
+            var office = ReadInput(shortConverter, officeValidator);
 
-            short catsCount = 0;
-            decimal catsBudget = 0;
-            var age = DateTime.Today.Year - dateOfBirth.Year;
-            if (age > 30 && gender == Gender.F && materialStatus == 'U')
-            {
-                catsCount = 30;
-                catsBudget = 100;
-                Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^-.-^)");
-            }
-            else
-            {
-                Console.Write($"How many cats does {firstName} {lastName} have? ");
-                catsCount = ReadInput(shortConverter, catsCountValidator);
-                if (catsCount != 0)
-                {
-                    Console.Write("What is the budget for cats? ");
-                    catsBudget = ReadInput(decimalConverter, catsBudgetValidator);
-                }
-            }
+            Console.Write("Salary: ");
+            var salary = ReadInput(decimalConverter, salaryValidator);
 
-            return (firstName, lastName, dateOfBirth, gender, materialStatus, catsCount, catsBudget);
+            return (firstName, lastName, dateOfBirth, gender, office, salary);
         }
 
         private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
@@ -410,15 +405,17 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Exiting an application...");
             isRunning = false;
+            if (fileStream != null)
+            {
+                fileStream.Close();
+            }
         }
 
         private static void Print(ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords)
         {
             foreach (var item in fileCabinetRecords)
             {
-                string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
-                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
-                    $"{item.MaterialStatus}, {item.CatsCount}, {item.CatsBudget}");
+                Console.WriteLine(item.ToString());
             }
         }
     }
