@@ -29,7 +29,6 @@ namespace FileCabinetApp.Services
         private const int DecimalInBitesLength = 16;
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
-        private UnicodeEncoding uniEncoding = new UnicodeEncoding();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
@@ -278,6 +277,15 @@ namespace FileCabinetApp.Services
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Restores the specified snapshot.
+        /// </summary>
+        /// <param name="snapshot">The snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            throw new NotImplementedException();
+        }
+
         private static byte[] GetBytes(decimal dec)
         {
             int[] bits = decimal.GetBits(dec);
@@ -306,6 +314,22 @@ namespace FileCabinetApp.Services
             return new decimal(bits);
         }
 
+        private static FileCabinetRecord CreateNewFileCabinetRecord(BinaryReader binaryReader)
+        {
+            return new FileCabinetRecord
+            {
+                Id = binaryReader.ReadInt32(),
+                FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                LastName = System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
+                Gender = binaryReader.ReadChar(),
+                Office = binaryReader.ReadInt16(),
+                Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
+            };
+        }
+
         private ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             var dateList = new List<FileCabinetRecord>();
@@ -322,7 +346,7 @@ namespace FileCabinetApp.Services
                     {
                         this.fileStream.Position -= LastNamePosition;
                         binaryReader.ReadBytes(2);
-                        dateList.Add(this.CreateNewFileCabinetRecord(binaryReader));
+                        dateList.Add(CreateNewFileCabinetRecord(binaryReader));
                     }
 
                     this.fileStream.Position += RecordInBytesLength - LastNamePosition + FirstNamePosition;
@@ -349,7 +373,7 @@ namespace FileCabinetApp.Services
                     {
                         this.fileStream.Position -= YearPosition;
                         binaryReader.ReadBytes(2);
-                        dateList.Add(this.CreateNewFileCabinetRecord(binaryReader));
+                        dateList.Add(CreateNewFileCabinetRecord(binaryReader));
                     }
 
                     this.fileStream.Position += RecordInBytesLength - YearPosition + LastNamePosition;
@@ -377,7 +401,7 @@ namespace FileCabinetApp.Services
                         {
                             this.fileStream.Position -= GenderPosition;
                             binaryReader.ReadBytes(2);
-                            dateList.Add(this.CreateNewFileCabinetRecord(binaryReader));
+                            dateList.Add(CreateNewFileCabinetRecord(binaryReader));
                         }
                     }
 
@@ -387,22 +411,6 @@ namespace FileCabinetApp.Services
 
             var dateCollection = new ReadOnlyCollection<FileCabinetRecord>(dateList);
             return dateCollection;
-        }
-
-        private FileCabinetRecord CreateNewFileCabinetRecord(BinaryReader binaryReader)
-        {
-            return new FileCabinetRecord
-            {
-                Id = binaryReader.ReadInt32(),
-                FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                LastName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
-                Gender = binaryReader.ReadChar(),
-                Office = binaryReader.ReadInt16(),
-                Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
-            };
         }
     }
 }

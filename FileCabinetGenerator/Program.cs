@@ -96,6 +96,13 @@ namespace FileCabinetGenerator
         {
             using (StreamWriter writer = new StreamWriter(filePath))
             {
+                writer.WriteLine($"{nameof(FileCabinetRecord.Id)}," +
+                $"{nameof(FileCabinetRecord.FullName.FirstName)}," +
+                $"{nameof(FileCabinetRecord.FullName.LastName)}," +
+                $"{nameof(FileCabinetRecord.DateOfBirth)}," +
+                $"{nameof(FileCabinetRecord.Gender)}," +
+                $"{nameof(FileCabinetRecord.Office)}," +
+                $"{nameof(FileCabinetRecord.Salary)}");
                 foreach (var record in recordsArray)
                 {
                     writer.WriteLine(record.ToString());

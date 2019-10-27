@@ -27,21 +27,21 @@ namespace FileCabinetApp.Validators
         /// dateOfBirth.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// firstName - The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.
+        /// The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols. - firstName
         /// or
-        /// firstName - The {nameof(firstName)} can't consists only from spases.
+        /// The {nameof(firstName)} can't consists only from spases. - firstName
         /// or
-        /// lastName - The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.
+        /// The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols. - lastName
         /// or
-        /// lastName - The {nameof(lastName)} can't consists only from spases.
+        /// The {nameof(lastName)} can't consists only from spases. - lastName
         /// or
-        /// dateOfBirth - The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
+        /// The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date. - dateOfBirth
         /// or
-        /// gender - The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
+        /// The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'. - gender
         /// or
-        /// office - The {nameof(office)} can't be less than 0 or larger than 500.
+        /// The {nameof(office)} can't be less than 0 or larger than 500. - office
         /// or
-        /// salary - The {nameof(salary)} can't be less than zero.
+        /// The {nameof(salary)} can't be less than zero. - salary.
         /// </exception>
         public void ValidateParameters(string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
         {
@@ -57,22 +57,22 @@ namespace FileCabinetApp.Validators
 
             if (firstName.Length < 2 || firstName.Length > 30)
             {
-                throw new ArgumentException(nameof(firstName), $"The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.");
+                throw new ArgumentException($"The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.", nameof(firstName));
             }
 
             if (string.IsNullOrWhiteSpace(firstName))
             {
-                throw new ArgumentException(nameof(firstName), $"The {nameof(firstName)} can't consists only from spases.");
+                throw new ArgumentException($"The {nameof(firstName)} can't consists only from spases.", nameof(firstName));
             }
 
             if (lastName.Length <= 2 || lastName.Length > 30)
             {
-                throw new ArgumentException(nameof(lastName), $"The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.");
+                throw new ArgumentException($"The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.", nameof(lastName));
             }
 
             if (string.IsNullOrWhiteSpace(lastName))
             {
-                throw new ArgumentException(nameof(lastName), $"The {nameof(lastName)} can't consists only from spases.");
+                throw new ArgumentException($"The {nameof(lastName)} can't consists only from spases.", nameof(lastName));
             }
 
             if (dateOfBirth == null)
@@ -82,22 +82,22 @@ namespace FileCabinetApp.Validators
 
             if (dateOfBirth > DateTime.Today || dateOfBirth < MinDate)
             {
-                throw new ArgumentException(nameof(dateOfBirth), $"The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.");
+                throw new ArgumentException($"The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.", nameof(dateOfBirth));
             }
 
             if (gender != 'M' && gender != 'F' && gender != 'O' && gender != 'U')
             {
-                throw new ArgumentException(nameof(gender), $"The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.");
+                throw new ArgumentException($"The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.", nameof(gender));
             }
 
             if (office < 0 || office > 300)
             {
-                throw new ArgumentException(nameof(office), $"The {nameof(office)} can't be less than 0 or larger than 500.");
+                throw new ArgumentException($"The {nameof(office)} can't be less than 0 or larger than 500.", nameof(office));
             }
 
             if (salary < 0)
             {
-                throw new ArgumentException(nameof(salary), $"The {nameof(salary)} can't be less than zero.");
+                throw new ArgumentException($"The {nameof(salary)} can't be less than zero.", nameof(salary));
             }
         }
     }

@@ -33,7 +33,7 @@ namespace FileCabinetApp.Writers
             builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)},");
             builder.Append($"{record.Gender},");
             builder.Append($"{record.Office},");
-            builder.Append($"{record.Salary}");
+            builder.Append($"{record.Salary.ToString("F", CultureInfo.InvariantCulture)}");
             this.writer.WriteLine(builder.ToString());
         }
     }

@@ -80,6 +80,7 @@ namespace FileCabinetApp
                        serviceType = (o.Storage == ServiceType.File)
                             ? ServiceType.File : ServiceType.Memory;
                    });
+            parser.Dispose();
             fileCabinetService = CreateServise(validationRules, serviceType, out converter, out validator);
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
@@ -226,42 +227,41 @@ namespace FileCabinetApp
 
             if (!File.Exists(filePath))
             {
-                Console.WriteLine($"File {filePath} didn't found.");
+                Console.WriteLine($"Import error: file {filePath} is not exist.");
                 return;
             }
 
-            switch (fileFormat)
+            try
             {
-                case csvFormat:
-                    ImportFromCSVFile(filePath);
-                    break;
-                case xmlFormat:
-                    ImportFromXMLFile(filePath);
-                    break;
-                default:
-                    throw new Exception(nameof(fileFormat));
+                switch (fileFormat)
+                {
+                    case csvFormat:
+                        ImportFromCSVFile(filePath);
+                        break;
+                    case xmlFormat:
+                        ImportFromXMLFile(filePath);
+                        break;
+                    default:
+                        throw new Exception(nameof(fileFormat));
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Records were not imported.");
             }
         }
 
         private static void ImportFromCSVFile(string filePath)
         {
+            FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot();
+            int recordsCount = 0;
             using (StreamReader reader = new StreamReader(filePath))
             {
-                while (!reader.EndOfStream)
-                {
-                    var elements = reader.ReadLine().Split(',');
-                    FileCabinetRecord record = new FileCabinetRecord()
-                    {
-                        Id = int.Parse(elements[0], CultureInfo.InvariantCulture),
-                        FirstName = elements[1],
-                        LastName = elements[2],
-                        DateOfBirth = DateTime.Parse(elements[3], CultureInfo.InvariantCulture),
-                        Gender = char.Parse(elements[4]),
-                        Office = short.Parse(elements[5], CultureInfo.InvariantCulture),
-                        Salary = decimal.Parse(elements[6], CultureInfo.InvariantCulture),
-                    };
-                }
+                snapshot.LoadFromCSV(reader, out recordsCount);
+                fileCabinetService.Restore(snapshot);
             }
+
+            Console.WriteLine($"{recordsCount} records were imported from {filePath}.");
         }
 
         private static void ImportFromXMLFile(string filePath)

@@ -326,6 +326,23 @@
             </summary>
             <param name="args">Input parameters.</param>
         </member>
+        <member name="T:FileCabinetApp.Readers.FileCabinetRecordCsvReader">
+            <summary>
+            File cabinet record csv reader.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Readers.FileCabinetRecordCsvReader.#ctor(System.IO.StreamReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Readers.FileCabinetRecordCsvReader"/> class.
+            </summary>
+            <param name="reader">The reader.</param>
+        </member>
+        <member name="M:FileCabinetApp.Readers.FileCabinetRecordCsvReader.ReadAll">
+            <summary>
+            Reads all.
+            </summary>
+            <returns>List of records.</returns>
+        </member>
         <member name="T:FileCabinetApp.Services.FileCabinetFilesystemService">
             <summary>
             The file cabinet FileStream service.
@@ -396,6 +413,12 @@
             </summary>
             <returns>The file cabinet service snapshot.</returns>
         </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot)">
+            <summary>
+            Restores the specified snapshot.
+            </summary>
+            <param name="snapshot">The snapshot.</param>
+        </member>
         <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
             <summary>
             File cabinet service snapshot.
@@ -418,12 +441,22 @@
             Saves to CSV.
             </summary>
             <param name="writer">The writer.</param>
+            <exception cref="T:System.ArgumentNullException">Writer is null.</exception>
         </member>
         <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.SaveToXML(System.IO.StreamWriter)">
             <summary>
             Saves to XML.
             </summary>
             <param name="writer">The writer.</param>
+            <exception cref="T:System.ArgumentNullException">Writer is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.LoadFromCSV(System.IO.StreamReader,System.Int32@)">
+            <summary>
+            Loads from CSV.
+            </summary>
+            <param name="reader">The reader.</param>
+            <param name="recordsCount">The records count.</param>
+            <exception cref="T:System.ArgumentNullException">Reader is null.</exception>
         </member>
         <member name="T:FileCabinetApp.Services.IFileCabinetService">
             <summary>
@@ -479,6 +512,12 @@
             </summary>
             <returns>The file cabinet service snapshot.</returns>
         </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot)">
+            <summary>
+            Restores the specified snapshot.
+            </summary>
+            <param name="snapshot">The snapshot.</param>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>
             The file cabinet memory service.
@@ -497,6 +536,12 @@
             <returns>
             The file cabinet service snapshot.
             </returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot)">
+            <summary>
+            Restores the specified snapshot.
+            </summary>
+            <param name="snapshot">The snapshot.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecord(FileCabinetApp.Record)">
             <summary>
@@ -739,21 +784,21 @@
             dateOfBirth.
             </exception>
             <exception cref="T:System.ArgumentException">
-            firstName - The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.
+            The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols. - firstName
             or
-            firstName - The {nameof(firstName)} can't consists only from spases.
+            The {nameof(firstName)} can't consists only from spases. - firstName
             or
-            lastName - The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.
+            The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols. - lastName
             or
-            lastName - The {nameof(lastName)} can't consists only from spases.
+            The {nameof(lastName)} can't consists only from spases. - lastName
             or
-            dateOfBirth - The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
+            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date. - dateOfBirth
             or
-            gender - The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
+            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'. - gender
             or
-            office - The {nameof(office)} can't be less than 0 or larger than 500.
+            The {nameof(office)} can't be less than 0 or larger than 500. - office
             or
-            salary - The {nameof(salary)} can't be less than zero.
+            The {nameof(salary)} can't be less than zero. - salary.
             </exception>
         </member>
         <member name="T:FileCabinetApp.Validators.DefaultValidator">
@@ -780,21 +825,21 @@
             dateOfBirth.
             </exception>
             <exception cref="T:System.ArgumentException">
-            firstName - The {nameof(firstName)} length can't be less than 2 symbols and larger than 60 symbols.
+            The {nameof(firstName)} length can't be less than 2 symbols and larger than 60 symbols. - firstName
             or
-            firstName - The {nameof(firstName)} can't consists only from spases.
+            The {nameof(firstName)} can't consists only from spases. - firstName
             or
-            lastName - The {nameof(lastName)} length can't be less than 2 symbols and larger than 60 symbols.
+            The {nameof(lastName)} length can't be less than 2 symbols and larger than 60 symbols. - lastName
             or
-            lastName - The {nameof(lastName)} can't consists only from spases.
+            The {nameof(lastName)} can't consists only from spases. - lastName
             or
-            dateOfBirth - The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
+            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date. - dateOfBirth
             or
-            gender - The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
+            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'. - gender
             or
-            office - The {nameof(office)} can't be less than 0 or larger than 500.
+            The {nameof(office)} can't be less than 0 or larger than 500. - office
             or
-            salary - The {nameof(salary)} can't be less than zero.
+            The {nameof(salary)} can't be less than zero. - salary.
             </exception>
         </member>
         <member name="T:FileCabinetApp.Validators.IRecordValidator">
