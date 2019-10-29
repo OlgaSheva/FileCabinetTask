@@ -73,7 +73,7 @@ namespace FileCabinetApp
 
             this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
 
-            int newId = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id + 1 : 0;
+            int newId = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id + 1 : 1;
 
             var record = new FileCabinetRecord
             {

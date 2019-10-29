@@ -115,5 +115,24 @@ namespace FileCabinetApp.Services
 
             this.fileCabinetRecords = recordsFromFile.ToArray();
         }
+
+        internal void LoadFromXML(StreamReader reader, out int recordsCount)
+        {
+            if (reader == null)
+            {
+                throw new ArgumentNullException(nameof(reader));
+            }
+
+            var xmlReader = new FileCabinetRecordXmlReader(reader);
+            var recordsFromFile = xmlReader.ReadAll();
+
+            recordsCount = recordsFromFile.Count;
+            if (recordsCount == 0)
+            {
+                return;
+            }
+
+            this.fileCabinetRecords = recordsFromFile.ToArray();
+        }
     }
 }

@@ -30,16 +30,17 @@ namespace FileCabinetApp.Writers
             XElement record = new XElement("record");
             doc.Root.Add(record);
             record.Add(
-                new XAttribute("id", fileCabinetRecord.Id.ToString(CultureInfo.InvariantCulture)));
+                new XAttribute("id", fileCabinetRecord.Id));
             XElement name = new XElement("name");
             record.Add(name);
             name.Add(
                 new XAttribute("first", fileCabinetRecord.FirstName),
                 new XAttribute("last", fileCabinetRecord.LastName));
-            record.Add(new XElement("dateOfBirth", fileCabinetRecord.DateOfBirth.ToShortDateString()));
-            record.Add(new XElement("gender", fileCabinetRecord.Gender.ToString(CultureInfo.InvariantCulture)));
-            record.Add(new XElement("office", fileCabinetRecord.Office));
-            record.Add(new XElement("salary", fileCabinetRecord.Salary.ToString(CultureInfo.InvariantCulture)));
+            record.Add(
+                new XElement("dateOfBirth", fileCabinetRecord.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
+                new XElement("gender", (int)fileCabinetRecord.Gender),
+                new XElement("office", fileCabinetRecord.Office),
+                new XElement("salary", fileCabinetRecord.Salary));
         }
     }
 }

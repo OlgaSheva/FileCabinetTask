@@ -243,7 +243,8 @@ namespace FileCabinetApp
                         ImportFromXMLFile(filePath);
                         break;
                     default:
-                        throw new Exception(nameof(fileFormat));
+                        Console.WriteLine($"Unknown file format '{fileFormat}'.");
+                        break;
                 }
             }
             catch (ArgumentException)
@@ -273,7 +274,21 @@ namespace FileCabinetApp
 
         private static void ImportFromXMLFile(string filePath)
         {
-            throw new NotImplementedException();
+            FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot();
+            Dictionary<int, string> exceptions = new Dictionary<int, string>();
+            int recordsCount = 0;
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                snapshot.LoadFromXML(reader, out recordsCount);
+                fileCabinetService.Restore(snapshot, out exceptions);
+            }
+
+            foreach (var ex in exceptions)
+            {
+                Console.WriteLine($"Record #{ex.Key} was not imported.");
+            }
+
+            Console.WriteLine($"{recordsCount - exceptions.Count} records were imported from {filePath}.");
         }
 
         private static void Stat(string parameters)

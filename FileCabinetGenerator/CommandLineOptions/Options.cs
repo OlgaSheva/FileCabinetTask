@@ -31,7 +31,7 @@ namespace FileCabinetGenerator.CommandLineOptions
         /// <value>
         /// The record amount.
         /// </value>
-        [Option('a', "records-amount", Default = 5000, HelpText = "Amount of generated records.")]
+        [Option('a', "records-amount", Default = 0, HelpText = "Amount of generated records.")]
         public int RecordAmount { get; set; }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace FileCabinetGenerator.CommandLineOptions
         /// <value>
         /// The start identifier.
         /// </value>
-        [Option('i', "start-id", Default = 0, HelpText = "ID value to start.")]
+        [Option('i', "start-id", Default = 1, HelpText = "ID value to start.")]
         public int StartId { get; set; }
     }
 }
