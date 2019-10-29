@@ -1,5 +1,4 @@
 ﻿using System;
-using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Validators
 {
@@ -15,9 +14,8 @@ namespace FileCabinetApp.Validators
         /// <param name="lastName">The last name.</param>
         /// <param name="dateOfBirth">The date of birth.</param>
         /// <param name="gender">The gender.</param>
-        /// <param name="materialStatus">The material status.</param>
-        /// <param name="catsCount">The cats count.</param>
-        /// <param name="catsBudget">The cats budget.</param>
-        void ValidateParameters(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget);
+        /// <param name="office">The office.</param>
+        /// <param name="salary">The salary.</param>
+        void ValidateParameters(string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary);
     }
 }

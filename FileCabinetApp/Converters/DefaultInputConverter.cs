@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Converters
 {
@@ -40,21 +39,6 @@ namespace FileCabinetApp.Converters
             bool flag = DateTime.TryParse(input, out DateTime date);
 
             var tuple = new Tuple<bool, string, DateTime>(flag, input, date);
-            return tuple;
-        }
-
-        /// <summary>
-        /// Genders the converter.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns>
-        /// Gender enum representation.
-        /// </returns>
-        public Tuple<bool, string, Gender> GenderConverter(string input)
-        {
-            bool flag = Enum.TryParse(input, out Gender gender);
-
-            var tuple = new Tuple<bool, string, Gender>(flag, input, gender);
             return tuple;
         }
 

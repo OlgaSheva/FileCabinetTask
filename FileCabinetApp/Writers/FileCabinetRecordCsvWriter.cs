@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace FileCabinetApp.Writers
 {
@@ -25,15 +26,15 @@ namespace FileCabinetApp.Writers
         /// <param name="record">The record.</param>
         public void Write(FileCabinetRecord record)
         {
-            this.writer.WriteLine(
-                $"#{record.Id}," +
-                $"{record.FirstName}," +
-                $"{record.LastName}," +
-                $"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}," +
-                $"{record.Gender}," +
-                $"{record.MaterialStatus}," +
-                $"{record.CatsCount}," +
-                $"{record.CatsBudget}");
+            var builder = new StringBuilder();
+            builder.Append($"{record.Id},");
+            builder.Append($"{record.FirstName},");
+            builder.Append($"{record.LastName},");
+            builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)},");
+            builder.Append($"{record.Gender},");
+            builder.Append($"{record.Office},");
+            builder.Append($"{record.Salary.ToString("F", CultureInfo.InvariantCulture)}");
+            this.writer.WriteLine(builder.ToString());
         }
     }
 }

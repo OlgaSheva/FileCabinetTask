@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -21,10 +22,11 @@ namespace FileCabinetApp
     {
         private const string DeveloperName = "Olga Kripulevich";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+        private const string CustomValidationType = "custom";
+        private const string DefaultValidationRules = "default";
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-        private static readonly string FileStreamName = "cabinet-records.db";
 
         private static bool isRunning = true;
 
@@ -38,6 +40,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("find", FindByParameter),
             new Tuple<string, Action<string>>("export", Export),
+            new Tuple<string, Action<string>>("import", Import),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -49,7 +52,8 @@ namespace FileCabinetApp
             new string[] { "edit <ID>", "edits an existing entry", "The 'edit' command edits an existing entry." },
             new string[] { "list", "returns a list of records added to the service", "The 'list' command returns a list of records added to the service." },
             new string[] { "find <parameter name> <parameter value>", "returns a list of records with the given parameter", "The 'find firstname' command returns a list of records with the given parameter." },
-            new string[] { "export <csv/xml> <file adress>", "export service data to a CSV or XML file", "The 'export' command export service data to a CSV or XML file." },
+            new string[] { "export <csv/xml> <file adress>", "exports service data to a CSV or XML file", "The 'export' command exports service data to a CSV or XML file." },
+            new string[] { "import <csv/xml> <file adress>", "imports service data from a CSV or XML file", "The 'export' command imports service data from a CSV or XML file." },
         };
 
         private static IFileCabinetService fileCabinetService;
@@ -64,55 +68,27 @@ namespace FileCabinetApp
         /// <param name="args">Input parameters.</param>
         public static void Main(string[] args)
         {
-            string validationRules = "default";
-            //string storage = "memory";
-            string storage = "file"; // only for debagging
+            string validationRules = DefaultValidationRules;
+            ServiceType serviceType = ServiceType.Memory;
 
-            var result = Parser.Default.ParseArguments<Options>(args);
+            var parser = new Parser(with => with.CaseInsensitiveEnumValues = true);
+            var result = parser.ParseArguments<Options>(args);
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
                    {
-                       if (o.Validate.Equals("custom", StringComparison.InvariantCultureIgnoreCase))
-                       {
-                           validationRules = "custom";
-                       }
-
-                       if (o.Storage.Equals("file", StringComparison.InvariantCultureIgnoreCase))
-                       {
-                           storage = "file";
-                       }
+                       validationRules = o.Validate.Equals(CustomValidationType, StringComparison.InvariantCultureIgnoreCase)
+                            ? CustomValidationType : DefaultValidationRules;
+                       serviceType = (o.Storage == ServiceType.File)
+                            ? ServiceType.File : ServiceType.Memory;
                    });
+            parser?.Dispose();
+            fileCabinetService = CreateServise(validationRules, serviceType, out converter, out validator);
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {validationRules} validation rules.");
-            Console.WriteLine($"The {storage} storage.");
+            Console.WriteLine($"The {serviceType.ToString()} service.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
-
-            if (storage == "file")
-            {
-                fileStream = new FileStream(FileStreamName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                fileCabinetService = (validationRules == "custom")
-                        ? new FileCabinetFilesystemService(fileStream, new CustomValidator())
-                        : new FileCabinetFilesystemService(fileStream, new DefaultValidator());
-            }
-            else
-            {
-                fileCabinetService = (validationRules == "custom")
-                    ? new FileCabinetMemoryService(new CustomValidator())
-                    : new FileCabinetMemoryService(new DefaultValidator());
-            }
-
-            if (validationRules.Equals("custom"))
-            {
-                validator = new CustomInputValidator();
-                converter = new CustomInputConverter();
-            }
-            else
-            {
-                validator = new DefaultInputValidator();
-                converter = new DefaultInputConverter();
-            }
 
             do
             {
@@ -142,18 +118,59 @@ namespace FileCabinetApp
             while (isRunning);
         }
 
+        private static IFileCabinetService CreateServise(string validationRules, ServiceType serviceType, out IInputConverter converter, out IInputValidator validator)
+        {
+            const string dataFilePath = "cabinet-records.db";
+
+            switch (validationRules)
+            {
+                case CustomValidationType:
+                    validator = new CustomInputValidator();
+                    converter = new CustomInputConverter();
+                    break;
+                case DefaultValidationRules:
+                    validator = new DefaultInputValidator();
+                    converter = new DefaultInputConverter();
+                    break;
+                default:
+                    throw new Exception();
+            }
+
+            switch (serviceType)
+            {
+                case ServiceType.File:
+                    fileStream = new FileStream(dataFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                    fileCabinetService = (validationRules == CustomValidationType)
+                         ? new FileCabinetFilesystemService(fileStream, new CustomValidator())
+                         : new FileCabinetFilesystemService(fileStream, new DefaultValidator());
+                    break;
+                case ServiceType.Memory:
+                    fileCabinetService = (validationRules == CustomValidationType)
+                                ? new FileCabinetMemoryService(new CustomValidator())
+                                : new FileCabinetMemoryService(new DefaultValidator());
+                    break;
+                default:
+                    throw new Exception();
+            }
+
+            return fileCabinetService;
+        }
+
         private static void Export(string parameters)
         {
             string[] comands = parameters.Split(' ');
             string format = comands[0];
             string path = comands[1];
+            const string yesAnswer = "y";
+            const string csvFileType = "csv";
+            const string xmlFileType = "xml";
 
             if (File.Exists(path))
             {
                 Console.Write($"File is exist - rewrite {path}? [Y/n] ");
                 if (char.TryParse(Console.ReadLine(), out char answer))
                 {
-                    if (answer == 'Y' || answer == 'y')
+                    if (answer.ToString(CultureInfo.InvariantCulture).Equals(yesAnswer, StringComparison.InvariantCultureIgnoreCase))
                     {
                         File.Delete(path);
                         Write(path);
@@ -170,7 +187,7 @@ namespace FileCabinetApp
                 {
                     Write(path);
                 }
-                catch (Exception ex)
+                catch (FileLoadException ex)
                 {
                     Console.WriteLine($"Export failed: can't open file {path}.", ex.Message);
                 }
@@ -182,11 +199,11 @@ namespace FileCabinetApp
                 {
                     FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
 
-                    if (format.Equals("csv"))
+                    if (format == csvFileType)
                     {
                         snapshot.SaveToCSV(streamWriter);
                     }
-                    else if (comands[0].Equals("xml"))
+                    else if (comands[0] == xmlFileType)
                     {
                         snapshot.SaveToXML(streamWriter);
                     }
@@ -201,6 +218,79 @@ namespace FileCabinetApp
             }
         }
 
+        private static void Import(string parameters)
+        {
+            string[] comands = parameters.Split(' ');
+            string fileFormat = comands[0];
+            string filePath = comands[1];
+            const string csvFormat = "csv";
+            const string xmlFormat = "xml";
+
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine($"Import error: file {filePath} is not exist.");
+                return;
+            }
+
+            try
+            {
+                switch (fileFormat)
+                {
+                    case csvFormat:
+                        ImportFromCSVFile(filePath);
+                        break;
+                    case xmlFormat:
+                        ImportFromXMLFile(filePath);
+                        break;
+                    default:
+                        Console.WriteLine($"Unknown file format '{fileFormat}'.");
+                        break;
+                }
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine("Records were not imported.");
+            }
+        }
+
+        private static void ImportFromCSVFile(string filePath)
+        {
+            FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot();
+            Dictionary<int, string> exceptions = new Dictionary<int, string>();
+            int recordsCount = 0;
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                snapshot.LoadFromCSV(reader, out recordsCount);
+                fileCabinetService.Restore(snapshot, out exceptions);
+            }
+
+            foreach (var ex in exceptions)
+            {
+                Console.WriteLine($"Record #{ex.Key} was not imported.");
+            }
+
+            Console.WriteLine($"{recordsCount - exceptions.Count} records were imported from {filePath}.");
+        }
+
+        private static void ImportFromXMLFile(string filePath)
+        {
+            FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot();
+            Dictionary<int, string> exceptions = new Dictionary<int, string>();
+            int recordsCount = 0;
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                snapshot.LoadFromXML(reader, out recordsCount);
+                fileCabinetService.Restore(snapshot, out exceptions);
+            }
+
+            foreach (var ex in exceptions)
+            {
+                Console.WriteLine($"Record #{ex.Key} was not imported.");
+            }
+
+            Console.WriteLine($"{recordsCount - exceptions.Count} records were imported from {filePath}.");
+        }
+
         private static void Stat(string parameters)
         {
             var recordsCount = Program.fileCabinetService.GetStat();
@@ -209,12 +299,12 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
+            var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
 
-            int recordId = default(int);
+            int recordId = 0;
             try
             {
-                Record record = new Record(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                Record record = new Record(firstName, lastName, dateOfBirth, gender, office, salary);
                 recordId = fileCabinetService.CreateRecord(record);
                 Console.WriteLine($"Record #{recordId} is created.");
             }
@@ -232,7 +322,7 @@ namespace FileCabinetApp
 
         private static void Edit(string parameters)
         {
-            int.TryParse(parameters, out int id);
+            int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out int id);
             if (id == 0 || Program.fileCabinetService.GetStat() == 0)
             {
                 Console.WriteLine($"The '{parameters}' isn't an ID.");
@@ -241,20 +331,20 @@ namespace FileCabinetApp
 
             if (fileCabinetService.IsThereARecordWithThisId(id, out int index))
             {
-                var (firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget) = ParameterEntry();
+                var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
                 try
                 {
-                    Record record = new Record(firstName, lastName, dateOfBirth, gender, status, catsCount, catsBudget);
+                    Record record = new Record(firstName, lastName, dateOfBirth, gender, office, salary);
                     fileCabinetService.EditRecord(id, record);
                 }
                 catch (ArgumentNullException anex)
                 {
-                    Console.WriteLine("Record wasn't edited.", anex.Message);
+                    Console.WriteLine($"Record wasn't edited.", anex.Message);
                     Console.WriteLine(Program.HintMessage);
                 }
                 catch (ArgumentException aex)
                 {
-                    Console.WriteLine("Record wasn't edited.", aex.Message);
+                    Console.WriteLine($"Record wasn't edited.", aex.Message);
                     Console.WriteLine(Program.HintMessage);
                 }
             }
@@ -273,15 +363,15 @@ namespace FileCabinetApp
             }
             catch (InvalidOperationException ioex)
             {
-                Console.WriteLine("The record didn't find.", ioex.Message);
+                Console.WriteLine($"The record didn't find.", ioex.Message);
             }
             catch (ArgumentException aex)
             {
-                Console.WriteLine("The record didn't find.", aex.Message);
+                Console.WriteLine($"The record didn't find.", aex.Message);
             }
         }
 
-        private static (string firstName, string lastName, DateTime dateOfBirth, Gender gender, char status, short catsCount, decimal catsBudget)
+        private static (string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
             ParameterEntry()
         {
             var firstAndLastName = new CultureInfo("ru-RU").TextInfo;
@@ -289,14 +379,12 @@ namespace FileCabinetApp
             Func<string, Tuple<bool, string>> firstNameValidator = validator.FirstNameValidator;
             Func<string, Tuple<bool, string>> lastNameValidator = validator.LastNameValidator;
             Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = validator.DateOfBirthValidator;
-            Func<Gender, Tuple<bool, string>> genderValidator = validator.GenderValidator;
-            Func<char, Tuple<bool, string>> materialStatusValidator = validator.MaterialStatusValidator;
-            Func<short, Tuple<bool, string>> catsCountValidator = validator.CatsCountValidator;
-            Func<decimal, Tuple<bool, string>> catsBudgetValidator = validator.CatsBudgetValidator;
+            Func<char, Tuple<bool, string>> genderValidator = validator.GenderValidator;
+            Func<short, Tuple<bool, string>> officeValidator = validator.OfficeValidator;
+            Func<decimal, Tuple<bool, string>> salaryValidator = validator.SalaryValidator;
 
             Func<string, Tuple<bool, string, string>> stringConverter = converter.StringConverter;
             Func<string, Tuple<bool, string, DateTime>> dateConverter = converter.DateConverter;
-            Func<string, Tuple<bool, string, Gender>> genderConverter = converter.GenderConverter;
             Func<string, Tuple<bool, string, char>> charConverter = converter.CharConverter;
             Func<string, Tuple<bool, string, short>> shortConverter = converter.ShortConverter;
             Func<string, Tuple<bool, string, decimal>> decimalConverter = converter.DecimalConverter;
@@ -311,32 +399,15 @@ namespace FileCabinetApp
             var dateOfBirth = ReadInput(dateConverter, dateOfBirthValidator);
 
             Console.Write("Gender M (male) / F (female) / O (other) / U (unknown): ");
-            var gender = ReadInput(genderConverter, genderValidator);
+            var gender = ReadInput(charConverter, genderValidator);
 
-            Console.Write("Material status M (married) / U (unmarried): ");
-            var materialStatus = ReadInput(charConverter, materialStatusValidator);
+            Console.Write("Office: ");
+            var office = ReadInput(shortConverter, officeValidator);
 
-            short catsCount = 0;
-            decimal catsBudget = 0;
-            var age = DateTime.Today.Year - dateOfBirth.Year;
-            if (age > 30 && gender == Gender.F && materialStatus == 'U')
-            {
-                catsCount = 30;
-                catsBudget = 100;
-                Console.WriteLine($"{firstName} {lastName} is a strong independent woman. (^-.-^)");
-            }
-            else
-            {
-                Console.Write($"How many cats does {firstName} {lastName} have? ");
-                catsCount = ReadInput(shortConverter, catsCountValidator);
-                if (catsCount != 0)
-                {
-                    Console.Write("What is the budget for cats? ");
-                    catsBudget = ReadInput(decimalConverter, catsBudgetValidator);
-                }
-            }
+            Console.Write("Salary: ");
+            var salary = ReadInput(decimalConverter, salaryValidator);
 
-            return (firstName, lastName, dateOfBirth, gender, materialStatus, catsCount, catsBudget);
+            return (firstName, lastName, dateOfBirth, gender, office, salary);
         }
 
         private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
@@ -411,15 +482,14 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Exiting an application...");
             isRunning = false;
+            fileStream?.Close();
         }
 
         private static void Print(ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords)
         {
             foreach (var item in fileCabinetRecords)
             {
-                string date = item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
-                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, {date}, {item.Gender}, " +
-                    $"{item.MaterialStatus}, {item.CatsCount}, {item.CatsBudget}");
+                Console.WriteLine(item.ToString());
             }
         }
     }

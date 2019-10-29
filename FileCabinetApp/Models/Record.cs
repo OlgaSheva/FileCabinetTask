@@ -1,5 +1,4 @@
 ﻿using System;
-using FileCabinetApp.Enums;
 
 namespace FileCabinetApp
 {
@@ -11,10 +10,9 @@ namespace FileCabinetApp
         private readonly string firstName;
         private readonly string lastName;
         private readonly DateTime dateOfBirth;
-        private readonly Gender gender;
-        private readonly char materialStatus;
-        private readonly short catsCount;
-        private readonly decimal catsBudget;
+        private readonly char gender;
+        private readonly short office;
+        private readonly decimal salary;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Record"/> class.
@@ -23,18 +21,16 @@ namespace FileCabinetApp
         /// <param name="lastName">The last name.</param>
         /// <param name="dateOfBirth">The date of birth.</param>
         /// <param name="gender">The gender.</param>
-        /// <param name="materialStatus">The material status.</param>
-        /// <param name="catsCount">The cats count.</param>
-        /// <param name="catsBudget">The cats budget.</param>
-        public Record(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount = 0, decimal catsBudget = 0)
+        /// <param name="office">The office.</param>
+        /// <param name="salary">The salary.</param>
+        public Record(string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
         {
             this.firstName = firstName;
             this.lastName = lastName;
             this.dateOfBirth = dateOfBirth;
             this.gender = gender;
-            this.materialStatus = materialStatus;
-            this.catsCount = catsCount;
-            this.catsBudget = catsBudget;
+            this.office = office;
+            this.salary = salary;
         }
 
         /// <summary>
@@ -67,15 +63,7 @@ namespace FileCabinetApp
         /// <value>
         /// The gender.
         /// </value>
-        public Gender Gender { get => this.gender; }
-
-        /// <summary>
-        /// Gets the material status.
-        /// </summary>
-        /// <value>
-        /// The material status.
-        /// </value>
-        public char MaterialStatus { get => this.materialStatus; }
+        public char Gender { get => this.gender; }
 
         /// <summary>
         /// Gets the cats count.
@@ -83,7 +71,7 @@ namespace FileCabinetApp
         /// <value>
         /// The cats count.
         /// </value>
-        public short CatsCount { get => this.catsCount; }
+        public short Office { get => this.office; }
 
         /// <summary>
         /// Gets the cats budget.
@@ -91,6 +79,6 @@ namespace FileCabinetApp
         /// <value>
         /// The cats budget.
         /// </value>
-        public decimal CatsBudget { get => this.catsBudget; }
+        public decimal Salary { get => this.salary; }
     }
 }

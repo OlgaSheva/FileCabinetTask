@@ -1,5 +1,4 @@
 ﻿using System;
-using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Converters
 {
@@ -21,13 +20,6 @@ namespace FileCabinetApp.Converters
         /// <param name="input">The input.</param>
         /// <returns>DateTime representation.</returns>
         Tuple<bool, string, DateTime> DateConverter(string input);
-
-        /// <summary>
-        /// Genders the converter.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns>Gender enum representation.</returns>
-        Tuple<bool, string, Gender> GenderConverter(string input);
 
         /// <summary>
         /// Characters the converter.

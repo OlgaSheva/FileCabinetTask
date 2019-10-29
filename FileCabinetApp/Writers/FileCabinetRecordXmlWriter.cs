@@ -25,22 +25,22 @@ namespace FileCabinetApp.Writers
         /// </summary>
         /// <param name="fileCabinetRecord">The file cabinet record.</param>
         /// <param name="doc">The document.</param>
-        public void Write(FileCabinetRecord fileCabinetRecord, XDocument doc)
+        public static void Write(FileCabinetRecord fileCabinetRecord, XDocument doc)
         {
             XElement record = new XElement("record");
             doc.Root.Add(record);
             record.Add(
-                new XAttribute("id", fileCabinetRecord.Id.ToString()));
+                new XAttribute("id", fileCabinetRecord.Id));
             XElement name = new XElement("name");
             record.Add(name);
             name.Add(
                 new XAttribute("first", fileCabinetRecord.FirstName),
                 new XAttribute("last", fileCabinetRecord.LastName));
-            record.Add(new XElement("dateOfBirth", fileCabinetRecord.DateOfBirth.ToShortDateString()));
-            record.Add(new XElement("gender", fileCabinetRecord.Gender.ToString()));
-            record.Add(new XElement("materialStatus", fileCabinetRecord.MaterialStatus.ToString()));
-            record.Add(new XElement("catsCount", fileCabinetRecord.CatsCount));
-            record.Add(new XElement("catsBudget", fileCabinetRecord.CatsBudget.ToString()));
+            record.Add(
+                new XElement("dateOfBirth", fileCabinetRecord.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
+                new XElement("gender", (int)fileCabinetRecord.Gender),
+                new XElement("office", fileCabinetRecord.Office),
+                new XElement("salary", fileCabinetRecord.Salary));
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Validators
 {
@@ -18,109 +17,88 @@ namespace FileCabinetApp.Validators
         /// <param name="lastName">The last name.</param>
         /// <param name="dateOfBirth">The date of birth.</param>
         /// <param name="gender">The gender.</param>
-        /// <param name="materialStatus">The material status.</param>
-        /// <param name="catsCount">The cats count.</param>
-        /// <param name="catsBudget">The cats budget.</param>
+        /// <param name="office">The office.</param>
+        /// <param name="salary">The salary.</param>
         /// <exception cref="ArgumentNullException">
-        /// The {nameof(firstName)} can't be null.
+        /// firstName
         /// or
-        /// The {nameof(lastName)} can't be null.
+        /// lastName
         /// or
-        /// The {nameof(dateOfBirth)} can't be null.
-        /// or
-        /// The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.
+        /// dateOfBirth.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.
+        /// The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols. - firstName
         /// or
-        /// The {nameof(firstName)} can't consists only from spases.
+        /// The {nameof(firstName)} can't consists only from spases. - firstName
         /// or
-        /// The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.
+        /// The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols. - lastName
         /// or
-        /// The {nameof(lastName)} can't consists only from spases.
+        /// The {nameof(lastName)} can't consists only from spases. - lastName
         /// or
-        /// The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.
+        /// The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date. - dateOfBirth
         /// or
-        /// The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.
+        /// The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'. - gender
         /// or
-        /// The {nameof(catsCount)} can't be less than 0 or larger than 50.
+        /// The {nameof(office)} can't be less than 0 or larger than 500. - office
         /// or
-        /// The {nameof(catsBudget)} can't be less than zero.
+        /// The {nameof(salary)} can't be less than zero. - salary.
         /// </exception>
-        public void ValidateParameters(string firstName, string lastName, DateTime dateOfBirth, Gender gender, char materialStatus, short catsCount, decimal catsBudget)
+        public void ValidateParameters(string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
         {
             if (firstName == null)
             {
-                throw new ArgumentNullException($"The {nameof(firstName)} can't be null.");
+                throw new ArgumentNullException(nameof(firstName));
             }
 
             if (lastName == null)
             {
-                throw new ArgumentNullException($"The {nameof(lastName)} can't be null.");
+                throw new ArgumentNullException(nameof(lastName));
             }
 
             if (firstName.Length < 2 || firstName.Length > 30)
             {
-                throw new ArgumentException($"The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.");
+                throw new ArgumentException($"The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols.", nameof(firstName));
             }
 
-            if (ConsistsOfSpaces(firstName))
+            if (string.IsNullOrWhiteSpace(firstName))
             {
-                throw new ArgumentException($"The {nameof(firstName)} can't consists only from spases.");
+                throw new ArgumentException($"The {nameof(firstName)} can't consists only from spases.", nameof(firstName));
             }
 
             if (lastName.Length <= 2 || lastName.Length > 30)
             {
-                throw new ArgumentException($"The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.");
+                throw new ArgumentException($"The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols.", nameof(lastName));
             }
 
-            if (ConsistsOfSpaces(lastName))
+            if (string.IsNullOrWhiteSpace(lastName))
             {
-                throw new ArgumentException($"The {nameof(lastName)} can't consists only from spases.");
+                throw new ArgumentException($"The {nameof(lastName)} can't consists only from spases.", nameof(lastName));
             }
 
             if (dateOfBirth == null)
             {
-                throw new ArgumentNullException($"The {nameof(dateOfBirth)} can't be null.");
+                throw new ArgumentNullException(nameof(dateOfBirth));
             }
 
             if (dateOfBirth > DateTime.Today || dateOfBirth < MinDate)
             {
-                throw new ArgumentException($"The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.");
+                throw new ArgumentException($"The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date.", nameof(dateOfBirth));
             }
 
-            if (gender != Gender.M && gender != Gender.F && gender != Gender.O && gender != Gender.U)
+            if (gender != 'M' && gender != 'F' && gender != 'O' && gender != 'U')
             {
-                throw new ArgumentException($"The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.");
+                throw new ArgumentException($"The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'.", nameof(gender));
             }
 
-            if (materialStatus != 'M' && materialStatus != 'U')
+            if (office < 0 || office > 300)
             {
-                throw new ArgumentNullException($"The {nameof(materialStatus)} isn't a valid material status. You can use only 'M' or 'U' symbols.");
+                throw new ArgumentException($"The {nameof(office)} can't be less than 0 or larger than 500.", nameof(office));
             }
 
-            if (catsCount < 0 || catsCount > 50)
+            if (salary < 0)
             {
-                throw new ArgumentException($"The {nameof(catsCount)} can't be less than 0 or larger than 50.");
+                throw new ArgumentException($"The {nameof(salary)} can't be less than zero.", nameof(salary));
             }
-
-            if (catsBudget < 0)
-            {
-                throw new ArgumentException($"The {nameof(catsBudget)} can't be less than zero.");
-            }
-        }
-
-        private static bool ConsistsOfSpaces(string @string)
-        {
-            foreach (var item in @string)
-            {
-                if (item != ' ')
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }

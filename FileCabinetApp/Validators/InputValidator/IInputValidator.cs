@@ -1,5 +1,4 @@
 ﻿using System;
-using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Validators.InputValidator
 {
@@ -34,27 +33,20 @@ namespace FileCabinetApp.Validators.InputValidator
         /// </summary>
         /// <param name="gender">The gender.</param>
         /// <returns>Is parameter valid.</returns>
-        Tuple<bool, string> GenderValidator(Gender gender);
+        Tuple<bool, string> GenderValidator(char gender);
 
         /// <summary>
-        /// Materials the status validator.
+        /// Offices the validator.
         /// </summary>
-        /// <param name="materialStatus">The material status.</param>
+        /// <param name="office">The office.</param>
         /// <returns>Is parameter valid.</returns>
-        Tuple<bool, string> MaterialStatusValidator(char materialStatus);
+        Tuple<bool, string> OfficeValidator(short office);
 
         /// <summary>
-        /// Catses the count validator.
+        /// Salaries the validator.
         /// </summary>
-        /// <param name="catsCount">The cats count.</param>
+        /// <param name="salary">The salary.</param>
         /// <returns>Is parameter valid.</returns>
-        Tuple<bool, string> CatsCountValidator(short catsCount);
-
-        /// <summary>
-        /// Catses the budget validator.
-        /// </summary>
-        /// <param name="catsBudget">The cats budget.</param>
-        /// <returns>Is parameter valid.</returns>
-        Tuple<bool, string> CatsBudgetValidator(decimal catsBudget);
+        Tuple<bool, string> SalaryValidator(decimal salary);
     }
 }
