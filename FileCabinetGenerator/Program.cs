@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -79,33 +80,33 @@ namespace FileCabinetGenerator
 
         private static RecordsOrder RecordsOrderGeneration(int startId, int recordAmount)
         {
-            RecordsOrder recordsOrder = new RecordsOrder
-            {
-                FileCabinetRecords = new FileCabinetRecord[recordAmount],
-            };
+            RecordsOrder recordsOrder = new RecordsOrder();
             for (int i = 0; i < recordAmount; i++)
             {
                 var record = FileCabinetRecordGenerator(startId, i);
-                recordsOrder.FileCabinetRecords[i] = record;
+                recordsOrder.FileCabinetRecords.Add(record);
             }
 
             return recordsOrder;
         }
 
-        private static void ExportCSV(string filePath, FileCabinetRecord[] recordsArray)
+        private static void ExportCSV(string filePath, List<FileCabinetRecord> recordsList)
         {
-            using (StreamWriter writer = new StreamWriter(filePath))
+            if (recordsList != null && recordsList.Count > 0)
             {
-                writer.WriteLine($"{nameof(FileCabinetRecord.Id)}," +
-                $"{nameof(FileCabinetRecord.FullName.FirstName)}," +
-                $"{nameof(FileCabinetRecord.FullName.LastName)}," +
-                $"{nameof(FileCabinetRecord.DateOfBirth)}," +
-                $"{nameof(FileCabinetRecord.Gender)}," +
-                $"{nameof(FileCabinetRecord.Office)}," +
-                $"{nameof(FileCabinetRecord.Salary)}");
-                foreach (var record in recordsArray)
+                using (StreamWriter writer = new StreamWriter(filePath))
                 {
-                    writer.WriteLine(record.ToString());
+                    writer.WriteLine($"{nameof(FileCabinetRecord.Id)}," +
+                    $"{nameof(FileCabinetRecord.FullName.FirstName)}," +
+                    $"{nameof(FileCabinetRecord.FullName.LastName)}," +
+                    $"{nameof(FileCabinetRecord.DateOfBirth)}," +
+                    $"{nameof(FileCabinetRecord.Gender)}," +
+                    $"{nameof(FileCabinetRecord.Office)}," +
+                    $"{nameof(FileCabinetRecord.Salary)}");
+                    foreach (var record in recordsList)
+                    {
+                        writer.WriteLine(record.ToString());
+                    }
                 }
             }
         }

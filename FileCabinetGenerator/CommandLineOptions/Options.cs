@@ -13,7 +13,7 @@ namespace FileCabinetGenerator.CommandLineOptions
         /// <value>
         /// The type of the output.
         /// </value>
-        [Option('t', "output-type", Default = "csv", HelpText = "Output format type (csv, xml).")]
+        [Option('t', "output-type", Default = "xml", HelpText = "Output format type (csv, xml).")]
         public string OutputType { get; set; }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace FileCabinetGenerator.CommandLineOptions
         /// <value>
         /// The output.
         /// </value>
-        [Option('o', "output", Default = "records.csv", HelpText = "Output file name.")]
+        [Option('o', "output", Default = "records.xml", HelpText = "Output file name.")]
         public string Output { get; set; }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace FileCabinetGenerator.CommandLineOptions
         /// <value>
         /// The record amount.
         /// </value>
-        [Option('a', "records-amount", Default = 0, HelpText = "Amount of generated records.")]
+        [Option('a', "records-amount", Default = 5000, HelpText = "Amount of generated records.")]
         public int RecordAmount { get; set; }
 
         /// <summary>

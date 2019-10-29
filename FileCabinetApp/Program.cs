@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -80,7 +81,7 @@ namespace FileCabinetApp
                        serviceType = (o.Storage == ServiceType.File)
                             ? ServiceType.File : ServiceType.Memory;
                    });
-            parser.Dispose();
+            parser?.Dispose();
             fileCabinetService = CreateServise(validationRules, serviceType, out converter, out validator);
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
@@ -245,7 +246,7 @@ namespace FileCabinetApp
                         throw new Exception(nameof(fileFormat));
                 }
             }
-            catch (Exception)
+            catch (ArgumentException)
             {
                 Console.WriteLine("Records were not imported.");
             }
@@ -254,14 +255,20 @@ namespace FileCabinetApp
         private static void ImportFromCSVFile(string filePath)
         {
             FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot();
+            Dictionary<int, string> exceptions = new Dictionary<int, string>();
             int recordsCount = 0;
             using (StreamReader reader = new StreamReader(filePath))
             {
                 snapshot.LoadFromCSV(reader, out recordsCount);
-                fileCabinetService.Restore(snapshot);
+                fileCabinetService.Restore(snapshot, out exceptions);
             }
 
-            Console.WriteLine($"{recordsCount} records were imported from {filePath}.");
+            foreach (var ex in exceptions)
+            {
+                Console.WriteLine($"Record #{ex.Key} was not imported.");
+            }
+
+            Console.WriteLine($"{recordsCount - exceptions.Count} records were imported from {filePath}.");
         }
 
         private static void ImportFromXMLFile(string filePath)
@@ -460,10 +467,7 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Exiting an application...");
             isRunning = false;
-            if (fileStream != null)
-            {
-                fileStream.Close();
-            }
+            fileStream?.Close();
         }
 
         private static void Print(ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords)

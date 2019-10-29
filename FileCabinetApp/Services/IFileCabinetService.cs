@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace FileCabinetApp.Services
 {
@@ -60,6 +61,7 @@ namespace FileCabinetApp.Services
         /// Restores the specified snapshot.
         /// </summary>
         /// <param name="snapshot">The snapshot.</param>
-        void Restore(FileCabinetServiceSnapshot snapshot);
+        /// <param name="exceptions">The exceptions.</param>
+        void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions);
     }
 }

@@ -85,7 +85,7 @@ namespace FileCabinetApp.Services
 
             foreach (var item in this.fileCabinetRecords)
             {
-                xmlWriter.Write(item, doc);
+                FileCabinetRecordXmlWriter.Write(item, doc);
             }
 
             doc.Save(writer);

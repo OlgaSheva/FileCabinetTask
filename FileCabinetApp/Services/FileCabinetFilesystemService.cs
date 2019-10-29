@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using FileCabinetApp.Validators;
@@ -20,15 +21,12 @@ namespace FileCabinetApp.Services
         private const int FirstNamePosition = 6;
         private const int LastNamePosition = 126;
         private const int YearPosition = 246;
-        private const int MonthPosition = 250;
-        private const int DayPosition = 254;
         private const int GenderPosition = 258;
-        private const int OfficePosition = 260;
-        private const int SalaryPosition = 262;
         private const int StringInBitesLength = 120;
         private const int DecimalInBitesLength = 16;
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
+        private readonly SortedList<int, long> idpositionPairs = new SortedList<int, long>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
@@ -70,29 +68,8 @@ namespace FileCabinetApp.Services
                 Salary = rec.Salary,
             };
 
-            var byteId = BitConverter.GetBytes(record.Id);
-            var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.FirstName.PadRight(60));
-            var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.LastName.PadRight(60));
-            var byteYear = BitConverter.GetBytes(record.DateOfBirth.Year);
-            var byteMonth = BitConverter.GetBytes(record.DateOfBirth.Month);
-            var byteDay = BitConverter.GetBytes(record.DateOfBirth.Day);
-            var byteGender = BitConverter.GetBytes(record.Gender);
-            var byteOffice = BitConverter.GetBytes(record.Office);
-            var byteSalary = GetBytes(record.Salary);
-
-            using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
-            {
-                writeBinay.Write(new byte[2], 0, 2); // reserved
-                writeBinay.Write(byteId, 0, byteId.Length);
-                writeBinay.Write(byteFirstName, 0, byteFirstName.Length);
-                writeBinay.Write(byteLastName, 0, byteLastName.Length);
-                writeBinay.Write(byteYear, 0, byteYear.Length);
-                writeBinay.Write(byteMonth, 0, byteMonth.Length);
-                writeBinay.Write(byteDay, 0, byteDay.Length);
-                writeBinay.Write(byteGender, 0, byteGender.Length);
-                writeBinay.Write(byteOffice, 0, byteOffice.Length);
-                writeBinay.Write(byteSalary, 0, byteSalary.Length);
-            }
+            this.WriteToTheBinaryFile(record);
+            this.idpositionPairs.Add(record.Id, this.fileStream.Position - RecordInBytesLength);
 
             return record.Id;
         }
@@ -207,7 +184,7 @@ namespace FileCabinetApp.Services
                 long count = this.fileStream.Length / RecordInBytesLength;
                 while (count-- > 0)
                 {
-                    binaryReader.ReadBytes(2);
+                    binaryReader.ReadBytes(IdPosition);
                     records.Add(new FileCabinetRecord
                     {
                         Id = binaryReader.ReadInt32(),
@@ -252,7 +229,7 @@ namespace FileCabinetApp.Services
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
                 int count = (int)(this.fileStream.Length / RecordInBytesLength);
-                this.fileStream.Position = 2;
+                this.fileStream.Position = IdPosition;
                 while (count-- > 0)
                 {
                     if (binaryReader.ReadInt32() == id)
@@ -281,9 +258,57 @@ namespace FileCabinetApp.Services
         /// Restores the specified snapshot.
         /// </summary>
         /// <param name="snapshot">The snapshot.</param>
-        public void Restore(FileCabinetServiceSnapshot snapshot)
+        /// <param name="exceptions">The exceptions.</param>
+        /// <exception cref="ArgumentNullException">Snapshot is null.</exception>
+        public void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions)
         {
-            throw new NotImplementedException();
+            if (snapshot == null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
+            exceptions = new Dictionary<int, string>();
+            var recordsFromFile = snapshot.FileCabinetRecords.ToList();
+            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            {
+                this.IdPositionSortedListPlaceholder(binaryReader);
+
+                bool flag = false;
+                int existId = -1;
+                foreach (var record in recordsFromFile)
+                {
+                    flag = false;
+                    foreach (var idkey in this.idpositionPairs.Keys)
+                    {
+                        if (record.Id == idkey)
+                        {
+                            flag = true;
+                            existId = idkey;
+                        }
+                    }
+
+                    if (flag)
+                    {
+                        long existRecordPosition = this.idpositionPairs[existId];
+                        this.fileStream.Seek(existRecordPosition, SeekOrigin.Begin);
+                    }
+                    else
+                    {
+                        this.fileStream.Seek(0, SeekOrigin.End);
+                        this.idpositionPairs.Add(record.Id, this.fileStream.Position - RecordInBytesLength);
+                    }
+
+                    try
+                    {
+                        this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
+                        this.WriteToTheBinaryFile(record);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        exceptions.Add(record.Id, ex.Message);
+                    }
+                }
+            }
         }
 
         private static byte[] GetBytes(decimal dec)
@@ -330,6 +355,51 @@ namespace FileCabinetApp.Services
             };
         }
 
+        private void IdPositionSortedListPlaceholder(BinaryReader binaryReader)
+        {
+            this.fileStream.Seek(0, SeekOrigin.Begin);
+            int id;
+            while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
+            {
+                this.fileStream.Seek(IdPosition, SeekOrigin.Current);
+                id = binaryReader.ReadInt32();
+                this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
+                if (!this.idpositionPairs.Keys.Contains(id))
+                {
+                    this.idpositionPairs.Add(id, this.fileStream.Position);
+                }
+
+                this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
+            }
+        }
+
+        private void WriteToTheBinaryFile(FileCabinetRecord record)
+        {
+            using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
+            {
+                var byteId = BitConverter.GetBytes(record.Id);
+                var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.FirstName.PadRight(60));
+                var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.LastName.PadRight(60));
+                var byteYear = BitConverter.GetBytes(record.DateOfBirth.Year);
+                var byteMonth = BitConverter.GetBytes(record.DateOfBirth.Month);
+                var byteDay = BitConverter.GetBytes(record.DateOfBirth.Day);
+                var byteGender = BitConverter.GetBytes(record.Gender);
+                var byteOffice = BitConverter.GetBytes(record.Office);
+                var byteSalary = GetBytes(record.Salary);
+
+                writeBinay.Write(new byte[2], 0, 2); // reserved
+                writeBinay.Write(byteId, 0, byteId.Length);
+                writeBinay.Write(byteFirstName, 0, byteFirstName.Length);
+                writeBinay.Write(byteLastName, 0, byteLastName.Length);
+                writeBinay.Write(byteYear, 0, byteYear.Length);
+                writeBinay.Write(byteMonth, 0, byteMonth.Length);
+                writeBinay.Write(byteDay, 0, byteDay.Length);
+                writeBinay.Write(byteGender, 0, byteGender.Length);
+                writeBinay.Write(byteOffice, 0, byteOffice.Length);
+                writeBinay.Write(byteSalary, 0, byteSalary.Length);
+            }
+        }
+
         private ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             var dateList = new List<FileCabinetRecord>();
@@ -345,7 +415,7 @@ namespace FileCabinetApp.Services
                     if (firstNameFromFile == firstName)
                     {
                         this.fileStream.Position -= LastNamePosition;
-                        binaryReader.ReadBytes(2);
+                        binaryReader.ReadBytes(IdPosition);
                         dateList.Add(CreateNewFileCabinetRecord(binaryReader));
                     }
 

@@ -120,10 +120,13 @@
             XML export model.
             </summary>
         </member>
-        <member name="F:FileCabinetGenerator.Models.RecordsOrder.FileCabinetRecords">
+        <member name="P:FileCabinetGenerator.Models.RecordsOrder.FileCabinetRecords">
             <summary>
-            The file cabinet records.
+            Gets the file cabinet records.
             </summary>
+            <value>
+            The file cabinet records.
+            </value>
         </member>
         <member name="T:FileCabinetGenerator.Program">
             <summary>

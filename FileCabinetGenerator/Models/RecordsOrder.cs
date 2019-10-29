@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace FileCabinetGenerator.Models
 {
@@ -8,10 +9,18 @@ namespace FileCabinetGenerator.Models
     [XmlRoot("records")]
     public class RecordsOrder
     {
+        private readonly List<FileCabinetRecord> fileCabinetRecords = new List<FileCabinetRecord>();
+
         /// <summary>
-        /// The file cabinet records.
+        /// Gets the file cabinet records.
         /// </summary>
+        /// <value>
+        /// The file cabinet records.
+        /// </value>
         [XmlElement("record")]
-        public FileCabinetRecord[] FileCabinetRecords;
+        public List<FileCabinetRecord> FileCabinetRecords
+        {
+            get => this.fileCabinetRecords;
+        }
     }
 }

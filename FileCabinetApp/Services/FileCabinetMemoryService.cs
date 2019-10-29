@@ -15,10 +15,10 @@ namespace FileCabinetApp
     public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly IRecordValidator validator;
+        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
         private List<FileCabinetRecord> list = new List<FileCabinetRecord>();
-        private Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
-        private Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
-        private Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.
@@ -45,7 +45,9 @@ namespace FileCabinetApp
         /// Restores the specified snapshot.
         /// </summary>
         /// <param name="snapshot">The snapshot.</param>
-        public void Restore(FileCabinetServiceSnapshot snapshot)
+        /// <param name="exceptions">The exceptions.</param>
+        /// <exception cref="ArgumentNullException">Snapshot is null.</exception>
+        public void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions)
         {
             if (snapshot == null)
             {
@@ -53,44 +55,8 @@ namespace FileCabinetApp
             }
 
             var recordsFromFile = snapshot.FileCabinetRecords.ToList();
-
-            int lastArrayElementId = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id : -1;
-            int firstArrayElementId = (this.list.Count > 0) ? this.list[0].Id : -1;
-            int lastListElementId = recordsFromFile[recordsFromFile.Count - 1].Id;
-            int firstListElementId = recordsFromFile[0].Id;
-
-            FileCabinetRecord[] newArray;
-            if (lastArrayElementId < firstListElementId)
-            {
-                newArray = new FileCabinetRecord[this.list.Count + recordsFromFile.Count];
-            }
-            else
-            {
-                int iddifference = (lastArrayElementId > lastListElementId)
-                    ? lastListElementId - firstArrayElementId
-                    : lastArrayElementId - firstListElementId;
-                newArray = new FileCabinetRecord[this.list.Count + recordsFromFile.Count - iddifference - 1];
-            }
-
-            for (int i = 0; i < newArray.Length; i++)
-            {
-                if (i >= firstListElementId - 1 && i <= lastListElementId - 1)
-                {
-                    if (i >= firstArrayElementId - 1 && i <= lastArrayElementId - 1)
-                    {
-                        this.RemoveFromDictionaries(i);
-                    }
-
-                    newArray[i] = recordsFromFile[i - firstListElementId + 1];
-                    this.AddToDictionaries(newArray[i]);
-                }
-                else
-                {
-                    newArray[i] = this.list[i];
-                }
-            }
-
-            this.list = newArray.ToList();
+            List<FileCabinetRecord> newArray = this.GenerateNewListWithExistAndRestoreRecords(recordsFromFile, out exceptions);
+            this.list = newArray;
         }
 
         /// <summary>
@@ -107,9 +73,11 @@ namespace FileCabinetApp
 
             this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
 
+            int newId = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id + 1 : 0;
+
             var record = new FileCabinetRecord
             {
-                Id = this.list.Count + 1,
+                Id = newId,
                 FirstName = rec.FirstName,
                 LastName = rec.LastName,
                 DateOfBirth = rec.DateOfBirth,
@@ -253,6 +221,59 @@ namespace FileCabinetApp
             }
 
             return false;
+        }
+
+        private List<FileCabinetRecord> GenerateNewListWithExistAndRestoreRecords(
+            List<FileCabinetRecord> recordsFromFile, out Dictionary<int, string> exceptions)
+        {
+            exceptions = new Dictionary<int, string>();
+            List<FileCabinetRecord> newList = new List<FileCabinetRecord>(this.list);
+
+            int indexFileRecord = 0;
+            int indexListRecord = 0;
+            bool flag = false;
+            int matchingIdPosition = -1;
+            foreach (var fileRecord in recordsFromFile)
+            {
+                indexListRecord = 0;
+                flag = false;
+                matchingIdPosition = -1;
+                foreach (var listRecord in this.list)
+                {
+                    if (fileRecord.Id == listRecord.Id)
+                    {
+                        flag = true;
+                        matchingIdPosition = indexListRecord;
+                    }
+
+                    indexListRecord++;
+                }
+
+                try
+                {
+                    var record = fileRecord;
+                    this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
+                    if (flag)
+                    {
+                        this.RemoveFromDictionaries(matchingIdPosition);
+                        newList[matchingIdPosition] = fileRecord;
+                        this.AddToDictionaries(fileRecord);
+                    }
+                    else
+                    {
+                        newList.Add(record);
+                        this.AddToDictionaries(record);
+                    }
+                }
+                catch (ArgumentException ex)
+                {
+                    exceptions.Add(fileRecord.Id, ex.Message);
+                }
+
+                indexFileRecord++;
+            }
+
+            return newList;
         }
 
         private ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)

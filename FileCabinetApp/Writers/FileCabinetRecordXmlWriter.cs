@@ -25,7 +25,7 @@ namespace FileCabinetApp.Writers
         /// </summary>
         /// <param name="fileCabinetRecord">The file cabinet record.</param>
         /// <param name="doc">The document.</param>
-        public void Write(FileCabinetRecord fileCabinetRecord, XDocument doc)
+        public static void Write(FileCabinetRecord fileCabinetRecord, XDocument doc)
         {
             XElement record = new XElement("record");
             doc.Root.Add(record);
