@@ -17,10 +17,10 @@ namespace FileCabinetApp.Services
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private const int RecordInBytesLength = 278;
-        private const int IdPosition = 2;
+        private const int ReservedFieldLength = 2;
         private const int FirstNamePosition = 6;
         private const int LastNamePosition = 126;
-        private const int YearPosition = 246;
+        private const int DatePosition = 246;
         private const int GenderPosition = 258;
         private const int StringInBitesLength = 120;
         private const int DecimalInBitesLength = 16;
@@ -86,14 +86,14 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(record));
             }
 
-            if (id < 0)
+            if (id <= 0)
             {
-                throw new ArgumentException($"The {nameof(id)} can't be less than zero.", nameof(id));
+                throw new ArgumentException($"The {nameof(id)} have to be larger than zero.", nameof(id));
             }
 
             if (!this.IsThereARecordWithThisId(id, out int index))
             {
-                throw new ArgumentException($"The {nameof(id)} doesn't exist.", nameof(id));
+                throw new ArgumentException($"Record #{nameof(id)} doesn't exist.", nameof(id));
             }
 
             this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
@@ -107,7 +107,7 @@ namespace FileCabinetApp.Services
             var byteOffice = BitConverter.GetBytes(record.Office);
             var byteSalary = GetBytes(record.Salary);
 
-            this.fileStream.Position = (RecordInBytesLength * (index - 1)) + 2 + BitConverter.GetBytes(default(int)).Length;
+            this.fileStream.Position = (RecordInBytesLength * (index - 1)) + FirstNamePosition;
 
             using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
             {
@@ -136,34 +136,33 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(parameters));
             }
 
-            var param = parameters.Split(' ');
-            string parameterName = param[0].ToLower(CultureInfo.CurrentCulture);
-            string parameterValue = param[1].Trim('"');
+            string key = parameters.Split(' ')[0].ToLower(CultureInfo.CurrentCulture);
+            string value = parameters.Replace(key, string.Empty, StringComparison.InvariantCultureIgnoreCase).Trim().Trim('"');
 
             var textInfo = new CultureInfo("ru-RU").TextInfo;
-            parameterValue = textInfo.ToTitleCase(textInfo.ToLower(parameterValue));
+            value = textInfo.ToTitleCase(textInfo.ToLower(value));
 
             ReadOnlyCollection<FileCabinetRecord> findCollection = null;
             try
             {
-                switch (parameterName)
+                switch (key)
                 {
                     case "firstname":
-                        findCollection = this.FindByFirstName(parameterValue);
+                        findCollection = this.FindByFirstName(value);
                         break;
                     case "lastname":
-                        findCollection = this.FindByLastName(parameterValue);
+                        findCollection = this.FindByLastName(value);
                         break;
                     case "dateofbirth":
-                        findCollection = this.FindByDateOfBirth(parameterValue);
+                        findCollection = this.FindByDateOfBirth(value);
                         break;
                     default:
-                        throw new InvalidOperationException($"The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
+                        throw new InvalidOperationException($"The {key} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
                 }
             }
             catch (KeyNotFoundException knfex)
             {
-                throw new ArgumentException($"The record with {parameterName} '{parameterValue}' doesn't exist.", knfex.Message);
+                throw new ArgumentException($"The record with {key} '{value}' doesn't exist.", knfex.Message);
             }
 
             return findCollection;
@@ -184,19 +183,25 @@ namespace FileCabinetApp.Services
                 long count = this.fileStream.Length / RecordInBytesLength;
                 while (count-- > 0)
                 {
-                    binaryReader.ReadBytes(IdPosition);
-                    records.Add(new FileCabinetRecord
+                    if (binaryReader.ReadBytes(2)[0] == 0)
                     {
-                        Id = binaryReader.ReadInt32(),
-                        FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
-                            binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                        LastName = System.Text.UnicodeEncoding.Unicode.GetString(
-                            binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                        DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
-                        Gender = binaryReader.ReadChar(),
-                        Office = binaryReader.ReadInt16(),
-                        Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
-                    });
+                        records.Add(new FileCabinetRecord
+                        {
+                            Id = binaryReader.ReadInt32(),
+                            FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                            LastName = System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                            DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
+                            Gender = binaryReader.ReadChar(),
+                            Office = binaryReader.ReadInt16(),
+                            Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
+                        });
+                    }
+                    else
+                    {
+                        this.fileStream.Seek(RecordInBytesLength - ReservedFieldLength, SeekOrigin.Current);
+                    }
                 }
             }
 
@@ -229,16 +234,23 @@ namespace FileCabinetApp.Services
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
                 int count = (int)(this.fileStream.Length / RecordInBytesLength);
-                this.fileStream.Position = IdPosition;
+                this.fileStream.Seek(0, SeekOrigin.Begin);
+                int position = 0;
                 while (count-- > 0)
                 {
-                    if (binaryReader.ReadInt32() == id)
+                    if (binaryReader.ReadBytes(2)[0] == 0)
                     {
-                        index = id;
-                        return true;
+                        if (binaryReader.ReadInt32() == id)
+                        {
+                            index = position;
+                            return true;
+                        }
+
+                        this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
                     }
 
-                    this.fileStream.Position += RecordInBytesLength - BitConverter.GetBytes(default(int)).Length;
+                    position++;
+                    this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
                 }
             }
 
@@ -300,6 +312,11 @@ namespace FileCabinetApp.Services
 
                     try
                     {
+                        if (record.Id <= 0)
+                        {
+                            throw new ArgumentException(nameof(record.Id));
+                        }
+
                         this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
                         this.WriteToTheBinaryFile(record);
                     }
@@ -309,6 +326,32 @@ namespace FileCabinetApp.Services
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Removes a record by the identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="position">Record position.</param>
+        public void Remove(int id, int position)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException($"{nameof(id)} have to be larger than zero.", nameof(id));
+            }
+
+            if (id <= 0)
+            {
+                throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
+            }
+
+            if (!this.IsThereARecordWithThisId(id, out int index))
+            {
+                throw new ArgumentException($"Record #{nameof(id)} doesn't exist.", nameof(id));
+            }
+
+            this.fileStream.Seek(RecordInBytesLength * index, SeekOrigin.Begin);
+            this.fileStream.WriteByte(1);
         }
 
         private static byte[] GetBytes(decimal dec)
@@ -341,6 +384,7 @@ namespace FileCabinetApp.Services
 
         private static FileCabinetRecord CreateNewFileCabinetRecord(BinaryReader binaryReader)
         {
+            binaryReader.ReadBytes(ReservedFieldLength);
             return new FileCabinetRecord
             {
                 Id = binaryReader.ReadInt32(),
@@ -361,15 +405,21 @@ namespace FileCabinetApp.Services
             int id;
             while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
             {
-                this.fileStream.Seek(IdPosition, SeekOrigin.Current);
-                id = binaryReader.ReadInt32();
-                this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
-                if (!this.idpositionPairs.Keys.Contains(id))
+                if (binaryReader.ReadBytes(ReservedFieldLength)[0] == 0)
                 {
-                    this.idpositionPairs.Add(id, this.fileStream.Position);
-                }
+                    id = binaryReader.ReadInt32();
+                    this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
+                    if (!this.idpositionPairs.Keys.Contains(id))
+                    {
+                        this.idpositionPairs.Add(id, this.fileStream.Position);
+                    }
 
-                this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
+                    this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
+                }
+                else
+                {
+                    this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
+                }
             }
         }
 
@@ -387,7 +437,7 @@ namespace FileCabinetApp.Services
                 var byteOffice = BitConverter.GetBytes(record.Office);
                 var byteSalary = GetBytes(record.Salary);
 
-                writeBinay.Write(new byte[2], 0, 2); // reserved
+                writeBinay.Write(new byte[2] { 0, 0 }, 0, 2); // 0 - not deleted, 1 - deleted
                 writeBinay.Write(byteId, 0, byteId.Length);
                 writeBinay.Write(byteFirstName, 0, byteFirstName.Length);
                 writeBinay.Write(byteLastName, 0, byteLastName.Length);
@@ -406,20 +456,29 @@ namespace FileCabinetApp.Services
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
                 int count = (int)(this.fileStream.Length / RecordInBytesLength);
-                this.fileStream.Position = FirstNamePosition;
+                this.fileStream.Seek(0, SeekOrigin.Begin);
                 string firstNameFromFile;
                 while (count-- > 0)
                 {
-                    firstNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
-                        binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
-                    if (firstNameFromFile == firstName)
+                    if (binaryReader.ReadBytes(2)[0] == 0)
                     {
-                        this.fileStream.Position -= LastNamePosition;
-                        binaryReader.ReadBytes(IdPosition);
-                        dateList.Add(CreateNewFileCabinetRecord(binaryReader));
+                        this.fileStream.Seek(-ReservedFieldLength + FirstNamePosition, SeekOrigin.Current);
+                        firstNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
+                            binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                        if (firstNameFromFile == firstName)
+                        {
+                            this.fileStream.Seek(-LastNamePosition, SeekOrigin.Current);
+                            dateList.Add(CreateNewFileCabinetRecord(binaryReader));
+                        }
+                        else
+                        {
+                            this.fileStream.Seek(-LastNamePosition + RecordInBytesLength, SeekOrigin.Current);
+                        }
                     }
-
-                    this.fileStream.Position += RecordInBytesLength - LastNamePosition + FirstNamePosition;
+                    else
+                    {
+                        this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
+                    }
                 }
             }
 
@@ -433,20 +492,29 @@ namespace FileCabinetApp.Services
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
                 int count = (int)(this.fileStream.Length / RecordInBytesLength);
-                this.fileStream.Position = LastNamePosition;
-                string firstNameFromFile;
+                this.fileStream.Seek(0, SeekOrigin.Begin);
+                string lastNameFromFile;
                 while (count-- > 0)
                 {
-                    firstNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
-                        binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
-                    if (firstNameFromFile == lastName)
+                    if (binaryReader.ReadBytes(2)[0] == 0)
                     {
-                        this.fileStream.Position -= YearPosition;
-                        binaryReader.ReadBytes(2);
-                        dateList.Add(CreateNewFileCabinetRecord(binaryReader));
+                        this.fileStream.Seek(-ReservedFieldLength + LastNamePosition, SeekOrigin.Current);
+                        lastNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
+                            binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                        if (lastNameFromFile == lastName)
+                        {
+                            this.fileStream.Seek(-DatePosition, SeekOrigin.Current);
+                            dateList.Add(CreateNewFileCabinetRecord(binaryReader));
+                        }
+                        else
+                        {
+                            this.fileStream.Seek(-DatePosition + RecordInBytesLength, SeekOrigin.Current);
+                        }
                     }
-
-                    this.fileStream.Position += RecordInBytesLength - YearPosition + LastNamePosition;
+                    else
+                    {
+                        this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
+                    }
                 }
             }
 
@@ -460,22 +528,31 @@ namespace FileCabinetApp.Services
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
                 int count = (int)(this.fileStream.Length / RecordInBytesLength);
-                this.fileStream.Position = YearPosition;
+                this.fileStream.Seek(0, SeekOrigin.Begin);
                 DateTime dateFromFile;
                 while (count-- > 0)
                 {
-                    dateFromFile = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32());
-                    if (DateTime.TryParse(dateOfBirth, out DateTime date))
+                    if (binaryReader.ReadBytes(2)[0] == 0)
                     {
-                        if (DateTime.Compare(dateFromFile, date) == 0)
+                        this.fileStream.Seek(-ReservedFieldLength + DatePosition, SeekOrigin.Current);
+                        dateFromFile = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32());
+                        if (DateTime.TryParse(dateOfBirth, out DateTime date))
                         {
-                            this.fileStream.Position -= GenderPosition;
-                            binaryReader.ReadBytes(2);
-                            dateList.Add(CreateNewFileCabinetRecord(binaryReader));
+                            if (DateTime.Compare(dateFromFile, date) == 0)
+                            {
+                                this.fileStream.Seek(-GenderPosition, SeekOrigin.Current);
+                                dateList.Add(CreateNewFileCabinetRecord(binaryReader));
+                            }
+                        }
+                        else
+                        {
+                            this.fileStream.Seek(-GenderPosition + RecordInBytesLength, SeekOrigin.Current);
                         }
                     }
-
-                    this.fileStream.Position += RecordInBytesLength - GenderPosition + YearPosition;
+                    else
+                    {
+                        this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
+                    }
                 }
             }
 

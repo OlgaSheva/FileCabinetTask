@@ -41,6 +41,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("find", FindByParameter),
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
+            new Tuple<string, Action<string>>("remove", Remove),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -54,6 +55,7 @@ namespace FileCabinetApp
             new string[] { "find <parameter name> <parameter value>", "returns a list of records with the given parameter", "The 'find firstname' command returns a list of records with the given parameter." },
             new string[] { "export <csv/xml> <file adress>", "exports service data to a CSV or XML file", "The 'export' command exports service data to a CSV or XML file." },
             new string[] { "import <csv/xml> <file adress>", "imports service data from a CSV or XML file", "The 'export' command imports service data from a CSV or XML file." },
+            new string[] { "remove <ID>", "removes a record by id", "The 'remove' command removes a record by id." },
         };
 
         private static IFileCabinetService fileCabinetService;
@@ -322,8 +324,10 @@ namespace FileCabinetApp
 
         private static void Edit(string parameters)
         {
-            int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out int id);
-            if (id == 0 || Program.fileCabinetService.GetStat() == 0)
+            int id = -1;
+            if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
+                || id == 0
+                || Program.fileCabinetService.GetStat() == 0)
             {
                 Console.WriteLine($"The '{parameters}' isn't an ID.");
                 return;
@@ -368,6 +372,24 @@ namespace FileCabinetApp
             catch (ArgumentException aex)
             {
                 Console.WriteLine($"The record didn't find.", aex.Message);
+            }
+        }
+
+        private static void Remove(string parameters)
+        {
+            int id = -1;
+            if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
+                || id == 0
+                || Program.fileCabinetService.GetStat() == 0)
+            {
+                Console.WriteLine($"Record '{parameters}' doesn't exists.");
+                return;
+            }
+
+            if (fileCabinetService.IsThereARecordWithThisId(id, out int index))
+            {
+                fileCabinetService.Remove(id, index);
+                Console.WriteLine($"Record #{id} is removed.");
             }
         }
 
