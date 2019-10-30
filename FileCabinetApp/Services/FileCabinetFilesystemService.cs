@@ -263,7 +263,8 @@ namespace FileCabinetApp.Services
         /// <returns>The file cabinet service snapshot.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            throw new NotImplementedException();
+            var snapshot = new FileCabinetServiceSnapshot();
+            return snapshot;
         }
 
         /// <summary>
@@ -283,7 +284,7 @@ namespace FileCabinetApp.Services
             var recordsFromFile = snapshot.FileCabinetRecords.ToList();
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                this.IdPositionSortedListPlaceholder(binaryReader);
+                this.IdAndPositionSortedList(binaryReader);
 
                 bool flag = false;
                 int existId = -1;
@@ -307,7 +308,6 @@ namespace FileCabinetApp.Services
                     else
                     {
                         this.fileStream.Seek(0, SeekOrigin.End);
-                        this.idpositionPairs.Add(record.Id, this.fileStream.Position - RecordInBytesLength);
                     }
 
                     try
@@ -319,6 +319,14 @@ namespace FileCabinetApp.Services
 
                         this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
                         this.WriteToTheBinaryFile(record);
+                        if (this.fileStream.Length == 0)
+                        {
+                            this.idpositionPairs.Add(record.Id, this.fileStream.Position);
+                        }
+                        else
+                        {
+                            this.idpositionPairs.Add(record.Id, this.fileStream.Position - RecordInBytesLength);
+                        }
                     }
                     catch (ArgumentException ex)
                     {
@@ -352,6 +360,57 @@ namespace FileCabinetApp.Services
 
             this.fileStream.Seek(RecordInBytesLength * index, SeekOrigin.Begin);
             this.fileStream.WriteByte(1);
+        }
+
+        /// <summary>
+        /// Purges the specified deleted records count.
+        /// </summary>
+        /// <param name="deletedRecordsCount">The deleted records count.</param>
+        /// <param name="recordsCount">The records count.</param>
+        public void Purge(out int deletedRecordsCount, out int recordsCount)
+        {
+            this.fileStream.Seek(0, SeekOrigin.Begin);
+            int count = (int)(this.fileStream.Length / RecordInBytesLength);
+            recordsCount = count;
+            deletedRecordsCount = 0;
+            byte[] buffer = new byte[RecordInBytesLength];
+            Queue<long> deletedRecordPositions = new Queue<long>();
+            long lastDeletedRecordPosition = -1;
+            long lastAliveRecordPosition = 0;
+
+            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            using (BinaryWriter writer = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
+            {
+                while (count-- > 0)
+                {
+                    if (reader.ReadBytes(ReservedFieldLength)[0] == 1)
+                    {
+                        this.fileStream.Seek(-ReservedFieldLength, SeekOrigin.Current);
+                        deletedRecordPositions.Enqueue(this.fileStream.Position);
+                        deletedRecordsCount++;
+                    }
+                    else
+                    {
+                        this.fileStream.Seek(-ReservedFieldLength, SeekOrigin.Current);
+                        if (deletedRecordPositions.TryDequeue(out lastDeletedRecordPosition))
+                        {
+                            buffer = reader.ReadBytes(RecordInBytesLength);
+                            this.fileStream.Seek(-RecordInBytesLength, SeekOrigin.Current);
+                            this.fileStream.WriteByte(1); // deleted
+                            this.fileStream.Seek(lastDeletedRecordPosition, SeekOrigin.Begin);
+                            writer.Write(buffer, 0, RecordInBytesLength);
+                        }
+                        else
+                        {
+                            this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
+                        }
+
+                        lastAliveRecordPosition = this.fileStream.Position;
+                    }
+                }
+            }
+
+            this.fileStream.SetLength(lastAliveRecordPosition);
         }
 
         private static byte[] GetBytes(decimal dec)
@@ -399,7 +458,7 @@ namespace FileCabinetApp.Services
             };
         }
 
-        private void IdPositionSortedListPlaceholder(BinaryReader binaryReader)
+        private void IdAndPositionSortedList(BinaryReader binaryReader)
         {
             this.fileStream.Seek(0, SeekOrigin.Begin);
             int id;

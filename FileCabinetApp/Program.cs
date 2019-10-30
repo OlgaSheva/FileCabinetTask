@@ -42,6 +42,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
             new Tuple<string, Action<string>>("remove", Remove),
+            new Tuple<string, Action<string>>("purge", Purge),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -56,6 +57,7 @@ namespace FileCabinetApp
             new string[] { "export <csv/xml> <file adress>", "exports service data to a CSV or XML file", "The 'export' command exports service data to a CSV or XML file." },
             new string[] { "import <csv/xml> <file adress>", "imports service data from a CSV or XML file", "The 'export' command imports service data from a CSV or XML file." },
             new string[] { "remove <ID>", "removes a record by id", "The 'remove' command removes a record by id." },
+            new string[] { "purge", "defragment a data file", "The 'purge' command defragment a data file." },
         };
 
         private static IFileCabinetService fileCabinetService;
@@ -390,6 +392,15 @@ namespace FileCabinetApp
             {
                 fileCabinetService.Remove(id, index);
                 Console.WriteLine($"Record #{id} is removed.");
+            }
+        }
+
+        private static void Purge(string parameters)
+        {
+            fileCabinetService.Purge(out int deletedRecordsCount, out int recordsCount);
+            if (fileCabinetService is FileCabinetFilesystemService)
+            {
+                Console.WriteLine($"Data file processing is completed: {deletedRecordsCount} of {recordsCount} records were purged.");
             }
         }
 

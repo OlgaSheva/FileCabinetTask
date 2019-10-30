@@ -244,6 +244,17 @@ namespace FileCabinetApp
             return false;
         }
 
+        /// <summary>
+        /// Do nothing.
+        /// </summary>
+        /// <param name="deletedRecordsCount">The deleted records count.</param>
+        /// <param name="recordsCount">The records count.</param>
+        public void Purge(out int deletedRecordsCount, out int recordsCount)
+        {
+            deletedRecordsCount = 0;
+            recordsCount = 0;
+        }
+
         private List<FileCabinetRecord> GenerateNewListWithExistAndRestoreRecords(
             List<FileCabinetRecord> recordsFromFile, out Dictionary<int, string> exceptions)
         {

@@ -70,5 +70,12 @@ namespace FileCabinetApp.Services
         /// <param name="id">The identifier.</param>
         /// <param name="position">Record position.</param>
         void Remove(int id, int position);
+
+        /// <summary>
+        /// Purges the specified deleted records count.
+        /// </summary>
+        /// <param name="deletedRecordsCount">The deleted records count.</param>
+        /// <param name="recordsCount">The records count.</param>
+        void Purge(out int deletedRecordsCount, out int recordsCount);
     }
 }

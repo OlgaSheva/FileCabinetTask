@@ -441,6 +441,13 @@
             <param name="id">The identifier.</param>
             <param name="position">Record position.</param>
         </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Purges the specified deleted records count.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
+        </member>
         <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
             <summary>
             File cabinet service snapshot.
@@ -548,6 +555,13 @@
             <param name="id">The identifier.</param>
             <param name="position">Record position.</param>
         </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Purges the specified deleted records count.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>
             The file cabinet memory service.
@@ -631,6 +645,13 @@
             <returns>
               <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Do nothing.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
         </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.CustomInputValidator">
             <summary>
