@@ -212,12 +212,21 @@ namespace FileCabinetApp.Services
         /// <summary>
         /// Gets the stat.
         /// </summary>
+        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <returns>
         /// The quantity of records.
         /// </returns>
-        public int GetStat()
+        public int GetStat(out int deletedRecordsCount)
         {
-            return (int)(this.fileStream.Position / RecordInBytesLength);
+            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            {
+                this.IdAndPositionSortedList(reader);
+            }
+
+            this.fileStream.Seek(0, SeekOrigin.End);
+            int recordsCount = (int)(this.fileStream.Position / RecordInBytesLength);
+            deletedRecordsCount = recordsCount - this.idpositionPairs.Count;
+            return recordsCount;
         }
 
         /// <summary>
@@ -360,6 +369,7 @@ namespace FileCabinetApp.Services
 
             this.fileStream.Seek(RecordInBytesLength * index, SeekOrigin.Begin);
             this.fileStream.WriteByte(1);
+            this.idpositionPairs.Remove(id);
         }
 
         /// <summary>

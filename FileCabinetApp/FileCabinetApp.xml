@@ -402,10 +402,11 @@
             All existing records.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetStat">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetStat(System.Int32@)">
             <summary>
             Gets the stat.
             </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>
             The quantity of records.
             </returns>
@@ -505,10 +506,11 @@
             </summary>
             <returns>All existing records.</returns>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetStat">
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetStat(System.Int32@)">
             <summary>
             Gets the stat.
             </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>The quantity of records.</returns>
         </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.Record)">
@@ -602,10 +604,11 @@
             </summary>
             <returns>All existing records.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetStat">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetStat(System.Int32@)">
             <summary>
             Gets the stat.
             </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>The quantity of records.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(System.Int32,FileCabinetApp.Record)">

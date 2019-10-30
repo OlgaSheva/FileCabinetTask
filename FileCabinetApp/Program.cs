@@ -297,8 +297,8 @@ namespace FileCabinetApp
 
         private static void Stat(string parameters)
         {
-            var recordsCount = Program.fileCabinetService.GetStat();
-            Console.WriteLine($"{recordsCount} record(s).");
+            var recordsCount = Program.fileCabinetService.GetStat(out int deletedRecordsCount);
+            Console.WriteLine($"{recordsCount} record(s). Number of deleted records: {deletedRecordsCount}.");
         }
 
         private static void Create(string parameters)
@@ -329,7 +329,7 @@ namespace FileCabinetApp
             int id = -1;
             if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
                 || id == 0
-                || Program.fileCabinetService.GetStat() == 0)
+                || Program.fileCabinetService.GetStat(out int deletedRecordsCount) == 0)
             {
                 Console.WriteLine($"The '{parameters}' isn't an ID.");
                 return;
@@ -382,7 +382,7 @@ namespace FileCabinetApp
             int id = -1;
             if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
                 || id == 0
-                || Program.fileCabinetService.GetStat() == 0)
+                || Program.fileCabinetService.GetStat(out int deletedRecordsCount) == 0)
             {
                 Console.WriteLine($"Record '{parameters}' doesn't exists.");
                 return;
