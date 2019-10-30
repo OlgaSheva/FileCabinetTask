@@ -24,8 +24,9 @@ namespace FileCabinetApp.Services
         /// <summary>
         /// Gets the stat.
         /// </summary>
+        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <returns>The quantity of records.</returns>
-        int GetStat();
+        int GetStat(out int deletedRecordsCount);
 
         /// <summary>
         /// Edits the record.
@@ -63,5 +64,19 @@ namespace FileCabinetApp.Services
         /// <param name="snapshot">The snapshot.</param>
         /// <param name="exceptions">The exceptions.</param>
         void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions);
+
+        /// <summary>
+        /// Removes a record by the identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="position">Record position.</param>
+        void Remove(int id, int position);
+
+        /// <summary>
+        /// Purges the specified deleted records count.
+        /// </summary>
+        /// <param name="deletedRecordsCount">The deleted records count.</param>
+        /// <param name="recordsCount">The records count.</param>
+        void Purge(out int deletedRecordsCount, out int recordsCount);
     }
 }

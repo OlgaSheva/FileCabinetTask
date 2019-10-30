@@ -105,9 +105,11 @@ namespace FileCabinetApp
         /// <summary>
         /// Gets the stat.
         /// </summary>
+        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <returns>The quantity of records.</returns>
-        public int GetStat()
+        public int GetStat(out int deletedRecordsCount)
         {
+            deletedRecordsCount = 0;
             return this.list.Count;
         }
 
@@ -201,6 +203,27 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Removes a record by the identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="position">Record position.</param>
+        public void Remove(int id, int position)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException($"{nameof(id)} have to be larger than zero.", nameof(id));
+            }
+
+            if (id <= 0)
+            {
+                throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
+            }
+
+            this.RemoveFromDictionaries(position);
+            this.list.Remove(this.list[position]);
+        }
+
+        /// <summary>
         /// Determines whether [is there a record with this identifier] [the specified identifier].
         /// </summary>
         /// <param name="id">The identifier.</param>
@@ -221,6 +244,17 @@ namespace FileCabinetApp
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Do nothing.
+        /// </summary>
+        /// <param name="deletedRecordsCount">The deleted records count.</param>
+        /// <param name="recordsCount">The records count.</param>
+        public void Purge(out int deletedRecordsCount, out int recordsCount)
+        {
+            deletedRecordsCount = 0;
+            recordsCount = 0;
         }
 
         private List<FileCabinetRecord> GenerateNewListWithExistAndRestoreRecords(
@@ -252,6 +286,11 @@ namespace FileCabinetApp
                 try
                 {
                     var record = fileRecord;
+                    if (record.Id <= 0)
+                    {
+                        throw new ArgumentException(nameof(record.Id));
+                    }
+
                     this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
                     if (flag)
                     {

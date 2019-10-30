@@ -402,10 +402,11 @@
             All existing records.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetStat">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetStat(System.Int32@)">
             <summary>
             Gets the stat.
             </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>
             The quantity of records.
             </returns>
@@ -433,6 +434,20 @@
             <param name="snapshot">The snapshot.</param>
             <param name="exceptions">The exceptions.</param>
             <exception cref="T:System.ArgumentNullException">Snapshot is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Remove(System.Int32,System.Int32)">
+            <summary>
+            Removes a record by the identifier.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">Record position.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Purges the specified deleted records count.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
             <summary>
@@ -491,10 +506,11 @@
             </summary>
             <returns>All existing records.</returns>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetStat">
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetStat(System.Int32@)">
             <summary>
             Gets the stat.
             </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>The quantity of records.</returns>
         </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.Record)">
@@ -533,6 +549,20 @@
             </summary>
             <param name="snapshot">The snapshot.</param>
             <param name="exceptions">The exceptions.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Remove(System.Int32,System.Int32)">
+            <summary>
+            Removes a record by the identifier.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">Record position.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Purges the specified deleted records count.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
         </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>
@@ -574,10 +604,11 @@
             </summary>
             <returns>All existing records.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetStat">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetStat(System.Int32@)">
             <summary>
             Gets the stat.
             </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>The quantity of records.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(System.Int32,FileCabinetApp.Record)">
@@ -601,6 +632,13 @@
             <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
             <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Remove(System.Int32,System.Int32)">
+            <summary>
+            Removes a record by the identifier.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">Record position.</param>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
             <summary>
             Determines whether [is there a record with this identifier] [the specified identifier].
@@ -610,6 +648,13 @@
             <returns>
               <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Do nothing.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
         </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.CustomInputValidator">
             <summary>
