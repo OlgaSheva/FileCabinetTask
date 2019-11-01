@@ -335,7 +335,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            if (fileCabinetService.IsThereARecordWithThisId(id, out int index))
+            if (fileCabinetService.IsThereARecordWithThisId(id, out long index))
             {
                 var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
                 try
@@ -388,10 +388,14 @@ namespace FileCabinetApp
                 return;
             }
 
-            if (fileCabinetService.IsThereARecordWithThisId(id, out int index))
+            if (fileCabinetService.IsThereARecordWithThisId(id, out long position))
             {
-                fileCabinetService.Remove(id, index);
+                fileCabinetService.Remove(id, position);
                 Console.WriteLine($"Record #{id} is removed.");
+            }
+            else
+            {
+                Console.WriteLine($"Record #{id} didn't found.");
             }
         }
 

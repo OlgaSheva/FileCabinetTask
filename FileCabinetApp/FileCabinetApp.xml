@@ -411,12 +411,12 @@
             The quantity of records.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.IsThereARecordWithThisId(System.Int32,System.Int64@)">
             <summary>
             Determines whether [is there a record with this identifier] [the specified identifier].
             </summary>
             <param name="id">The identifier.</param>
-            <param name="index">The index.</param>
+            <param name="position">The index.</param>
             <returns>
             <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
             </returns>
@@ -435,7 +435,7 @@
             <param name="exceptions">The exceptions.</param>
             <exception cref="T:System.ArgumentNullException">Snapshot is null.</exception>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Remove(System.Int32,System.Int32)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Remove(System.Int32,System.Int64)">
             <summary>
             Removes a record by the identifier.
             </summary>
@@ -527,12 +527,12 @@
             <param name="parameters">The parameters.</param>
             <returns>All records with specified parameters.</returns>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.IsThereARecordWithThisId(System.Int32,System.Int64@)">
             <summary>
             Determines whether [is there a record with this identifier] [the specified identifier].
             </summary>
             <param name="id">The identifier.</param>
-            <param name="index">The index.</param>
+            <param name="position">The record position.</param>
             <returns>
               <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
             </returns>
@@ -550,7 +550,7 @@
             <param name="snapshot">The snapshot.</param>
             <param name="exceptions">The exceptions.</param>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.Remove(System.Int32,System.Int32)">
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Remove(System.Int32,System.Int64)">
             <summary>
             Removes a record by the identifier.
             </summary>
@@ -632,14 +632,14 @@
             <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
             <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.Remove(System.Int32,System.Int32)">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Remove(System.Int32,System.Int64)">
             <summary>
             Removes a record by the identifier.
             </summary>
             <param name="id">The identifier.</param>
             <param name="position">Record position.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.IsThereARecordWithThisId(System.Int32,System.Int32@)">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.IsThereARecordWithThisId(System.Int32,System.Int64@)">
             <summary>
             Determines whether [is there a record with this identifier] [the specified identifier].
             </summary>

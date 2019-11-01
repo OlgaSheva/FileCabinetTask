@@ -54,12 +54,10 @@ namespace FileCabinetApp.Services
             }
 
             this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
-
+            int maxExistId = this.idpositionPairs.Keys[this.idpositionPairs.Count - 1];
             var record = new FileCabinetRecord
             {
-                Id = this.fileStream.Position != 0
-                ? (int)(this.fileStream.Position / RecordInBytesLength) + 1
-                : 1,
+                Id = this.idpositionPairs.Count > 0 ? maxExistId + 1 : 1,
                 FirstName = rec.FirstName,
                 LastName = rec.LastName,
                 DateOfBirth = rec.DateOfBirth,
@@ -91,7 +89,7 @@ namespace FileCabinetApp.Services
                 throw new ArgumentException($"The {nameof(id)} have to be larger than zero.", nameof(id));
             }
 
-            if (!this.IsThereARecordWithThisId(id, out int index))
+            if (!this.IsThereARecordWithThisId(id, out long position))
             {
                 throw new ArgumentException($"Record #{nameof(id)} doesn't exist.", nameof(id));
             }
@@ -107,7 +105,7 @@ namespace FileCabinetApp.Services
             var byteOffice = BitConverter.GetBytes(record.Office);
             var byteSalary = GetBytes(record.Salary);
 
-            this.fileStream.Position = (RecordInBytesLength * (index - 1)) + FirstNamePosition;
+            this.fileStream.Seek(position + FirstNamePosition, SeekOrigin.Begin);
 
             using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
             {
@@ -233,34 +231,17 @@ namespace FileCabinetApp.Services
         /// Determines whether [is there a record with this identifier] [the specified identifier].
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="index">The index.</param>
+        /// <param name="position">The index.</param>
         /// <returns>
         /// <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsThereARecordWithThisId(int id, out int index)
+        public bool IsThereARecordWithThisId(int id, out long position)
         {
-            index = -1;
-            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            position = -1;
+            if (this.idpositionPairs.ContainsKey(id))
             {
-                int count = (int)(this.fileStream.Length / RecordInBytesLength);
-                this.fileStream.Seek(0, SeekOrigin.Begin);
-                int position = 0;
-                while (count-- > 0)
-                {
-                    if (binaryReader.ReadBytes(2)[0] == 0)
-                    {
-                        if (binaryReader.ReadInt32() == id)
-                        {
-                            index = position;
-                            return true;
-                        }
-
-                        this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
-                    }
-
-                    position++;
-                    this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
-                }
+                position = this.idpositionPairs[id];
+                return true;
             }
 
             return false;
@@ -306,6 +287,7 @@ namespace FileCabinetApp.Services
                         {
                             flag = true;
                             existId = idkey;
+                            break;
                         }
                     }
 
@@ -328,11 +310,7 @@ namespace FileCabinetApp.Services
 
                         this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
                         this.WriteToTheBinaryFile(record);
-                        if (this.fileStream.Length == 0)
-                        {
-                            this.idpositionPairs.Add(record.Id, this.fileStream.Position);
-                        }
-                        else
+                        if (!this.idpositionPairs.ContainsKey(record.Id))
                         {
                             this.idpositionPairs.Add(record.Id, this.fileStream.Position - RecordInBytesLength);
                         }
@@ -350,7 +328,7 @@ namespace FileCabinetApp.Services
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="position">Record position.</param>
-        public void Remove(int id, int position)
+        public void Remove(int id, long position)
         {
             if (id <= 0)
             {
@@ -362,12 +340,7 @@ namespace FileCabinetApp.Services
                 throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
             }
 
-            if (!this.IsThereARecordWithThisId(id, out int index))
-            {
-                throw new ArgumentException($"Record #{nameof(id)} doesn't exist.", nameof(id));
-            }
-
-            this.fileStream.Seek(RecordInBytesLength * index, SeekOrigin.Begin);
+            this.fileStream.Seek(position, SeekOrigin.Begin);
             this.fileStream.WriteByte(1);
             this.idpositionPairs.Remove(id);
         }
@@ -387,6 +360,7 @@ namespace FileCabinetApp.Services
             Queue<long> deletedRecordPositions = new Queue<long>();
             long lastDeletedRecordPosition = -1;
             long lastAliveRecordPosition = 0;
+            int id;
 
             using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             using (BinaryWriter writer = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
@@ -398,24 +372,31 @@ namespace FileCabinetApp.Services
                         this.fileStream.Seek(-ReservedFieldLength, SeekOrigin.Current);
                         deletedRecordPositions.Enqueue(this.fileStream.Position);
                         deletedRecordsCount++;
+                        this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
                     }
                     else
                     {
-                        this.fileStream.Seek(-ReservedFieldLength, SeekOrigin.Current);
+                        id = reader.ReadInt32();
+                        this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
                         if (deletedRecordPositions.TryDequeue(out lastDeletedRecordPosition))
                         {
                             buffer = reader.ReadBytes(RecordInBytesLength);
                             this.fileStream.Seek(-RecordInBytesLength, SeekOrigin.Current);
                             this.fileStream.WriteByte(1); // deleted
+
+                            this.idpositionPairs[id] = lastDeletedRecordPosition;
                             this.fileStream.Seek(lastDeletedRecordPosition, SeekOrigin.Begin);
                             writer.Write(buffer, 0, RecordInBytesLength);
+
+                            deletedRecordPositions.Enqueue(this.fileStream.Position);
+                            lastAliveRecordPosition = this.fileStream.Position;
+                            this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
                         }
                         else
                         {
                             this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
+                            lastAliveRecordPosition = this.fileStream.Position;
                         }
-
-                        lastAliveRecordPosition = this.fileStream.Position;
                     }
                 }
             }

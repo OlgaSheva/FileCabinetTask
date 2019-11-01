@@ -46,11 +46,11 @@ namespace FileCabinetApp.Services
         /// Determines whether [is there a record with this identifier] [the specified identifier].
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="index">The index.</param>
+        /// <param name="position">The record position.</param>
         /// <returns>
         ///   <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
         /// </returns>
-        bool IsThereARecordWithThisId(int id, out int index);
+        bool IsThereARecordWithThisId(int id, out long position);
 
         /// <summary>
         /// Makes the snapshot.
@@ -70,7 +70,7 @@ namespace FileCabinetApp.Services
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="position">Record position.</param>
-        void Remove(int id, int position);
+        void Remove(int id, long position);
 
         /// <summary>
         /// Purges the specified deleted records count.
