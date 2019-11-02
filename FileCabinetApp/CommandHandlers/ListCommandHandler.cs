@@ -4,13 +4,11 @@ using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    internal class ListCommandHandler : CommandHandlerBase
+    internal class ListCommandHandler : ServiceCommandHandlerBase
     {
-        private static IFileCabinetService fileCabinetService;
-
-        public ListCommandHandler(IFileCabinetService service)
+        public ListCommandHandler(IFileCabinetService service) 
+            : base(service)
         {
-            fileCabinetService = service;
         }
 
         public override AppCommandRequest Handle(AppCommandRequest request)
@@ -28,7 +26,7 @@ namespace FileCabinetApp.CommandHandlers
 
         private static void List(string parameters)
         {
-            ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = fileCabinetService.GetRecords();
+            ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = service.GetRecords();
             Print(fileCabinetRecords);
         }
 

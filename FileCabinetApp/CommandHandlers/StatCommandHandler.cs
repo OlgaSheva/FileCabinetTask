@@ -3,13 +3,11 @@ using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    internal class StatCommandHandler : CommandHandlerBase
+    internal class StatCommandHandler : ServiceCommandHandlerBase
     {
-        private static IFileCabinetService fileCabinetService;
-
         public StatCommandHandler(IFileCabinetService service)
+            : base(service)
         {
-            fileCabinetService = service;
         }
 
         public override AppCommandRequest Handle(AppCommandRequest request)
@@ -27,7 +25,7 @@ namespace FileCabinetApp.CommandHandlers
 
         private static void Stat(string parameters)
         {
-            var recordsCount = fileCabinetService.GetStat(out int deletedRecordsCount);
+            var recordsCount = service.GetStat(out int deletedRecordsCount);
             Console.WriteLine($"{recordsCount} record(s). Number of deleted records: {deletedRecordsCount}.");
         }
     }

@@ -4,13 +4,11 @@ using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    internal class RemoveCommandHandler : CommandHandlerBase
+    internal class RemoveCommandHandler : ServiceCommandHandlerBase
     {
-        private static IFileCabinetService fileCabinetService;
-
         public RemoveCommandHandler(IFileCabinetService service)
+            : base(service)
         {
-            fileCabinetService = service;
         }
 
         public override AppCommandRequest Handle(AppCommandRequest request)
@@ -31,15 +29,15 @@ namespace FileCabinetApp.CommandHandlers
             int id = -1;
             if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
                 || id == 0
-                || fileCabinetService.GetStat(out int deletedRecordsCount) == 0)
+                || service.GetStat(out int deletedRecordsCount) == 0)
             {
                 Console.WriteLine($"Record '{parameters}' doesn't exists.");
                 return;
             }
 
-            if (fileCabinetService.IsThereARecordWithThisId(id, out long position))
+            if (service.IsThereARecordWithThisId(id, out long position))
             {
-                fileCabinetService.Remove(id, position);
+                service.Remove(id, position);
                 Console.WriteLine($"Record #{id} is removed.");
             }
             else

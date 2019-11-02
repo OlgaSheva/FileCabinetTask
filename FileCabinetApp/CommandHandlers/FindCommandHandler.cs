@@ -4,13 +4,11 @@ using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    internal class FindCommandHandler : CommandHandlerBase
+    internal class FindCommandHandler : ServiceCommandHandlerBase
     {
-        private static IFileCabinetService fileCabinetService;
-
         public FindCommandHandler(IFileCabinetService service)
+            : base(service)
         {
-            fileCabinetService = service;
         }
 
         public override AppCommandRequest Handle(AppCommandRequest request)
@@ -30,7 +28,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             try
             {
-                ReadOnlyCollection<FileCabinetRecord> findList = fileCabinetService.Find(parameters);
+                ReadOnlyCollection<FileCabinetRecord> findList = service.Find(parameters);
                 Print(findList);
             }
             catch (InvalidOperationException ioex)

@@ -5,14 +5,13 @@ using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    internal class ExportCommandHandler : CommandHandlerBase
+    internal class ExportCommandHandler : ServiceCommandHandlerBase
     {
         private static StreamWriter streamWriter;
-        private static IFileCabinetService fileCabinetService;
 
         public ExportCommandHandler(IFileCabinetService service)
+            : base(service)
         {
-            fileCabinetService = service;
         }
 
         public override AppCommandRequest Handle(AppCommandRequest request)
@@ -69,7 +68,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 using (streamWriter = new StreamWriter(p))
                 {
-                    FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
+                    FileCabinetServiceSnapshot snapshot = service.MakeSnapshot();
 
                     if (format == csvFileType)
                     {

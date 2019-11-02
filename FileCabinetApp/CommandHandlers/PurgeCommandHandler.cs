@@ -3,13 +3,11 @@ using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    internal class PurgeCommandHandler : CommandHandlerBase
+    internal class PurgeCommandHandler : ServiceCommandHandlerBase
     {
-        private static IFileCabinetService fileCabinetService;
-
         public PurgeCommandHandler(IFileCabinetService service)
+            : base(service)
         {
-            fileCabinetService = service;
         }
 
         public override AppCommandRequest Handle(AppCommandRequest request)
@@ -27,8 +25,8 @@ namespace FileCabinetApp.CommandHandlers
 
         private static void Purge(string parameters)
         {
-            fileCabinetService.Purge(out int deletedRecordsCount, out int recordsCount);
-            if (fileCabinetService is FileCabinetFilesystemService)
+            service.Purge(out int deletedRecordsCount, out int recordsCount);
+            if (service is FileCabinetFilesystemService)
             {
                 Console.WriteLine($"Data file processing is completed: {deletedRecordsCount} of {recordsCount} records were purged.");
             }

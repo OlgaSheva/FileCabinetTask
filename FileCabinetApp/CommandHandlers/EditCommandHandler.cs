@@ -6,16 +6,16 @@ using FileCabinetApp.Validators.InputValidator;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    internal class EditCommandHandler : CommandHandlerBase
+    internal class EditCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
-        private static IFileCabinetService service;
         private static IInputConverter converter;
         private static IInputValidator validator;
 
-        public EditCommandHandler(IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator)
+        public EditCommandHandler(
+            IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator)
+            : base (fileCabinetService)
         {
-            service = fileCabinetService;
             converter = inputConverter;
             validator = inputValidator;
         }
