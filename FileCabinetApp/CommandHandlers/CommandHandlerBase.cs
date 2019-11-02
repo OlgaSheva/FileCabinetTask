@@ -3,7 +3,7 @@
     /// <summary>
     /// Abstract command handler.
     /// </summary>
-    /// <seealso cref="FileCabinetApp.Handlers.ICommandHandler" />
+    /// <seealso cref="FileCabinetApp.CommandHandlers.ICommandHandler" />
     public class CommandHandlerBase : ICommandHandler
     {
         private ICommandHandler nextHandler;
