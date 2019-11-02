@@ -16,7 +16,7 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
-        public static bool isRunning = true;
+        private static bool isRunning = true;
 
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private const string CustomValidationType = "custom";
@@ -74,7 +74,7 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHandlers()
         {
-            var exitHandler = new ExitCommandHandler(fileStream);
+            var exitHandler = new ExitCommandHandler(fileStream, (x) => isRunning = x);
             var helpHandler = new HelpCommandHandler();
             var createHandle = new CreateCommandHandler(fileCabinetService, converter, validator);
             var editHandler = new EditCommandHandler(fileCabinetService, converter, validator);
