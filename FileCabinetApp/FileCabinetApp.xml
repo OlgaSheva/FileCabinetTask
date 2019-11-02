@@ -36,7 +36,7 @@
             <summary>
             Abstract command handler.
             </summary>
-            <seealso cref="!:FileCabinetApp.Handlers.ICommandHandler" />
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ICommandHandler" />
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
             <summary>

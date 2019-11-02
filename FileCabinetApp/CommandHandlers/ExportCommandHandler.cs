@@ -8,15 +8,24 @@ namespace FileCabinetApp.CommandHandlers
     internal class ExportCommandHandler : CommandHandlerBase
     {
         private static StreamWriter streamWriter;
+        private static IFileCabinetService fileCabinetService;
+
+        public ExportCommandHandler(IFileCabinetService service)
+        {
+            fileCabinetService = service;
+        }
 
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             if (request.Command == "export")
             {
                 Export(request.Parameters);
+                return null;
             }
-
-            return base.Handle(request);
+            else
+            {
+                return base.Handle(request);
+            }
         }
 
         private static void Export(string parameters)
@@ -60,7 +69,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 using (streamWriter = new StreamWriter(p))
                 {
-                    FileCabinetServiceSnapshot snapshot = Program.fileCabinetService.MakeSnapshot();
+                    FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
 
                     if (format == csvFileType)
                     {

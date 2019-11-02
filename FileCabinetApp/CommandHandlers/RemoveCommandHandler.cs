@@ -1,18 +1,29 @@
 ﻿using System;
 using System.Globalization;
+using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
     internal class RemoveCommandHandler : CommandHandlerBase
     {
+        private static IFileCabinetService fileCabinetService;
+
+        public RemoveCommandHandler(IFileCabinetService service)
+        {
+            fileCabinetService = service;
+        }
+
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             if (request.Command == "remove")
             {
                 Remove(request.Parameters);
+                return null;
             }
-
-            return base.Handle(request);
+            else
+            {
+                return base.Handle(request);
+            }
         }
 
         private static void Remove(string parameters)
@@ -20,15 +31,15 @@ namespace FileCabinetApp.CommandHandlers
             int id = -1;
             if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
                 || id == 0
-                || Program.fileCabinetService.GetStat(out int deletedRecordsCount) == 0)
+                || fileCabinetService.GetStat(out int deletedRecordsCount) == 0)
             {
                 Console.WriteLine($"Record '{parameters}' doesn't exists.");
                 return;
             }
 
-            if (Program.fileCabinetService.IsThereARecordWithThisId(id, out long position))
+            if (fileCabinetService.IsThereARecordWithThisId(id, out long position))
             {
-                Program.fileCabinetService.Remove(id, position);
+                fileCabinetService.Remove(id, position);
                 Console.WriteLine($"Record #{id} is removed.");
             }
             else

@@ -7,14 +7,24 @@ namespace FileCabinetApp.CommandHandlers
 {
     internal class ImportCommandHandler : CommandHandlerBase
     {
+        private static IFileCabinetService fileCabinetService;
+
+        public ImportCommandHandler(IFileCabinetService service)
+        {
+            fileCabinetService = service;
+        }
+
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             if (request.Command == "import")
             {
                 Import(request.Parameters);
+                return null;
             }
-
-            return base.Handle(request);
+            else
+            {
+                return base.Handle(request);
+            }
         }
 
         private static void Import(string parameters)
@@ -60,7 +70,7 @@ namespace FileCabinetApp.CommandHandlers
             using (StreamReader reader = new StreamReader(filePath))
             {
                 snapshot.LoadFromCSV(reader, out recordsCount);
-                Program.fileCabinetService.Restore(snapshot, out exceptions);
+                fileCabinetService.Restore(snapshot, out exceptions);
             }
 
             foreach (var ex in exceptions)
@@ -79,7 +89,7 @@ namespace FileCabinetApp.CommandHandlers
             using (StreamReader reader = new StreamReader(filePath))
             {
                 snapshot.LoadFromXML(reader, out recordsCount);
-                Program.fileCabinetService.Restore(snapshot, out exceptions);
+                fileCabinetService.Restore(snapshot, out exceptions);
             }
 
             foreach (var ex in exceptions)

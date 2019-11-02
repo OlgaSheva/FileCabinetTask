@@ -1,25 +1,36 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
     internal class FindCommandHandler : CommandHandlerBase
     {
+        private static IFileCabinetService fileCabinetService;
+
+        public FindCommandHandler(IFileCabinetService service)
+        {
+            fileCabinetService = service;
+        }
+
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             if (request.Command == "find")
             {
                 FindByParameter(request.Parameters);
+                return null;
             }
-
-            return base.Handle(request);
+            else
+            {
+                return base.Handle(request);
+            }
         }
 
         private static void FindByParameter(string parameters)
         {
             try
             {
-                ReadOnlyCollection<FileCabinetRecord> findList = Program.fileCabinetService.Find(parameters);
+                ReadOnlyCollection<FileCabinetRecord> findList = fileCabinetService.Find(parameters);
                 Print(findList);
             }
             catch (InvalidOperationException ioex)

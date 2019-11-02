@@ -16,19 +16,18 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
+        public static bool isRunning = true;
+
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private const string CustomValidationType = "custom";
         private const string DefaultValidationRules = "default";
         private const string DeveloperName = "Olga Kripulevich";
 
-        public static IInputConverter converter;
-        public static IInputValidator validator;
-
-        public static bool isRunning = true;
-        public static IFileCabinetService fileCabinetService;
-        public static string validationRules;
-        public static ServiceType serviceType;
-        public static FileStream fileStream;
+        private static IInputConverter converter;
+        private static IInputValidator validator;
+        private static IFileCabinetService fileCabinetService;
+        private static string validationRules;
+        private static FileStream fileStream;
 
         /// <summary>
         /// Defines the entry point of the application.
@@ -75,17 +74,17 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHandlers()
         {
-            var exitHandler = new ExitCommandHandler();
+            var exitHandler = new ExitCommandHandler(fileStream);
             var helpHandler = new HelpCommandHandler();
-            var createHandle = new CreateCommandHandler();
-            var editHandler = new EditCommandHandler();
-            var findHandler = new FindCommandHandler();
-            var exportHandler = new ExportCommandHandler();
-            var importHandler = new ImportCommandHandler();
-            var removeHandler = new RemoveCommandHandler();
-            var listHandle = new ListCommandHandler();
-            var statHandler = new StatCommandHandler();
-            var purgeHadler = new PurgeCommandHandler();
+            var createHandle = new CreateCommandHandler(fileCabinetService, converter, validator);
+            var editHandler = new EditCommandHandler(fileCabinetService, converter, validator);
+            var findHandler = new FindCommandHandler(fileCabinetService);
+            var exportHandler = new ExportCommandHandler(fileCabinetService);
+            var importHandler = new ImportCommandHandler(fileCabinetService);
+            var removeHandler = new RemoveCommandHandler(fileCabinetService);
+            var listHandle = new ListCommandHandler(fileCabinetService);
+            var statHandler = new StatCommandHandler(fileCabinetService);
+            var purgeHadler = new PurgeCommandHandler(fileCabinetService);
             var missedCommandHandler = new MissedCommandHandler();
             helpHandler
                 .SetNext(exitHandler)

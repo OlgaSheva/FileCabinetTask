@@ -53,11 +53,11 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(rec));
             }
 
+            this.IdAndPositionSortedList();
             this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
-            int maxExistId = this.idpositionPairs.Keys[this.idpositionPairs.Count - 1];
             var record = new FileCabinetRecord
             {
-                Id = this.idpositionPairs.Count > 0 ? maxExistId + 1 : 1,
+                Id = this.idpositionPairs.Count > 0 ? this.idpositionPairs.Keys[this.idpositionPairs.Count - 1] + 1 : 1,
                 FirstName = rec.FirstName,
                 LastName = rec.LastName,
                 DateOfBirth = rec.DateOfBirth,
@@ -216,10 +216,7 @@ namespace FileCabinetApp.Services
         /// </returns>
         public int GetStat(out int deletedRecordsCount)
         {
-            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
-            {
-                this.IdAndPositionSortedList(reader);
-            }
+            this.IdAndPositionSortedList();
 
             this.fileStream.Seek(0, SeekOrigin.End);
             int recordsCount = (int)(this.fileStream.Position / RecordInBytesLength);
@@ -274,7 +271,7 @@ namespace FileCabinetApp.Services
             var recordsFromFile = snapshot.FileCabinetRecords.ToList();
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                this.IdAndPositionSortedList(binaryReader);
+                this.IdAndPositionSortedList();
 
                 bool flag = false;
                 int existId = -1;
@@ -449,26 +446,30 @@ namespace FileCabinetApp.Services
             };
         }
 
-        private void IdAndPositionSortedList(BinaryReader binaryReader)
+        private void IdAndPositionSortedList()
         {
             this.fileStream.Seek(0, SeekOrigin.Begin);
             int id;
-            while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
-            {
-                if (binaryReader.ReadBytes(ReservedFieldLength)[0] == 0)
-                {
-                    id = binaryReader.ReadInt32();
-                    this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
-                    if (!this.idpositionPairs.Keys.Contains(id))
-                    {
-                        this.idpositionPairs.Add(id, this.fileStream.Position);
-                    }
 
-                    this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
-                }
-                else
+            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            {
+                while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
                 {
-                    this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
+                    if (binaryReader.ReadBytes(ReservedFieldLength)[0] == 0)
+                    {
+                        id = binaryReader.ReadInt32();
+                        this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
+                        if (!this.idpositionPairs.Keys.Contains(id))
+                        {
+                            this.idpositionPairs.Add(id, this.fileStream.Position);
+                        }
+
+                        this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
+                    }
+                    else
+                    {
+                        this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
+                    }
                 }
             }
         }

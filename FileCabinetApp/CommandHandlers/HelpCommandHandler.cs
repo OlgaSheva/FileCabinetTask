@@ -29,9 +29,12 @@ namespace FileCabinetApp.CommandHandlers
             if (request.Command == "help")
             {
                 PrintHelp(request.Parameters);
+                return null;
             }
-
-            return base.Handle(request);
+            else
+            {
+                return base.Handle(request);
+            }
         }
 
         private static void PrintHelp(string parameters)

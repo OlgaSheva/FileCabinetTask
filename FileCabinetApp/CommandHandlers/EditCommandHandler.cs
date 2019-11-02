@@ -1,20 +1,36 @@
 ﻿using System;
 using System.Globalization;
+using FileCabinetApp.Converters;
+using FileCabinetApp.Services;
+using FileCabinetApp.Validators.InputValidator;
 
 namespace FileCabinetApp.CommandHandlers
 {
     internal class EditCommandHandler : CommandHandlerBase
     {
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+        private static IFileCabinetService service;
+        private static IInputConverter converter;
+        private static IInputValidator validator;
+
+        public EditCommandHandler(IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator)
+        {
+            service = fileCabinetService;
+            converter = inputConverter;
+            validator = inputValidator;
+        }
 
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             if (request.Command == "edit")
             {
                 Edit(request.Parameters);
+                return null;
             }
-
-            return base.Handle(request);
+            else
+            {
+                return base.Handle(request);
+            }
         }
 
         private static void Edit(string parameters)
@@ -22,19 +38,19 @@ namespace FileCabinetApp.CommandHandlers
             int id = -1;
             if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
                 || id == 0
-                || Program.fileCabinetService.GetStat(out int deletedRecordsCount) == 0)
+                || service.GetStat(out int deletedRecordsCount) == 0)
             {
                 Console.WriteLine($"The '{parameters}' isn't an ID.");
                 return;
             }
 
-            if (Program.fileCabinetService.IsThereARecordWithThisId(id, out long index))
+            if (service.IsThereARecordWithThisId(id, out long index))
             {
                 var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
                 try
                 {
                     Record record = new Record(firstName, lastName, dateOfBirth, gender, office, salary);
-                    Program.fileCabinetService.EditRecord(id, record);
+                    service.EditRecord(id, record);
                 }
                 catch (ArgumentNullException anex)
                 {
@@ -87,18 +103,18 @@ namespace FileCabinetApp.CommandHandlers
         {
             var firstAndLastName = new CultureInfo("ru-RU").TextInfo;
 
-            Func<string, Tuple<bool, string>> firstNameValidator = Program.validator.FirstNameValidator;
-            Func<string, Tuple<bool, string>> lastNameValidator = Program.validator.LastNameValidator;
-            Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = Program.validator.DateOfBirthValidator;
-            Func<char, Tuple<bool, string>> genderValidator = Program.validator.GenderValidator;
-            Func<short, Tuple<bool, string>> officeValidator = Program.validator.OfficeValidator;
-            Func<decimal, Tuple<bool, string>> salaryValidator = Program.validator.SalaryValidator;
+            Func<string, Tuple<bool, string>> firstNameValidator = validator.FirstNameValidator;
+            Func<string, Tuple<bool, string>> lastNameValidator = validator.LastNameValidator;
+            Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = validator.DateOfBirthValidator;
+            Func<char, Tuple<bool, string>> genderValidator = validator.GenderValidator;
+            Func<short, Tuple<bool, string>> officeValidator = validator.OfficeValidator;
+            Func<decimal, Tuple<bool, string>> salaryValidator = validator.SalaryValidator;
 
-            Func<string, Tuple<bool, string, string>> stringConverter = Program.converter.StringConverter;
-            Func<string, Tuple<bool, string, DateTime>> dateConverter = Program.converter.DateConverter;
-            Func<string, Tuple<bool, string, char>> charConverter = Program.converter.CharConverter;
-            Func<string, Tuple<bool, string, short>> shortConverter = Program.converter.ShortConverter;
-            Func<string, Tuple<bool, string, decimal>> decimalConverter = Program.converter.DecimalConverter;
+            Func<string, Tuple<bool, string, string>> stringConverter = converter.StringConverter;
+            Func<string, Tuple<bool, string, DateTime>> dateConverter = converter.DateConverter;
+            Func<string, Tuple<bool, string, char>> charConverter = converter.CharConverter;
+            Func<string, Tuple<bool, string, short>> shortConverter = converter.ShortConverter;
+            Func<string, Tuple<bool, string, decimal>> decimalConverter = converter.DecimalConverter;
 
             Console.Write("First name: ");
             var firstName = ReadInput(stringConverter, firstNameValidator);

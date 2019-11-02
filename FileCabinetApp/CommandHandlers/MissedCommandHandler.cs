@@ -7,8 +7,7 @@ namespace FileCabinetApp.CommandHandlers
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             PrintMissedCommandInfo(request.Command);
-
-            return base.Handle(request);
+            return null;
         }
 
         private static void PrintMissedCommandInfo(string command)
