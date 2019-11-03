@@ -134,11 +134,9 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(parameters));
             }
 
-            string key = parameters.Split(' ')[0].ToLower(CultureInfo.CurrentCulture);
-            string value = parameters.Replace(key, string.Empty, StringComparison.InvariantCultureIgnoreCase).Trim().Trim('"');
-
-            var textInfo = new CultureInfo("ru-RU").TextInfo;
-            value = textInfo.ToTitleCase(textInfo.ToLower(value));
+            string[] par = parameters.Split(' ', 2);
+            string key = par[0].ToLower(CultureInfo.CurrentCulture);
+            string value = par[1].Trim().Trim('"');
 
             ReadOnlyCollection<FileCabinetRecord> findCollection = null;
             try
@@ -516,7 +514,7 @@ namespace FileCabinetApp.Services
                         this.fileStream.Seek(-ReservedFieldLength + FirstNamePosition, SeekOrigin.Current);
                         firstNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
                             binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
-                        if (firstNameFromFile == firstName)
+                        if (firstNameFromFile.Equals(firstName, StringComparison.InvariantCultureIgnoreCase))
                         {
                             this.fileStream.Seek(-LastNamePosition, SeekOrigin.Current);
                             dateList.Add(CreateNewFileCabinetRecord(binaryReader));
@@ -552,7 +550,7 @@ namespace FileCabinetApp.Services
                         this.fileStream.Seek(-ReservedFieldLength + LastNamePosition, SeekOrigin.Current);
                         lastNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
                             binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
-                        if (lastNameFromFile == lastName)
+                        if (lastNameFromFile.Equals(lastName, StringComparison.InvariantCultureIgnoreCase))
                         {
                             this.fileStream.Seek(-DatePosition, SeekOrigin.Current);
                             dateList.Add(CreateNewFileCabinetRecord(binaryReader));

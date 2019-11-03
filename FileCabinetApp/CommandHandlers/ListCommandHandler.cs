@@ -1,40 +1,30 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using FileCabinetApp.CommandHandlers.Printer;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
     internal class ListCommandHandler : ServiceCommandHandlerBase
     {
-        public ListCommandHandler(IFileCabinetService service) 
+        private IRecordPrinter printer;
+
+        public ListCommandHandler(IFileCabinetService service, IRecordPrinter printer)
             : base(service)
         {
+            this.printer = printer;
         }
 
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             if (request.Command == "list")
             {
-                List(request.Parameters);
+                ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = service.GetRecords();
+                this.printer.Print(fileCabinetRecords);
                 return null;
             }
             else
             {
                 return base.Handle(request);
-            }
-        }
-
-        private static void List(string parameters)
-        {
-            ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = service.GetRecords();
-            Print(fileCabinetRecords);
-        }
-
-        private static void Print(ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords)
-        {
-            foreach (var item in fileCabinetRecords)
-            {
-                Console.WriteLine(item.ToString());
             }
         }
     }
