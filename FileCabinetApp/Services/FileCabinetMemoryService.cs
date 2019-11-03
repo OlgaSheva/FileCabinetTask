@@ -64,14 +64,15 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="rec">The record.</param>
         /// <returns>New file cabinet record.</returns>
-        public int CreateRecord(Record rec)
+        public int CreateRecord(RecordParameters rec)
         {
             if (rec == null)
             {
                 throw new ArgumentNullException(nameof(rec));
             }
 
-            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
+            this.validator.ValidateParameters(
+                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
 
             int newId = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id + 1 : 1;
 
@@ -123,7 +124,7 @@ namespace FileCabinetApp
         /// or
         /// The {nameof(id)} doesn't exist.
         /// </exception>
-        public void EditRecord(int id, Record rec)
+        public void EditRecord(int id, RecordParameters rec)
         {
             if (rec == null)
             {
@@ -135,23 +136,25 @@ namespace FileCabinetApp
                 throw new ArgumentException($"The {nameof(id)} can't be less than zero.", nameof(id));
             }
 
-            if (!this.IsThereARecordWithThisId(id, out int indexInList))
+            if (!this.IsThereARecordWithThisId(id, out long indexInList))
             {
                 throw new ArgumentException($"The {nameof(id)} doesn't exist.", nameof(id));
             }
 
-            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
+            int index = (int)indexInList;
+            this.validator.ValidateParameters(
+                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
 
-            this.RemoveFromDictionaries(indexInList);
+            this.RemoveFromDictionaries(index);
 
-            this.list[indexInList].FirstName = rec.FirstName;
-            this.list[indexInList].LastName = rec.LastName;
-            this.list[indexInList].DateOfBirth = rec.DateOfBirth;
-            this.list[indexInList].Gender = rec.Gender;
-            this.list[indexInList].Office = rec.Office;
-            this.list[indexInList].Salary = rec.Salary;
+            this.list[index].FirstName = rec.FirstName;
+            this.list[index].LastName = rec.LastName;
+            this.list[index].DateOfBirth = rec.DateOfBirth;
+            this.list[index].Gender = rec.Gender;
+            this.list[index].Office = rec.Office;
+            this.list[index].Salary = rec.Salary;
 
-            this.EditDictionaries(rec, indexInList);
+            this.EditDictionaries(rec, index);
         }
 
         /// <summary>
@@ -207,7 +210,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="position">Record position.</param>
-        public void Remove(int id, int position)
+        public void Remove(int id, long position)
         {
             if (id <= 0)
             {
@@ -219,8 +222,8 @@ namespace FileCabinetApp
                 throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
             }
 
-            this.RemoveFromDictionaries(position);
-            this.list.Remove(this.list[position]);
+            this.RemoveFromDictionaries((int)position);
+            this.list.Remove(this.list[(int)position]);
         }
 
         /// <summary>
@@ -231,7 +234,7 @@ namespace FileCabinetApp
         /// <returns>
         ///   <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsThereARecordWithThisId(int id, out int index)
+        public bool IsThereARecordWithThisId(int id, out long index)
         {
             index = -1;
             for (int i = 0; i < this.list.Count; i++)
@@ -291,7 +294,8 @@ namespace FileCabinetApp
                         throw new ArgumentException(nameof(record.Id));
                     }
 
-                    this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
+                    this.validator.ValidateParameters(
+                        new RecordParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary));
                     if (flag)
                     {
                         this.RemoveFromDictionaries(matchingIdPosition);
@@ -362,7 +366,7 @@ namespace FileCabinetApp
             this.dateOfBirthDictionary[this.list[index].DateOfBirth].Remove(this.list[index]);
         }
 
-        private void EditDictionaries(Record rec, int indexInList)
+        private void EditDictionaries(RecordParameters rec, int indexInList)
         {
             if (!this.firstNameDictionary.ContainsKey(rec.FirstName))
             {

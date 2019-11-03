@@ -54,6 +54,7 @@
         <Rule Id="CA2200" Action="Warning" />
         <Rule Id="CA2202" Action="Warning" />
         <Rule Id="CA2207" Action="Warning" />
+		<Rule Id="CA2211" Action="None" />
         <Rule Id="CA2212" Action="Warning" />
         <Rule Id="CA2213" Action="Warning" />
         <Rule Id="CA2214" Action="Warning" />
@@ -75,9 +76,11 @@
         <Rule Id="SA1200" Action="None" />
         <Rule Id="SA1305" Action="Warning" />
         <Rule Id="SA1400" Action="Error" />
+		<Rule Id="SA1401" Action="None" />
         <Rule Id="SA1412" Action="Warning" />
-        <Rule Id="SA1600" Action="None" />
+        <Rule Id="SA1600" Action="Warning" />
         <Rule Id="SA1609" Action="Warning" />
+        <Rule Id="SA1610" Action="None" />		
         <Rule Id="SA1633" Action="None" />
   </Rules>
 </RuleSet>

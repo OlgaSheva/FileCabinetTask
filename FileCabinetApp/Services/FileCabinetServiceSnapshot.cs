@@ -25,6 +25,12 @@ namespace FileCabinetApp.Services
             this.fileCabinetRecords = list?.ToArray() ?? Array.Empty<FileCabinetRecord>();
         }
 
+        /// <summary>
+        /// Gets the file cabinet records.
+        /// </summary>
+        /// <value>
+        /// The file cabinet records.
+        /// </value>
         public ReadOnlyCollection<FileCabinetRecord> FileCabinetRecords
         {
             get => new ReadOnlyCollection<FileCabinetRecord>(this.fileCabinetRecords);
@@ -116,6 +122,12 @@ namespace FileCabinetApp.Services
             this.fileCabinetRecords = recordsFromFile.ToArray();
         }
 
+        /// <summary>
+        /// Loads from XML.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="recordsCount">The records count.</param>
+        /// <exception cref="ArgumentNullException">Reader is null.</exception>
         internal void LoadFromXML(StreamReader reader, out int recordsCount)
         {
             if (reader == null)

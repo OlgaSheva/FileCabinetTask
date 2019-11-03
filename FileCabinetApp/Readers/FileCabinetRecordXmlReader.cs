@@ -7,6 +7,9 @@ using FileCabinetGenerator.Models;
 
 namespace FileCabinetApp.Readers
 {
+    /// <summary>
+    /// File cabinet records XML reader.
+    /// </summary>
     internal class FileCabinetRecordXmlReader
     {
         private readonly StreamReader reader;
