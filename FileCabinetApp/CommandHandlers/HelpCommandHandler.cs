@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    /// Help command handler.
+    /// </summary>
+    /// <seealso cref="FileCabinetApp.CommandHandlers.CommandHandlerBase" />
     internal class HelpCommandHandler : CommandHandlerBase
     {
         private const int CommandHelpIndex = 0;
@@ -24,6 +26,13 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "purge", "defragment a data file", "The 'purge' command defragment a data file." },
         };
 
+        /// <summary>
+        /// Handles the specified request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns>
+        /// Class AppCommandRequest Instance.
+        /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             if (request.Command == "help")

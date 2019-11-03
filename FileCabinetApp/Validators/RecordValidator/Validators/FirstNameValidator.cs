@@ -3,18 +3,33 @@ using System.Text.RegularExpressions;
 
 namespace FileCabinetApp.Validators.RecordValidator
 {
+    /// <summary>
+    /// The first name validotor.
+    /// </summary>
+    /// <seealso cref="FileCabinetApp.Validators.IRecordValidator" />
     internal class FirstNameValidator : IRecordValidator
     {
         private const string NamePattern = @"^[a-zA-Z '.-]*$";
         private readonly int minLength;
         private readonly int maxLength;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FirstNameValidator"/> class.
+        /// </summary>
+        /// <param name="min">The minimum.</param>
+        /// <param name="max">The maximum.</param>
         internal FirstNameValidator(int min, int max)
         {
             this.minLength = min;
             this.maxLength = max;
         }
 
+        /// <summary>
+        /// Validates the parameters.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <exception cref="ArgumentNullException">FirstName is null.</exception>
+        /// <exception cref="ArgumentException">FirstName.</exception>
         public void ValidateParameters(RecordParameters parameters)
         {
             var firstname = parameters.FirstName;

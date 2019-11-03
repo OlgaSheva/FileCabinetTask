@@ -127,13 +127,13 @@ namespace FileCabinetApp
                 case ServiceType.File:
                     fileStream = new FileStream(dataFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
                     fileCabinetService = (validationRules == CustomValidationType)
-                         ? new FileCabinetFilesystemService(fileStream, new CustomValidator())
-                         : new FileCabinetFilesystemService(fileStream, new DefaultValidator());
+                         ? new FileCabinetFilesystemService(fileStream, new ValidatorBuilder().CreateCustom())
+                         : new FileCabinetFilesystemService(fileStream, new ValidatorBuilder().CreateDefault());
                     break;
                 case ServiceType.Memory:
                     fileCabinetService = (validationRules == CustomValidationType)
-                                ? new FileCabinetMemoryService(new CustomValidator())
-                                : new FileCabinetMemoryService(new DefaultValidator());
+                                ? new FileCabinetMemoryService(new ValidatorBuilder().CreateCustom())
+                                : new FileCabinetMemoryService(new ValidatorBuilder().CreateDefault());
                     break;
                 default:
                     throw new Exception();

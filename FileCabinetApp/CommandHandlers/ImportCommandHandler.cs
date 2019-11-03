@@ -5,13 +5,28 @@ using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    /// Import command handler.
+    /// </summary>
+    /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class ImportCommandHandler : ServiceCommandHandlerBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImportCommandHandler"/> class.
+        /// </summary>
+        /// <param name="service">The service.</param>
         public ImportCommandHandler(IFileCabinetService service)
             : base(service)
         {
         }
 
+        /// <summary>
+        /// Handles the specified request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns>
+        /// Class AppCommandRequest Instance.
+        /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             if (request.Command == "import")

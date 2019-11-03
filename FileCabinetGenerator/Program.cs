@@ -67,8 +67,8 @@ namespace FileCabinetGenerator
                 Id = startId + index,
                 FullName = new Name()
                 {
-                    FirstName = "fn" + random.Next(0, 10000),
-                    LastName = "ln" + random.Next(0, 10000),
+                    FirstName = "Fn" + random.Next(0, 10000),
+                    LastName = "Ln" + random.Next(0, 10000),
                 },
                 DateOfBirth = minDate.AddDays(random.Next(0, daysDiff)),
                 Gender = genderChars[random.Next(0, genderChars.Length - 1)],

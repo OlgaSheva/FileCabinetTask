@@ -6,12 +6,22 @@ using FileCabinetApp.Validators.InputValidator;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    /// The command handler creater.
+    /// </summary>
+    /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class CreateCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private static IInputConverter converter;
         private static IInputValidator validator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
+        /// <param name="inputConverter">The input converter.</param>
+        /// <param name="inputValidator">The input validator.</param>
         public CreateCommandHandler(
             IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator)
             : base(fileCabinetService)
@@ -20,6 +30,13 @@ namespace FileCabinetApp.CommandHandlers
             validator = inputValidator;
         }
 
+        /// <summary>
+        /// Handles the specified request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns>
+        /// Class AppCommandRequest Instance.
+        /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             if (request.Command == "create")
