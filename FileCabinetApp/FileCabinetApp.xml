@@ -895,17 +895,34 @@
             <param name="salary">The salary.</param>
             <returns>Is parameter valid.</returns>
         </member>
+        <member name="T:FileCabinetApp.Validators.RecordValidator.CompositeValidator">
+            <summary>
+            Composited validator.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
+        </member>
+        <member name="M:FileCabinetApp.Validators.RecordValidator.CompositeValidator.#ctor(System.Collections.Generic.IEnumerable{FileCabinetApp.Validators.IRecordValidator})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.RecordValidator.CompositeValidator"/> class.
+            </summary>
+            <param name="validators">The validators.</param>
+        </member>
+        <member name="M:FileCabinetApp.Validators.RecordValidator.CompositeValidator.ValidateParameters(FileCabinetApp.RecordParameters)">
+            <summary>
+            Validates the parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+        </member>
         <member name="T:FileCabinetApp.Validators.RecordValidator.CustomValidator">
             <summary>
             Custom validator class.
             </summary>
             <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
         </member>
-        <member name="M:FileCabinetApp.Validators.RecordValidator.CustomValidator.ValidateParameters(FileCabinetApp.RecordParameters)">
+        <member name="M:FileCabinetApp.Validators.RecordValidator.CustomValidator.#ctor">
             <summary>
-            Validates the parameters.
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.RecordValidator.CustomValidator"/> class.
             </summary>
-            <param name="parameters">The parameters.</param>
         </member>
         <member name="T:FileCabinetApp.Validators.RecordValidator.DefaultValidator">
             <summary>
@@ -913,11 +930,10 @@
             </summary>
             <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
         </member>
-        <member name="M:FileCabinetApp.Validators.RecordValidator.DefaultValidator.ValidateParameters(FileCabinetApp.RecordParameters)">
+        <member name="M:FileCabinetApp.Validators.RecordValidator.DefaultValidator.#ctor">
             <summary>
-            Validates the parameters.
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.RecordValidator.DefaultValidator"/> class.
             </summary>
-            <param name="parameters">The parameters.</param>
         </member>
         <member name="T:FileCabinetApp.Validators.IRecordValidator">
             <summary>
