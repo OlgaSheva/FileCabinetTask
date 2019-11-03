@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CommandLine;
 using FileCabinetApp.CommandHandlers;
-using FileCabinetApp.CommandHandlers.Printer;
 using FileCabinetApp.CommandLineOptions;
 using FileCabinetApp.Converters;
 using FileCabinetApp.Enums;
@@ -75,7 +75,7 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHandlers()
         {
-            var recordPrinter = new DefaultRecordPrinter();
+            var recordPrinter = new Action<IEnumerable<FileCabinetRecord>>((x) => DefaultRecordPrint(x));
 
             var exitHandler = new ExitCommandHandler(fileStream, (x) => isRunning = x);
             var helpHandler = new HelpCommandHandler();
@@ -140,6 +140,19 @@ namespace FileCabinetApp
             }
 
             return fileCabinetService;
+        }
+
+        private static void DefaultRecordPrint(IEnumerable<FileCabinetRecord> records)
+        {
+            if (records is null)
+            {
+                throw new ArgumentNullException(nameof(records));
+            }
+
+            foreach (var item in records)
+            {
+                Console.WriteLine(item.ToString());
+            }
         }
     }
 }

@@ -76,17 +76,6 @@
             <param name="request">The request.</param>
             <returns>Class AppCommandRequest Instance.</returns>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.Printer.IRecordPrinter">
-            <summary>
-            File cabinet records printer interface.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.Printer.IRecordPrinter.Print(System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord})">
-            <summary>
-            Prints the specified records.
-            </summary>
-            <param name="records">The records.</param>
-        </member>
         <member name="T:FileCabinetApp.CommandLineOptions.Options">
             <summary>
             Command line options.

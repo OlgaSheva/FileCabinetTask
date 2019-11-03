@@ -1,14 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using FileCabinetApp.CommandHandlers.Printer;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
 {
     internal class ListCommandHandler : ServiceCommandHandlerBase
     {
-        private IRecordPrinter printer;
+        private Action<IEnumerable<FileCabinetRecord>> printer;
 
-        public ListCommandHandler(IFileCabinetService service, IRecordPrinter printer)
+        public ListCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
             : base(service)
         {
             this.printer = printer;
@@ -19,7 +20,7 @@ namespace FileCabinetApp.CommandHandlers
             if (request.Command == "list")
             {
                 ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = service.GetRecords();
-                this.printer.Print(fileCabinetRecords);
+                this.printer(fileCabinetRecords);
                 return null;
             }
             else
