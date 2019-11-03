@@ -39,9 +39,9 @@ namespace FileCabinetApp.Validators.RecordValidator
             }
 
             if ((lastname.Length < this.minLength)
-                || (lastname.Length >= this.maxLength)
-                || !Regex.IsMatch(lastname, NamePattern)
-                || string.IsNullOrWhiteSpace(lastname))
+                && (lastname.Length >= this.maxLength)
+                && !Regex.IsMatch(lastname, NamePattern)
+                && string.IsNullOrWhiteSpace(lastname))
             {
                 throw new ArgumentException(nameof(parameters.LastName));
             }

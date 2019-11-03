@@ -356,8 +356,9 @@ namespace FileCabinetApp.Services
             deletedRecordsCount = 0;
             byte[] buffer = new byte[RecordInBytesLength];
             Queue<long> deletedRecordPositions = new Queue<long>();
-            long lastDeletedRecordPosition = -1;
-            long lastAliveRecordPosition = 0;
+            long lastDeletedRecordStart = -1;
+            int deadRecordsCount = 0;
+            long lastAliveRecordEnd = 0;
             int id;
 
             using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
@@ -376,30 +377,31 @@ namespace FileCabinetApp.Services
                     {
                         id = reader.ReadInt32();
                         this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
-                        if (deletedRecordPositions.TryDequeue(out lastDeletedRecordPosition))
+                        if (deletedRecordPositions.TryDequeue(out lastDeletedRecordStart))
                         {
                             buffer = reader.ReadBytes(RecordInBytesLength);
                             this.fileStream.Seek(-RecordInBytesLength, SeekOrigin.Current);
+                            deletedRecordPositions.Enqueue(this.fileStream.Position);
                             this.fileStream.WriteByte(1); // deleted
 
-                            this.idpositionPairs[id] = lastDeletedRecordPosition;
-                            this.fileStream.Seek(lastDeletedRecordPosition, SeekOrigin.Begin);
+                            deadRecordsCount = (int)((this.fileStream.Position - lastAliveRecordEnd) / RecordInBytesLength);
+                            this.idpositionPairs[id] = lastDeletedRecordStart;
+                            this.fileStream.Seek(lastDeletedRecordStart, SeekOrigin.Begin);
                             writer.Write(buffer, 0, RecordInBytesLength);
 
-                            deletedRecordPositions.Enqueue(this.fileStream.Position);
-                            lastAliveRecordPosition = this.fileStream.Position;
-                            this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
+                            lastAliveRecordEnd = this.fileStream.Position;
+                            this.fileStream.Seek(RecordInBytesLength * deadRecordsCount, SeekOrigin.Current);
                         }
                         else
                         {
                             this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
-                            lastAliveRecordPosition = this.fileStream.Position;
+                            lastAliveRecordEnd = this.fileStream.Position;
                         }
                     }
                 }
             }
 
-            this.fileStream.SetLength(lastAliveRecordPosition);
+            this.fileStream.SetLength(lastAliveRecordEnd);
         }
 
         private static byte[] GetBytes(decimal dec)
