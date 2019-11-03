@@ -13,7 +13,7 @@ namespace FileCabinetApp.Services
         /// </summary>
         /// <param name="record">The record.</param>
         /// <returns>New file cabinet record.</returns>
-        int CreateRecord(Record record);
+        int CreateRecord(RecordParameters record);
 
         /// <summary>
         /// Gets the records.
@@ -33,7 +33,7 @@ namespace FileCabinetApp.Services
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="record">The record.</param>
-        void EditRecord(int id, Record record);
+        void EditRecord(int id, RecordParameters record);
 
         /// <summary>
         /// Finds the specified parameters.

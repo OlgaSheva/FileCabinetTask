@@ -5,7 +5,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Class record for transmission to FileCabinetService.CreateRecord and FileCabinetService.EditRecord.
     /// </summary>
-    public class Record
+    public class RecordParameters
     {
         private readonly string firstName;
         private readonly string lastName;
@@ -15,7 +15,7 @@ namespace FileCabinetApp
         private readonly decimal salary;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Record"/> class.
+        /// Initializes a new instance of the <see cref="RecordParameters"/> class.
         /// </summary>
         /// <param name="firstName">The first name.</param>
         /// <param name="lastName">The last name.</param>
@@ -23,7 +23,7 @@ namespace FileCabinetApp
         /// <param name="gender">The gender.</param>
         /// <param name="office">The office.</param>
         /// <param name="salary">The salary.</param>
-        public Record(string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
+        public RecordParameters(string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
         {
             this.firstName = firstName;
             this.lastName = lastName;

@@ -14,7 +14,7 @@ namespace FileCabinetApp.CommandHandlers
 
         public CreateCommandHandler(
             IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator)
-            : base (fileCabinetService)
+            : base(fileCabinetService)
         {
             converter = inputConverter;
             validator = inputValidator;
@@ -40,7 +40,7 @@ namespace FileCabinetApp.CommandHandlers
             int recordId = 0;
             try
             {
-                Record record = new Record(firstName, lastName, dateOfBirth, gender, office, salary);
+                RecordParameters record = new RecordParameters(firstName, lastName, dateOfBirth, gender, office, salary);
                 recordId = service.CreateRecord(record);
                 Console.WriteLine($"Record #{recordId} is created.");
             }

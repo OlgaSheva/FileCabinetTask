@@ -7,8 +7,8 @@ using FileCabinetApp.CommandLineOptions;
 using FileCabinetApp.Converters;
 using FileCabinetApp.Enums;
 using FileCabinetApp.Services;
-using FileCabinetApp.Validators;
 using FileCabinetApp.Validators.InputValidator;
+using FileCabinetApp.Validators.RecordValidator;
 
 namespace FileCabinetApp
 {
@@ -17,8 +17,6 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
-        private static bool isRunning = true;
-
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private const string CustomValidationType = "custom";
         private const string DefaultValidationRules = "default";
@@ -29,6 +27,8 @@ namespace FileCabinetApp
         private static IFileCabinetService fileCabinetService;
         private static string validationRules;
         private static FileStream fileStream;
+
+        private static bool isRunning = true;
 
         /// <summary>
         /// Defines the entry point of the application.

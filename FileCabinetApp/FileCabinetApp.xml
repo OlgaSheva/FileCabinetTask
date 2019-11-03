@@ -323,14 +323,14 @@
             A <see cref="T:System.String" /> that represents this instance.
             </returns>
         </member>
-        <member name="T:FileCabinetApp.Record">
+        <member name="T:FileCabinetApp.RecordParameters">
             <summary>
             Class record for transmission to FileCabinetService.CreateRecord and FileCabinetService.EditRecord.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Record.#ctor(System.String,System.String,System.DateTime,System.Char,System.Int16,System.Decimal)">
+        <member name="M:FileCabinetApp.RecordParameters.#ctor(System.String,System.String,System.DateTime,System.Char,System.Int16,System.Decimal)">
             <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.Record"/> class.
+            Initializes a new instance of the <see cref="T:FileCabinetApp.RecordParameters"/> class.
             </summary>
             <param name="firstName">The first name.</param>
             <param name="lastName">The last name.</param>
@@ -339,7 +339,7 @@
             <param name="office">The office.</param>
             <param name="salary">The salary.</param>
         </member>
-        <member name="P:FileCabinetApp.Record.FirstName">
+        <member name="P:FileCabinetApp.RecordParameters.FirstName">
             <summary>
             Gets the first name.
             </summary>
@@ -347,7 +347,7 @@
             The first name.
             </value>
         </member>
-        <member name="P:FileCabinetApp.Record.LastName">
+        <member name="P:FileCabinetApp.RecordParameters.LastName">
             <summary>
             Gets the last name.
             </summary>
@@ -355,7 +355,7 @@
             The last name.
             </value>
         </member>
-        <member name="P:FileCabinetApp.Record.DateOfBirth">
+        <member name="P:FileCabinetApp.RecordParameters.DateOfBirth">
             <summary>
             Gets the date of birth.
             </summary>
@@ -363,7 +363,7 @@
             The date of birth.
             </value>
         </member>
-        <member name="P:FileCabinetApp.Record.Gender">
+        <member name="P:FileCabinetApp.RecordParameters.Gender">
             <summary>
             Gets the gender.
             </summary>
@@ -371,7 +371,7 @@
             The gender.
             </value>
         </member>
-        <member name="P:FileCabinetApp.Record.Office">
+        <member name="P:FileCabinetApp.RecordParameters.Office">
             <summary>
             Gets the cats count.
             </summary>
@@ -379,7 +379,7 @@
             The cats count.
             </value>
         </member>
-        <member name="P:FileCabinetApp.Record.Salary">
+        <member name="P:FileCabinetApp.RecordParameters.Salary">
             <summary>
             Gets the cats budget.
             </summary>
@@ -441,7 +441,7 @@
             <param name="fileStream">The file stream.</param>
             <param name="validator">The validator.</param>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.Record)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.RecordParameters)">
             <summary>
             Creates the record.
             </summary>
@@ -450,7 +450,7 @@
             New file cabinet record.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.EditRecord(System.Int32,FileCabinetApp.Record)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
             <summary>
             Edits the record.
             </summary>
@@ -565,7 +565,7 @@
             File cabinet service.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.CreateRecord(FileCabinetApp.Record)">
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.CreateRecord(FileCabinetApp.RecordParameters)">
             <summary>
             Creates the record.
             </summary>
@@ -585,7 +585,7 @@
             <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>The quantity of records.</returns>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.Record)">
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
             <summary>
             Edits the record.
             </summary>
@@ -663,7 +663,7 @@
             <param name="exceptions">The exceptions.</param>
             <exception cref="T:System.ArgumentNullException">Snapshot is null.</exception>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecord(FileCabinetApp.Record)">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecord(FileCabinetApp.RecordParameters)">
             <summary>
             Creates the record.
             </summary>
@@ -683,7 +683,7 @@
             <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>The quantity of records.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(System.Int32,FileCabinetApp.Record)">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
             <summary>
             Edits the record.
             </summary>
@@ -895,103 +895,40 @@
             <param name="salary">The salary.</param>
             <returns>Is parameter valid.</returns>
         </member>
-        <member name="T:FileCabinetApp.Validators.CustomValidator">
+        <member name="T:FileCabinetApp.Validators.RecordValidator.CustomValidator">
             <summary>
             Custom validator class.
             </summary>
             <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
         </member>
-        <member name="M:FileCabinetApp.Validators.CustomValidator.ValidateParameters(System.String,System.String,System.DateTime,System.Char,System.Int16,System.Decimal)">
+        <member name="M:FileCabinetApp.Validators.RecordValidator.CustomValidator.ValidateParameters(FileCabinetApp.RecordParameters)">
             <summary>
             Validates the parameters.
             </summary>
-            <param name="firstName">The first name.</param>
-            <param name="lastName">The last name.</param>
-            <param name="dateOfBirth">The date of birth.</param>
-            <param name="gender">The gender.</param>
-            <param name="office">The office.</param>
-            <param name="salary">The salary.</param>
-            <exception cref="T:System.ArgumentNullException">
-            firstName
-            or
-            lastName
-            or
-            dateOfBirth.
-            </exception>
-            <exception cref="T:System.ArgumentException">
-            The {nameof(firstName)} length can't be less than 2 symbols and larger than 20 symbols. - firstName
-            or
-            The {nameof(firstName)} can't consists only from spases. - firstName
-            or
-            The {nameof(lastName)} length can't be less than 2 symbols and larger than 20 symbols. - lastName
-            or
-            The {nameof(lastName)} can't consists only from spases. - lastName
-            or
-            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date. - dateOfBirth
-            or
-            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'. - gender
-            or
-            The {nameof(office)} can't be less than 0 or larger than 500. - office
-            or
-            The {nameof(salary)} can't be less than zero. - salary.
-            </exception>
+            <param name="parameters">The parameters.</param>
         </member>
-        <member name="T:FileCabinetApp.Validators.DefaultValidator">
+        <member name="T:FileCabinetApp.Validators.RecordValidator.DefaultValidator">
             <summary>
             Default validator class.
             </summary>
             <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
         </member>
-        <member name="M:FileCabinetApp.Validators.DefaultValidator.ValidateParameters(System.String,System.String,System.DateTime,System.Char,System.Int16,System.Decimal)">
+        <member name="M:FileCabinetApp.Validators.RecordValidator.DefaultValidator.ValidateParameters(FileCabinetApp.RecordParameters)">
             <summary>
             Validates the parameters.
             </summary>
-            <param name="firstName">The first name.</param>
-            <param name="lastName">The last name.</param>
-            <param name="dateOfBirth">The date of birth.</param>
-            <param name="gender">The gender.</param>
-            <param name="office">The office.</param>
-            <param name="salary">The salary.</param>
-            <exception cref="T:System.ArgumentNullException">
-            firstName
-            or
-            lastName
-            or
-            dateOfBirth.
-            </exception>
-            <exception cref="T:System.ArgumentException">
-            The {nameof(firstName)} length can't be less than 2 symbols and larger than 60 symbols. - firstName
-            or
-            The {nameof(firstName)} can't consists only from spases. - firstName
-            or
-            The {nameof(lastName)} length can't be less than 2 symbols and larger than 60 symbols. - lastName
-            or
-            The {nameof(lastName)} can't consists only from spases. - lastName
-            or
-            The {nameof(dateOfBirth)} can't be less than 01-Jan-1950 and larger than the current date. - dateOfBirth
-            or
-            The {nameof(gender)} can be only 'M', 'F', 'O' or 'U'. - gender
-            or
-            The {nameof(office)} can't be less than 0 or larger than 500. - office
-            or
-            The {nameof(salary)} can't be less than zero. - salary.
-            </exception>
+            <param name="parameters">The parameters.</param>
         </member>
         <member name="T:FileCabinetApp.Validators.IRecordValidator">
             <summary>
             Validator.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Validators.IRecordValidator.ValidateParameters(System.String,System.String,System.DateTime,System.Char,System.Int16,System.Decimal)">
+        <member name="M:FileCabinetApp.Validators.IRecordValidator.ValidateParameters(FileCabinetApp.RecordParameters)">
             <summary>
             Validates the parameters.
             </summary>
-            <param name="firstName">The first name.</param>
-            <param name="lastName">The last name.</param>
-            <param name="dateOfBirth">The date of birth.</param>
-            <param name="gender">The gender.</param>
-            <param name="office">The office.</param>
-            <param name="salary">The salary.</param>
+            <param name="parameters">The parameters.</param>
         </member>
         <member name="T:FileCabinetApp.Writers.FileCabinetRecordCsvWriter">
             <summary>

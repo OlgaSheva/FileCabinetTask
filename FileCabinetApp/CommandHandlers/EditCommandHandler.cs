@@ -14,7 +14,7 @@ namespace FileCabinetApp.CommandHandlers
 
         public EditCommandHandler(
             IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator)
-            : base (fileCabinetService)
+            : base(fileCabinetService)
         {
             converter = inputConverter;
             validator = inputValidator;
@@ -49,7 +49,7 @@ namespace FileCabinetApp.CommandHandlers
                 var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
                 try
                 {
-                    Record record = new Record(firstName, lastName, dateOfBirth, gender, office, salary);
+                    RecordParameters record = new RecordParameters(firstName, lastName, dateOfBirth, gender, office, salary);
                     service.EditRecord(id, record);
                 }
                 catch (ArgumentNullException anex)

@@ -46,7 +46,7 @@ namespace FileCabinetApp.Services
         /// <returns>
         /// New file cabinet record.
         /// </returns>
-        public int CreateRecord(Record rec)
+        public int CreateRecord(RecordParameters rec)
         {
             if (rec == null)
             {
@@ -54,7 +54,8 @@ namespace FileCabinetApp.Services
             }
 
             this.IdAndPositionSortedList();
-            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
+            this.validator.ValidateParameters(
+                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
             var record = new FileCabinetRecord
             {
                 Id = this.idpositionPairs.Count > 0 ? this.idpositionPairs.Keys[this.idpositionPairs.Count - 1] + 1 : 1,
@@ -77,7 +78,7 @@ namespace FileCabinetApp.Services
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="record">The record.</param>
-        public void EditRecord(int id, Record record)
+        public void EditRecord(int id, RecordParameters record)
         {
             if (record == null)
             {
@@ -94,7 +95,8 @@ namespace FileCabinetApp.Services
                 throw new ArgumentException($"Record #{nameof(id)} doesn't exist.", nameof(id));
             }
 
-            this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
+            this.validator.ValidateParameters(
+                new RecordParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary));
 
             var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.FirstName.PadRight(60));
             var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.LastName.PadRight(60));
@@ -303,7 +305,8 @@ namespace FileCabinetApp.Services
                             throw new ArgumentException(nameof(record.Id));
                         }
 
-                        this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
+                        this.validator.ValidateParameters(
+                            new RecordParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary));
                         this.WriteToTheBinaryFile(record);
                         if (!this.idpositionPairs.ContainsKey(record.Id))
                         {

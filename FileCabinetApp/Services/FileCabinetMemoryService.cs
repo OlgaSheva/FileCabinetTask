@@ -64,14 +64,15 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="rec">The record.</param>
         /// <returns>New file cabinet record.</returns>
-        public int CreateRecord(Record rec)
+        public int CreateRecord(RecordParameters rec)
         {
             if (rec == null)
             {
                 throw new ArgumentNullException(nameof(rec));
             }
 
-            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
+            this.validator.ValidateParameters(
+                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
 
             int newId = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id + 1 : 1;
 
@@ -123,7 +124,7 @@ namespace FileCabinetApp
         /// or
         /// The {nameof(id)} doesn't exist.
         /// </exception>
-        public void EditRecord(int id, Record rec)
+        public void EditRecord(int id, RecordParameters rec)
         {
             if (rec == null)
             {
@@ -141,7 +142,8 @@ namespace FileCabinetApp
             }
 
             int index = (int)indexInList;
-            this.validator.ValidateParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary);
+            this.validator.ValidateParameters(
+                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
 
             this.RemoveFromDictionaries(index);
 
@@ -292,7 +294,8 @@ namespace FileCabinetApp
                         throw new ArgumentException(nameof(record.Id));
                     }
 
-                    this.validator.ValidateParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
+                    this.validator.ValidateParameters(
+                        new RecordParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary));
                     if (flag)
                     {
                         this.RemoveFromDictionaries(matchingIdPosition);
@@ -363,7 +366,7 @@ namespace FileCabinetApp
             this.dateOfBirthDictionary[this.list[index].DateOfBirth].Remove(this.list[index]);
         }
 
-        private void EditDictionaries(Record rec, int indexInList)
+        private void EditDictionaries(RecordParameters rec, int indexInList)
         {
             if (!this.firstNameDictionary.ContainsKey(rec.FirstName))
             {
