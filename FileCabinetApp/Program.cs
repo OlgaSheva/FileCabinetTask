@@ -21,11 +21,14 @@ namespace FileCabinetApp
         private const string CustomValidationType = "custom";
         private const string DefaultValidationRules = "default";
         private const string DeveloperName = "Olga Kripulevich";
+        private const string MeterStatusOn = "on";
+        private const string MeterStatusOff = "off";
 
         private static IInputConverter converter;
         private static IInputValidator validator;
         private static IFileCabinetService fileCabinetService;
         private static string validationRules;
+        private static string meter;
         private static FileStream fileStream;
 
         private static bool isRunning = true;
@@ -38,6 +41,7 @@ namespace FileCabinetApp
         {
             validationRules = DefaultValidationRules;
             ServiceType serviceType = ServiceType.Memory;
+            meter = MeterStatusOff;
 
             var parser = new Parser(with => with.CaseInsensitiveEnumValues = true);
             var result = parser.ParseArguments<Options>(args);
@@ -48,10 +52,17 @@ namespace FileCabinetApp
                             ? CustomValidationType : DefaultValidationRules;
                        serviceType = (o.Storage == ServiceType.File)
                             ? ServiceType.File : ServiceType.Memory;
+                       meter = o.Meter.Equals(MeterStatusOn, StringComparison.InvariantCultureIgnoreCase)
+                            ? MeterStatusOn : MeterStatusOff;
                    });
             parser?.Dispose();
 
             fileCabinetService = CreateServise(validationRules, serviceType, out converter, out validator);
+
+            if (meter == MeterStatusOn)
+            {
+                fileCabinetService = new ServiceMeter(fileCabinetService);
+            }
 
             var commandHandler = CreateCommandHandlers();
 

@@ -365,6 +365,14 @@
             The validate.
             </value>
         </member>
+        <member name="P:FileCabinetApp.CommandLineOptions.Options.Meter">
+            <summary>
+            Gets or sets the meter.
+            </summary>
+            <value>
+            The meter.
+            </value>
+        </member>
         <member name="T:FileCabinetApp.Converters.CustomInputConverter">
             <summary>
             Custom input parameters convertor.
@@ -859,7 +867,7 @@
             Creates the record.
             </summary>
             <param name="record">The record.</param>
-            <returns>New file cabinet record.</returns>
+            <returns>Id of new file cabinet record.</returns>
         </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.GetRecords">
             <summary>
@@ -924,6 +932,91 @@
             </summary>
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="T:FileCabinetApp.Services.ServiceMeter">
+            <summary>
+            The servise meter.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Services.IFileCabinetService" />
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.ServiceMeter"/> class.
+            </summary>
+            <param name="service">The service.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.CreateRecord(FileCabinetApp.RecordParameters)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="record">The record.</param>
+            <returns>Id of new file cabinet record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
+            <summary>
+            Edits the record.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="record">The record.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Find(System.String)">
+            <summary>
+            Finds the specified parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+            <returns>Records by parameter.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>All records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.GetStat(System.Int32@)">
+            <summary>
+            Gets the stat.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <returns>Count of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.IsThereARecordWithThisId(System.Int32,System.Int64@)">
+            <summary>
+            Determines whether [is there a record with this identifier] [the specified identifier].
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">The record position.</param>
+            <returns>
+            <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.MakeSnapshot">
+            <summary>
+            Makes the snapshot.
+            </summary>
+            <returns>
+            The file cabinet service snapshot.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Purges the specified deleted records count.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Remove(System.Int32,System.Int64)">
+            <summary>
+            Removes the specified identifier.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">The position.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot,System.Collections.Generic.Dictionary{System.Int32,System.String}@)">
+            <summary>
+            Restores the specified snapshot.
+            </summary>
+            <param name="snapshot">The snapshot.</param>
+            <param name="exceptions">The exceptions.</param>
         </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>

@@ -12,7 +12,7 @@ namespace FileCabinetApp.Services
         /// Creates the record.
         /// </summary>
         /// <param name="record">The record.</param>
-        /// <returns>New file cabinet record.</returns>
+        /// <returns>Id of new file cabinet record.</returns>
         int CreateRecord(RecordParameters record);
 
         /// <summary>
