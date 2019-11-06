@@ -31,7 +31,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "import")
             {
-                Import(request.Parameters);
+                this.Import(request.Parameters);
                 return null;
             }
             else
@@ -40,7 +40,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Import(string parameters)
+        private void Import(string parameters)
         {
             string[] comands = parameters.Split(' ');
             string fileFormat = comands[0];
@@ -59,10 +59,10 @@ namespace FileCabinetApp.CommandHandlers
                 switch (fileFormat)
                 {
                     case csvFormat:
-                        ImportFromCSVFile(filePath);
+                        this.ImportFromCSVFile(filePath);
                         break;
                     case xmlFormat:
-                        ImportFromXMLFile(filePath);
+                        this.ImportFromXMLFile(filePath);
                         break;
                     default:
                         Console.WriteLine($"Unknown file format '{fileFormat}'.");
@@ -75,7 +75,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void ImportFromCSVFile(string filePath)
+        private void ImportFromCSVFile(string filePath)
         {
             FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot();
             Dictionary<int, string> exceptions = new Dictionary<int, string>();
@@ -83,7 +83,7 @@ namespace FileCabinetApp.CommandHandlers
             using (StreamReader reader = new StreamReader(filePath))
             {
                 snapshot.LoadFromCSV(reader, out recordsCount);
-                service.Restore(snapshot, out exceptions);
+                this.Service.Restore(snapshot, out exceptions);
             }
 
             foreach (var ex in exceptions)
@@ -94,7 +94,7 @@ namespace FileCabinetApp.CommandHandlers
             Console.WriteLine($"{recordsCount - exceptions.Count} records were imported from {filePath}.");
         }
 
-        private static void ImportFromXMLFile(string filePath)
+        private void ImportFromXMLFile(string filePath)
         {
             FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot();
             Dictionary<int, string> exceptions = new Dictionary<int, string>();
@@ -102,7 +102,7 @@ namespace FileCabinetApp.CommandHandlers
             using (StreamReader reader = new StreamReader(filePath))
             {
                 snapshot.LoadFromXML(reader, out recordsCount);
-                service.Restore(snapshot, out exceptions);
+                this.Service.Restore(snapshot, out exceptions);
             }
 
             foreach (var ex in exceptions)

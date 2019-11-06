@@ -37,7 +37,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 try
                 {
-                    ReadOnlyCollection<FileCabinetRecord> findList = service.Find(request.Parameters);
+                    ReadOnlyCollection<FileCabinetRecord> findList = this.Service.Find(request.Parameters);
                     this.printer(findList);
                 }
                 catch (InvalidOperationException ioex)

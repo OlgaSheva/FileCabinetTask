@@ -10,17 +10,21 @@ namespace FileCabinetApp.CommandHandlers
     public abstract class ServiceCommandHandlerBase : CommandHandlerBase
     {
         /// <summary>
-        /// The file cabinet service.
-        /// </summary>
-        protected static IFileCabinetService service;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ServiceCommandHandlerBase"/> class.
         /// </summary>
         /// <param name="fileCabinetService">The file cabinet service.</param>
+        /// <exception cref="ArgumentNullException">The fileCabinetService is null.</exception>
         protected ServiceCommandHandlerBase(IFileCabinetService fileCabinetService)
         {
-            service = fileCabinetService ?? throw new ArgumentNullException(nameof(fileCabinetService));
+            this.Service = fileCabinetService ?? throw new ArgumentNullException(nameof(fileCabinetService));
         }
+
+        /// <summary>
+        /// Gets or sets the service.
+        /// </summary>
+        /// <value>
+        /// The service.
+        /// </value>
+        protected IFileCabinetService Service { get; set; }
     }
 }

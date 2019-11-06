@@ -56,6 +56,69 @@
             Class AppCommandRequest Instance.
             </returns>
         </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ICommandHandler">
+            <summary>
+            The Handler interface declares a method for constructing a chain of handlers.
+            It also declares a method to execute the request.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
+            <summary>
+            Sets the next.
+            </summary>
+            <param name="handler">The handler.</param>
+            <returns>The next handler.</returns>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Handles the specified request.
+            </summary>
+            <param name="request">The request.</param>
+            <returns>Class AppCommandRequest Instance.</returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ListCommandHandler">
+            <summary>
+            List command handler.
+            </summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.
+            </summary>
+            <param name="service">The service.</param>
+            <param name="printer">The printer.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Handles the specified request.
+            </summary>
+            <param name="request">The request.</param>
+            <returns>
+            Class AppCommandRequest Instance.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase">
+            <summary>
+            The service command handler base.
+            </summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase"/> class.
+            </summary>
+            <param name="fileCabinetService">The file cabinet service.</param>
+            <exception cref="T:System.ArgumentNullException">The fileCabinetService is null.</exception>
+        </member>
+        <member name="P:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.Service">
+            <summary>
+            Gets or sets the service.
+            </summary>
+            <value>
+            The service.
+            </value>
+        </member>
         <member name="T:FileCabinetApp.CommandHandlers.CreateCommandHandler">
             <summary>
             The command handler creater.
@@ -182,26 +245,6 @@
             Class AppCommandRequest Instance.
             </returns>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.ICommandHandler">
-            <summary>
-            The Handler interface declares a method for constructing a chain of handlers.
-            It also declares a method to execute the request.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
-            <summary>
-            Sets the next.
-            </summary>
-            <param name="handler">The handler.</param>
-            <returns>The next handler.</returns>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handles the specified request.
-            </summary>
-            <param name="request">The request.</param>
-            <returns>Class AppCommandRequest Instance.</returns>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.ImportCommandHandler">
             <summary>
             Import command handler.
@@ -215,28 +258,6 @@
             <param name="service">The service.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.ImportCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handles the specified request.
-            </summary>
-            <param name="request">The request.</param>
-            <returns>
-            Class AppCommandRequest Instance.
-            </returns>
-        </member>
-        <member name="T:FileCabinetApp.CommandHandlers.ListCommandHandler">
-            <summary>
-            List command handler.
-            </summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.
-            </summary>
-            <param name="service">The service.</param>
-            <param name="printer">The printer.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
             Handles the specified request.
             </summary>
@@ -301,23 +322,6 @@
             <returns>
             Class AppCommandRequest Instance.
             </returns>
-        </member>
-        <member name="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase">
-            <summary>
-            The service command handler base.
-            </summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
-        </member>
-        <member name="F:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.service">
-            <summary>
-            The file cabinet service.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.#ctor(FileCabinetApp.Services.IFileCabinetService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase"/> class.
-            </summary>
-            <param name="fileCabinetService">The file cabinet service.</param>
         </member>
         <member name="T:FileCabinetApp.CommandHandlers.StatCommandHandler">
             <summary>
@@ -1013,6 +1017,164 @@
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
         </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings">
+            <summary>
+            The validation settings class.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+            <value>
+            The first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+            <value>
+            The last name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.DateOfBirth">
+            <summary>
+            Gets or sets the date of birth.
+            </summary>
+            <value>
+            The date of birth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.Gender">
+            <summary>
+            Gets or sets the gender.
+            </summary>
+            <value>
+            The gender.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.Office">
+            <summary>
+            Gets or sets the office.
+            </summary>
+            <value>
+            The office.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.Salary">
+            <summary>
+            Gets or sets the salary.
+            </summary>
+            <value>
+            The salary.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.FirstNameSettings">
+            <summary>
+            First name settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.FirstNameSettings.Min">
+            <summary>
+            Gets or sets determines the minimum of the parameters.
+            </summary>
+            <value>
+            The minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.FirstNameSettings.Max">
+            <summary>
+            Gets or sets determines the maximum of the parameters.
+            </summary>
+            <value>
+            The maximum.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.LastNameSettings">
+            <summary>
+            Last name settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.LastNameSettings.Min">
+            <summary>
+            Gets or sets determines the minimum of the parameters.
+            </summary>
+            <value>
+            The minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.LastNameSettings.Max">
+            <summary>
+            Gets or sets determines the maximum of the parameters.
+            </summary>
+            <value>
+            The maximum.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.DateOfBirthSettings">
+            <summary>
+            Date of birth settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.DateOfBirthSettings.From">
+            <summary>
+            Gets or sets from.
+            </summary>
+            <value>
+            From.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.DateOfBirthSettings.To">
+            <summary>
+            Gets or sets to.
+            </summary>
+            <value>
+            To.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.OfficeSettings">
+            <summary>
+            Office settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.OfficeSettings.Min">
+            <summary>
+            Gets or sets determines the minimum of the parameters.
+            </summary>
+            <value>
+            The minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.OfficeSettings.Max">
+            <summary>
+            Gets or sets determines the maximum of the parameters.
+            </summary>
+            <value>
+            The maximum.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.SalarySettings">
+            <summary>
+            Salary settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.SalarySettings.Min">
+            <summary>
+            Gets or sets determines the minimum of the parameters.
+            </summary>
+            <value>
+            The minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.SalarySettings.Max">
+            <summary>
+            Gets or sets determines the maximum of the parameters.
+            </summary>
+            <value>
+            The maximum.
+            </value>
+        </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.CustomInputValidator">
             <summary>
             Custom input parameters validator.
@@ -1268,14 +1430,14 @@
         </member>
         <member name="M:FileCabinetApp.Validators.RecordValidator.ValidatorBuilderExtensions.CreateDefault(FileCabinetApp.Validators.RecordValidator.ValidatorBuilder)">
             <summary>
-            Creates the default validator.
+            Creates the default.
             </summary>
             <param name="validatorBuilder">The validator builder.</param>
-            <returns>The default vlidator.</returns>
+            <returns>The default validator.</returns>
         </member>
         <member name="M:FileCabinetApp.Validators.RecordValidator.ValidatorBuilderExtensions.CreateCustom(FileCabinetApp.Validators.RecordValidator.ValidatorBuilder)">
             <summary>
-            Creates the custom validator.
+            Creates the custom.
             </summary>
             <param name="validatorBuilder">The validator builder.</param>
             <returns>The custom validator.</returns>

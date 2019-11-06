@@ -11,7 +11,7 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class ListCommandHandler : ServiceCommandHandlerBase
     {
-        private Action<IEnumerable<FileCabinetRecord>> printer;
+        private readonly Action<IEnumerable<FileCabinetRecord>> printer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
@@ -35,7 +35,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "list")
             {
-                ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = service.GetRecords();
+                ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = this.Service.GetRecords();
                 this.printer(fileCabinetRecords);
                 return null;
             }

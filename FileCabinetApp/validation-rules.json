@@ -1,0 +1,48 @@
+{
+  "default": {
+    "firstName": {
+      "min": 2,
+      "max": 60
+    },
+    "lastName": {
+      "min": 2,
+      "max": 60
+    },
+    "dateOfBirth": {
+      "from": "1/1/1950",
+      "to": "1/1/2010"
+    },
+    "gender": "MFOU",
+    "office": {
+      "min": 0,
+      "max": 500
+    },
+    "salary": {
+      "min": 0,
+      "max": 10000
+    }
+  },
+  "custom": {
+    "firstName": {
+      "min": 2,
+      "max": 30
+    },
+    "lastName": {
+      "min": 2,
+      "max": 30
+    },
+    "dateOfBirth": {
+      "from": "1/1/1930",
+      "to": "1/1/2000"
+    },
+    "gender": "MF",
+    "office": {
+      "min": 100,
+      "max": 300
+    },
+    "salary": {
+      "min": 100,
+      "max": 7000
+    }
+  }
+}

@@ -33,7 +33,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "export")
             {
-                Export(request.Parameters);
+                this.Export(request.Parameters);
                 return null;
             }
             else
@@ -42,7 +42,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Export(string parameters)
+        private void Export(string parameters)
         {
             string[] commands = parameters.Split(' ');
             string format = commands[0];
@@ -83,7 +83,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 using (streamWriter = new StreamWriter(p))
                 {
-                    FileCabinetServiceSnapshot snapshot = service.MakeSnapshot();
+                    FileCabinetServiceSnapshot snapshot = this.Service.MakeSnapshot();
 
                     if (format == csvFileType)
                     {
