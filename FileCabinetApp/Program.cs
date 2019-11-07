@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using CommandLine;
 using FileCabinetApp.CommandHandlers;
 using FileCabinetApp.CommandLineOptions;
@@ -38,6 +39,8 @@ namespace FileCabinetApp
         {
             validationRules = DefaultValidationRules;
             ServiceType serviceType = ServiceType.Memory;
+            MeterStatus meter = MeterStatus.Off;
+            LoggerStatus logger = LoggerStatus.Off;
 
             var parser = new Parser(with => with.CaseInsensitiveEnumValues = true);
             var result = parser.ParseArguments<Options>(args);
@@ -48,10 +51,24 @@ namespace FileCabinetApp
                             ? CustomValidationType : DefaultValidationRules;
                        serviceType = (o.Storage == ServiceType.File)
                             ? ServiceType.File : ServiceType.Memory;
+                       meter = (o.Meter == MeterStatus.On)
+                            ? MeterStatus.On : MeterStatus.Off;
+                       logger = (o.Logger == LoggerStatus.On)
+                            ? LoggerStatus.On : LoggerStatus.Off;
                    });
             parser?.Dispose();
 
             fileCabinetService = CreateServise(validationRules, serviceType, out converter, out validator);
+
+            if (meter == MeterStatus.On)
+            {
+                fileCabinetService = new ServiceMeter(fileCabinetService);
+            }
+
+            if (logger == LoggerStatus.On)
+            {
+                fileCabinetService = new ServiceLogger(fileCabinetService);
+            }
 
             var commandHandler = CreateCommandHandlers();
 

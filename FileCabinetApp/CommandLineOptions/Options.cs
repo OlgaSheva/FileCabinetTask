@@ -25,5 +25,23 @@ namespace FileCabinetApp.CommandLineOptions
         /// </value>
         [Option('v', "validation-rules", Default = "default", HelpText = "Defines validation rules: default or custom.")]
         public string Validate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the meter.
+        /// </summary>
+        /// <value>
+        /// The meter.
+        /// </value>
+        [Option("use-stopwatch", Default = MeterStatus.On, HelpText = "Defines meter rules: on or off.")]
+        public MeterStatus Meter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        /// <value>
+        /// The logger.
+        /// </value>
+        [Option("use-logger", Default = LoggerStatus.On, HelpText = "Defines logger rules: on or off.")]
+        public LoggerStatus Logger { get; set; }
     }
 }

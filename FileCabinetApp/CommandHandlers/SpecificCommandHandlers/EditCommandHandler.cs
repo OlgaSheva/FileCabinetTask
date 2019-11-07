@@ -41,48 +41,12 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "edit")
             {
-                Edit(request.Parameters);
+                this.Edit(request.Parameters);
                 return null;
             }
             else
             {
                 return base.Handle(request);
-            }
-        }
-
-        private static void Edit(string parameters)
-        {
-            int id = -1;
-            if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
-                || id == 0
-                || service.GetStat(out int deletedRecordsCount) == 0)
-            {
-                Console.WriteLine($"The '{parameters}' isn't an ID.");
-                return;
-            }
-
-            if (service.IsThereARecordWithThisId(id, out long index))
-            {
-                var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
-                try
-                {
-                    RecordParameters record = new RecordParameters(firstName, lastName, dateOfBirth, gender, office, salary);
-                    service.EditRecord(id, record);
-                }
-                catch (ArgumentNullException anex)
-                {
-                    Console.WriteLine($"Record wasn't edited.", anex.Message);
-                    Console.WriteLine(HintMessage);
-                }
-                catch (ArgumentException aex)
-                {
-                    Console.WriteLine($"Record wasn't edited.", aex.Message);
-                    Console.WriteLine(HintMessage);
-                }
-            }
-            else
-            {
-                Console.WriteLine($"#{id} record is not found.");
             }
         }
 
@@ -152,6 +116,42 @@ namespace FileCabinetApp.CommandHandlers
             var salary = ReadInput(decimalConverter, salaryValidator);
 
             return (firstName, lastName, dateOfBirth, gender, office, salary);
+        }
+
+        private void Edit(string parameters)
+        {
+            int id = -1;
+            if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
+                || id == 0
+                || this.Service.GetStat(out int deletedRecordsCount) == 0)
+            {
+                Console.WriteLine($"The '{parameters}' isn't an ID.");
+                return;
+            }
+
+            if (this.Service.IsThereARecordWithThisId(id, out long index))
+            {
+                var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
+                try
+                {
+                    RecordParameters record = new RecordParameters(firstName, lastName, dateOfBirth, gender, office, salary);
+                    this.Service.EditRecord(id, record);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    Console.WriteLine($"Record wasn't edited.", anex.Message);
+                    Console.WriteLine(HintMessage);
+                }
+                catch (ArgumentException aex)
+                {
+                    Console.WriteLine($"Record wasn't edited.", aex.Message);
+                    Console.WriteLine(HintMessage);
+                }
+            }
+            else
+            {
+                Console.WriteLine($"#{id} record is not found.");
+            }
         }
     }
 }

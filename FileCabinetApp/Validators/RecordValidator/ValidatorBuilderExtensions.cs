@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using FileCabinetApp.Validators.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace FileCabinetApp.Validators.RecordValidator
 {
@@ -7,39 +10,45 @@ namespace FileCabinetApp.Validators.RecordValidator
     /// </summary>
     public static class ValidatorBuilderExtensions
     {
+        private static readonly IConfigurationRoot Config =
+            new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("validation-rules.json").Build();
+
+        private static ValidatorSettings validatorSettings;
+
         /// <summary>
-        /// Creates the default validator.
+        /// Creates the default.
         /// </summary>
         /// <param name="validatorBuilder">The validator builder.</param>
-        /// <returns>The default vlidator.</returns>
+        /// <returns>The default validator.</returns>
         public static IRecordValidator CreateDefault(this ValidatorBuilder validatorBuilder)
-        {
-            var validator = new ValidatorBuilder()
-                .ValidateFirstName(2, 60)
-                .ValidateLastName(2, 60)
-                .ValidateDateOfBirth(new DateTime(1950, 1, 1), new DateTime(2010, 1, 1))
-                .ValidateGender(new char[] { 'M', 'F', 'O', 'U' })
-                .ValidateOffice(0, 500)
-                .ValidateSalary(0, 10000)
-                .Create();
-
-            return validator;
-        }
+            => CreateValidator("default");
 
         /// <summary>
-        /// Creates the custom validator.
+        /// Creates the custom.
         /// </summary>
         /// <param name="validatorBuilder">The validator builder.</param>
         /// <returns>The custom validator.</returns>
         public static IRecordValidator CreateCustom(this ValidatorBuilder validatorBuilder)
+            => CreateValidator("custom");
+
+        private static IRecordValidator CreateValidator(string validatorType)
         {
+            if (validatorType.Equals("custom", StringComparison.InvariantCultureIgnoreCase))
+            {
+                validatorSettings = Config.GetSection("custom").Get<ValidatorSettings>();
+            }
+            else
+            {
+                validatorSettings = Config.GetSection("default").Get<ValidatorSettings>();
+            }
+
             var validator = new ValidatorBuilder()
-                .ValidateFirstName(2, 30)
-                .ValidateLastName(2, 30)
-                .ValidateDateOfBirth(new DateTime(1930, 1, 1), new DateTime(2000, 1, 1))
-                .ValidateGender(new char[] { 'M', 'F' })
-                .ValidateOffice(100, 300)
-                .ValidateSalary(100, 7000)
+                .ValidateFirstName(validatorSettings.FirstName.Min, validatorSettings.FirstName.Max)
+                .ValidateLastName(validatorSettings.LastName.Min, validatorSettings.LastName.Max)
+                .ValidateDateOfBirth(validatorSettings.DateOfBirth.From, validatorSettings.DateOfBirth.To)
+                .ValidateGender(validatorSettings.Gender.ToCharArray())
+                .ValidateOffice(validatorSettings.Office.Min, validatorSettings.Office.Max)
+                .ValidateSalary(validatorSettings.Salary.Min, validatorSettings.Salary.Max)
                 .Create();
 
             return validator;

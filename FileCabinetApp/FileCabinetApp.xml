@@ -56,6 +56,69 @@
             Class AppCommandRequest Instance.
             </returns>
         </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ICommandHandler">
+            <summary>
+            The Handler interface declares a method for constructing a chain of handlers.
+            It also declares a method to execute the request.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
+            <summary>
+            Sets the next.
+            </summary>
+            <param name="handler">The handler.</param>
+            <returns>The next handler.</returns>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Handles the specified request.
+            </summary>
+            <param name="request">The request.</param>
+            <returns>Class AppCommandRequest Instance.</returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ListCommandHandler">
+            <summary>
+            List command handler.
+            </summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.
+            </summary>
+            <param name="service">The service.</param>
+            <param name="printer">The printer.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Handles the specified request.
+            </summary>
+            <param name="request">The request.</param>
+            <returns>
+            Class AppCommandRequest Instance.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase">
+            <summary>
+            The service command handler base.
+            </summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase"/> class.
+            </summary>
+            <param name="fileCabinetService">The file cabinet service.</param>
+            <exception cref="T:System.ArgumentNullException">The fileCabinetService is null.</exception>
+        </member>
+        <member name="P:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.Service">
+            <summary>
+            Gets or sets the service.
+            </summary>
+            <value>
+            The service.
+            </value>
+        </member>
         <member name="T:FileCabinetApp.CommandHandlers.CreateCommandHandler">
             <summary>
             The command handler creater.
@@ -182,26 +245,6 @@
             Class AppCommandRequest Instance.
             </returns>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.ICommandHandler">
-            <summary>
-            The Handler interface declares a method for constructing a chain of handlers.
-            It also declares a method to execute the request.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
-            <summary>
-            Sets the next.
-            </summary>
-            <param name="handler">The handler.</param>
-            <returns>The next handler.</returns>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handles the specified request.
-            </summary>
-            <param name="request">The request.</param>
-            <returns>Class AppCommandRequest Instance.</returns>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.ImportCommandHandler">
             <summary>
             Import command handler.
@@ -215,28 +258,6 @@
             <param name="service">The service.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.ImportCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handles the specified request.
-            </summary>
-            <param name="request">The request.</param>
-            <returns>
-            Class AppCommandRequest Instance.
-            </returns>
-        </member>
-        <member name="T:FileCabinetApp.CommandHandlers.ListCommandHandler">
-            <summary>
-            List command handler.
-            </summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.
-            </summary>
-            <param name="service">The service.</param>
-            <param name="printer">The printer.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
             Handles the specified request.
             </summary>
@@ -302,23 +323,6 @@
             Class AppCommandRequest Instance.
             </returns>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase">
-            <summary>
-            The service command handler base.
-            </summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
-        </member>
-        <member name="F:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.service">
-            <summary>
-            The file cabinet service.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.#ctor(FileCabinetApp.Services.IFileCabinetService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase"/> class.
-            </summary>
-            <param name="fileCabinetService">The file cabinet service.</param>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.StatCommandHandler">
             <summary>
             Stat command handler.
@@ -359,6 +363,22 @@
             </summary>
             <value>
             The validate.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.CommandLineOptions.Options.Meter">
+            <summary>
+            Gets or sets the meter.
+            </summary>
+            <value>
+            The meter.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.CommandLineOptions.Options.Logger">
+            <summary>
+            Gets or sets the logger.
+            </summary>
+            <value>
+            The logger.
             </value>
         </member>
         <member name="T:FileCabinetApp.Converters.CustomInputConverter">
@@ -502,6 +522,36 @@
             </summary>
             <param name="input">The input.</param>
             <returns>Decimal representation.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Enums.LoggerStatus">
+            <summary>
+            Logger status.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.LoggerStatus.On">
+            <summary>
+            Turn on logger.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.LoggerStatus.Off">
+            <summary>
+            Turn off logger.
+            </summary>
+        </member>
+        <member name="T:FileCabinetApp.Enums.MeterStatus">
+            <summary>
+            Meter status.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.MeterStatus.On">
+            <summary>
+            Turn on the meter.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.MeterStatus.Off">
+            <summary>
+            Turn off the meter.
+            </summary>
         </member>
         <member name="T:FileCabinetApp.Enums.ServiceType">
             <summary>
@@ -855,7 +905,7 @@
             Creates the record.
             </summary>
             <param name="record">The record.</param>
-            <returns>New file cabinet record.</returns>
+            <returns>Id of new file cabinet record.</returns>
         </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.GetRecords">
             <summary>
@@ -920,6 +970,187 @@
             </summary>
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="T:FileCabinetApp.Services.ServiceLogger">
+            <summary>
+            The service logger.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Services.IFileCabinetService" />
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.ServiceLogger"/> class.
+            </summary>
+            <param name="service">The service.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.CreateRecord(FileCabinetApp.RecordParameters)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="record">The record.</param>
+            <returns>
+            Id of new file cabinet record.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">record is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
+            <summary>
+            Edits the record.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="record">The record.</param>
+            <exception cref="T:System.ArgumentNullException">record is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Find(System.String)">
+            <summary>
+            Finds the specified parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+            <returns>
+            All records with specified parameters.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">parameters is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>
+            All existing records.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.GetStat(System.Int32@)">
+            <summary>
+            Gets the stat.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <returns>
+            The quantity of records.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.IsThereARecordWithThisId(System.Int32,System.Int64@)">
+            <summary>
+            Determines whether [is there a record with this identifier] [the specified identifier].
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">The record position.</param>
+            <returns>
+            <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.MakeSnapshot">
+            <summary>
+            Makes the snapshot.
+            </summary>
+            <returns>
+            The file cabinet service snapshot.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Purges the specified deleted records count.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Remove(System.Int32,System.Int64)">
+            <summary>
+            Removes a record by the identifier.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">Record position.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot,System.Collections.Generic.Dictionary{System.Int32,System.String}@)">
+            <summary>
+            Restores the specified snapshot.
+            </summary>
+            <param name="snapshot">The snapshot.</param>
+            <param name="exceptions">The exceptions.</param>
+        </member>
+        <member name="T:FileCabinetApp.Services.ServiceMeter">
+            <summary>
+            The servise meter.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Services.IFileCabinetService" />
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.ServiceMeter"/> class.
+            </summary>
+            <param name="service">The service.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.CreateRecord(FileCabinetApp.RecordParameters)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="record">The record.</param>
+            <returns>Id of new file cabinet record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
+            <summary>
+            Edits the record.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="record">The record.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Find(System.String)">
+            <summary>
+            Finds the specified parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+            <returns>Records by parameter.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>All records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.GetStat(System.Int32@)">
+            <summary>
+            Gets the stat.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <returns>Count of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.IsThereARecordWithThisId(System.Int32,System.Int64@)">
+            <summary>
+            Determines whether [is there a record with this identifier] [the specified identifier].
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">The record position.</param>
+            <returns>
+            <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.MakeSnapshot">
+            <summary>
+            Makes the snapshot.
+            </summary>
+            <returns>
+            The file cabinet service snapshot.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Purges the specified deleted records count.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Remove(System.Int32,System.Int64)">
+            <summary>
+            Removes the specified identifier.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">The position.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot,System.Collections.Generic.Dictionary{System.Int32,System.String}@)">
+            <summary>
+            Restores the specified snapshot.
+            </summary>
+            <param name="snapshot">The snapshot.</param>
+            <param name="exceptions">The exceptions.</param>
         </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>
@@ -1012,6 +1243,164 @@
             </summary>
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings">
+            <summary>
+            The validation settings class.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+            <value>
+            The first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+            <value>
+            The last name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.DateOfBirth">
+            <summary>
+            Gets or sets the date of birth.
+            </summary>
+            <value>
+            The date of birth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.Gender">
+            <summary>
+            Gets or sets the gender.
+            </summary>
+            <value>
+            The gender.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.Office">
+            <summary>
+            Gets or sets the office.
+            </summary>
+            <value>
+            The office.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.Salary">
+            <summary>
+            Gets or sets the salary.
+            </summary>
+            <value>
+            The salary.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.FirstNameSettings">
+            <summary>
+            First name settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.FirstNameSettings.Min">
+            <summary>
+            Gets or sets determines the minimum of the parameters.
+            </summary>
+            <value>
+            The minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.FirstNameSettings.Max">
+            <summary>
+            Gets or sets determines the maximum of the parameters.
+            </summary>
+            <value>
+            The maximum.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.LastNameSettings">
+            <summary>
+            Last name settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.LastNameSettings.Min">
+            <summary>
+            Gets or sets determines the minimum of the parameters.
+            </summary>
+            <value>
+            The minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.LastNameSettings.Max">
+            <summary>
+            Gets or sets determines the maximum of the parameters.
+            </summary>
+            <value>
+            The maximum.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.DateOfBirthSettings">
+            <summary>
+            Date of birth settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.DateOfBirthSettings.From">
+            <summary>
+            Gets or sets from.
+            </summary>
+            <value>
+            From.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.DateOfBirthSettings.To">
+            <summary>
+            Gets or sets to.
+            </summary>
+            <value>
+            To.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.OfficeSettings">
+            <summary>
+            Office settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.OfficeSettings.Min">
+            <summary>
+            Gets or sets determines the minimum of the parameters.
+            </summary>
+            <value>
+            The minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.OfficeSettings.Max">
+            <summary>
+            Gets or sets determines the maximum of the parameters.
+            </summary>
+            <value>
+            The maximum.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings.SalarySettings">
+            <summary>
+            Salary settings.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.SalarySettings.Min">
+            <summary>
+            Gets or sets determines the minimum of the parameters.
+            </summary>
+            <value>
+            The minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.Configuration.ValidatorSettings.SalarySettings.Max">
+            <summary>
+            Gets or sets determines the maximum of the parameters.
+            </summary>
+            <value>
+            The maximum.
+            </value>
         </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.CustomInputValidator">
             <summary>
@@ -1268,14 +1657,14 @@
         </member>
         <member name="M:FileCabinetApp.Validators.RecordValidator.ValidatorBuilderExtensions.CreateDefault(FileCabinetApp.Validators.RecordValidator.ValidatorBuilder)">
             <summary>
-            Creates the default validator.
+            Creates the default.
             </summary>
             <param name="validatorBuilder">The validator builder.</param>
-            <returns>The default vlidator.</returns>
+            <returns>The default validator.</returns>
         </member>
         <member name="M:FileCabinetApp.Validators.RecordValidator.ValidatorBuilderExtensions.CreateCustom(FileCabinetApp.Validators.RecordValidator.ValidatorBuilder)">
             <summary>
-            Creates the custom validator.
+            Creates the custom.
             </summary>
             <param name="validatorBuilder">The validator builder.</param>
             <returns>The custom validator.</returns>

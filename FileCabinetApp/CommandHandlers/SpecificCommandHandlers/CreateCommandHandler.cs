@@ -41,35 +41,12 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "create")
             {
-                Create(request.Parameters);
+                this.Create(request.Parameters);
                 return null;
             }
             else
             {
                 return base.Handle(request);
-            }
-        }
-
-        private static void Create(string parameters)
-        {
-            var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
-
-            int recordId = 0;
-            try
-            {
-                RecordParameters record = new RecordParameters(firstName, lastName, dateOfBirth, gender, office, salary);
-                recordId = service.CreateRecord(record);
-                Console.WriteLine($"Record #{recordId} is created.");
-            }
-            catch (ArgumentNullException anex)
-            {
-                Console.WriteLine($"Record wasn't created. {anex.Message}");
-                Console.WriteLine(HintMessage);
-            }
-            catch (ArgumentException aex)
-            {
-                Console.WriteLine($"Record wasn't created. {aex.Message}");
-                Console.WriteLine(HintMessage);
             }
         }
 
@@ -139,6 +116,29 @@ namespace FileCabinetApp.CommandHandlers
             var salary = ReadInput(decimalConverter, salaryValidator);
 
             return (firstName, lastName, dateOfBirth, gender, office, salary);
+        }
+
+        private void Create(string parameters)
+        {
+            var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
+
+            int recordId = 0;
+            try
+            {
+                RecordParameters record = new RecordParameters(firstName, lastName, dateOfBirth, gender, office, salary);
+                recordId = this.Service.CreateRecord(record);
+                Console.WriteLine($"Record #{recordId} is created.");
+            }
+            catch (ArgumentNullException anex)
+            {
+                Console.WriteLine($"Record wasn't created. {anex.Message}");
+                Console.WriteLine(HintMessage);
+            }
+            catch (ArgumentException aex)
+            {
+                Console.WriteLine($"Record wasn't created. {aex.Message}");
+                Console.WriteLine(HintMessage);
+            }
         }
     }
 }

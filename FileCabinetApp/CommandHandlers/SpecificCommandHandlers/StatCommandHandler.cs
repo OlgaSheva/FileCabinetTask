@@ -4,16 +4,16 @@ using FileCabinetApp.Services;
 namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>
-    /// Purge command handler.
+    /// Stat command handler.
     /// </summary>
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-    internal class PurgeCommandHandler : ServiceCommandHandlerBase
+    internal class StatCommandHandler : ServiceCommandHandlerBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PurgeCommandHandler"/> class.
+        /// Initializes a new instance of the <see cref="StatCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public PurgeCommandHandler(IFileCabinetService service)
+        public StatCommandHandler(IFileCabinetService service)
             : base(service)
         {
         }
@@ -27,9 +27,9 @@ namespace FileCabinetApp.CommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
-            if (request.Command == "purge")
+            if (request.Command == "stat")
             {
-                Purge(request.Parameters);
+                this.Stat(request.Parameters);
                 return null;
             }
             else
@@ -38,13 +38,10 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Purge(string parameters)
+        private void Stat(string parameters)
         {
-            service.Purge(out int deletedRecordsCount, out int recordsCount);
-            if (service is FileCabinetFilesystemService)
-            {
-                Console.WriteLine($"Data file processing is completed: {deletedRecordsCount} of {recordsCount} records were purged.");
-            }
+            var recordsCount = this.Service.GetStat(out int deletedRecordsCount);
+            Console.WriteLine($"{recordsCount} record(s). Number of deleted records: {deletedRecordsCount}.");
         }
     }
 }
