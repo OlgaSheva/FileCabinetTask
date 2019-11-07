@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using CommandLine;
 using FileCabinetApp.CommandHandlers;
 using FileCabinetApp.CommandLineOptions;
@@ -21,14 +22,11 @@ namespace FileCabinetApp
         private const string CustomValidationType = "custom";
         private const string DefaultValidationRules = "default";
         private const string DeveloperName = "Olga Kripulevich";
-        private const string MeterStatusOn = "on";
-        private const string MeterStatusOff = "off";
 
         private static IInputConverter converter;
         private static IInputValidator validator;
         private static IFileCabinetService fileCabinetService;
         private static string validationRules;
-        private static string meter;
         private static FileStream fileStream;
 
         private static bool isRunning = true;
@@ -41,7 +39,8 @@ namespace FileCabinetApp
         {
             validationRules = DefaultValidationRules;
             ServiceType serviceType = ServiceType.Memory;
-            meter = MeterStatusOff;
+            MeterStatus meter = MeterStatus.Off;
+            LoggerStatus logger = LoggerStatus.Off;
 
             var parser = new Parser(with => with.CaseInsensitiveEnumValues = true);
             var result = parser.ParseArguments<Options>(args);
@@ -52,16 +51,23 @@ namespace FileCabinetApp
                             ? CustomValidationType : DefaultValidationRules;
                        serviceType = (o.Storage == ServiceType.File)
                             ? ServiceType.File : ServiceType.Memory;
-                       meter = o.Meter.Equals(MeterStatusOn, StringComparison.InvariantCultureIgnoreCase)
-                            ? MeterStatusOn : MeterStatusOff;
+                       meter = (o.Meter == MeterStatus.On)
+                            ? MeterStatus.On : MeterStatus.Off;
+                       logger = (o.Logger == LoggerStatus.On)
+                            ? LoggerStatus.On : LoggerStatus.Off;
                    });
             parser?.Dispose();
 
             fileCabinetService = CreateServise(validationRules, serviceType, out converter, out validator);
 
-            if (meter == MeterStatusOn)
+            if (meter == MeterStatus.On)
             {
                 fileCabinetService = new ServiceMeter(fileCabinetService);
+            }
+
+            if (logger == LoggerStatus.On)
+            {
+                fileCabinetService = new ServiceLogger(fileCabinetService);
             }
 
             var commandHandler = CreateCommandHandlers();

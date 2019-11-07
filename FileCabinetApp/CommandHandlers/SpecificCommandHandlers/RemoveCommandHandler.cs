@@ -42,9 +42,7 @@ namespace FileCabinetApp.CommandHandlers
         private void Remove(string parameters)
         {
             int id = -1;
-            if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id)
-                || id == 0
-                || this.Service.GetStat(out int deletedRecordsCount) == 0)
+            if (!int.TryParse(parameters, NumberStyles.Integer, CultureInfo.InvariantCulture, out id) || id == 0)
             {
                 Console.WriteLine($"Record '{parameters}' doesn't exists.");
                 return;

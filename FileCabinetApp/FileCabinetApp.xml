@@ -373,6 +373,14 @@
             The meter.
             </value>
         </member>
+        <member name="P:FileCabinetApp.CommandLineOptions.Options.Logger">
+            <summary>
+            Gets or sets the logger.
+            </summary>
+            <value>
+            The logger.
+            </value>
+        </member>
         <member name="T:FileCabinetApp.Converters.CustomInputConverter">
             <summary>
             Custom input parameters convertor.
@@ -514,6 +522,36 @@
             </summary>
             <param name="input">The input.</param>
             <returns>Decimal representation.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Enums.LoggerStatus">
+            <summary>
+            Logger status.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.LoggerStatus.On">
+            <summary>
+            Turn on logger.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.LoggerStatus.Off">
+            <summary>
+            Turn off logger.
+            </summary>
+        </member>
+        <member name="T:FileCabinetApp.Enums.MeterStatus">
+            <summary>
+            Meter status.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.MeterStatus.On">
+            <summary>
+            Turn on the meter.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.MeterStatus.Off">
+            <summary>
+            Turn off the meter.
+            </summary>
         </member>
         <member name="T:FileCabinetApp.Enums.ServiceType">
             <summary>
@@ -932,6 +970,102 @@
             </summary>
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="T:FileCabinetApp.Services.ServiceLogger">
+            <summary>
+            The service logger.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Services.IFileCabinetService" />
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Services.ServiceLogger"/> class.
+            </summary>
+            <param name="service">The service.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.CreateRecord(FileCabinetApp.RecordParameters)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="record">The record.</param>
+            <returns>
+            Id of new file cabinet record.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">record is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
+            <summary>
+            Edits the record.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="record">The record.</param>
+            <exception cref="T:System.ArgumentNullException">record is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Find(System.String)">
+            <summary>
+            Finds the specified parameters.
+            </summary>
+            <param name="parameters">The parameters.</param>
+            <returns>
+            All records with specified parameters.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">parameters is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.GetRecords">
+            <summary>
+            Gets the records.
+            </summary>
+            <returns>
+            All existing records.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.GetStat(System.Int32@)">
+            <summary>
+            Gets the stat.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <returns>
+            The quantity of records.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.IsThereARecordWithThisId(System.Int32,System.Int64@)">
+            <summary>
+            Determines whether [is there a record with this identifier] [the specified identifier].
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">The record position.</param>
+            <returns>
+            <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.MakeSnapshot">
+            <summary>
+            Makes the snapshot.
+            </summary>
+            <returns>
+            The file cabinet service snapshot.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Purge(System.Int32@,System.Int32@)">
+            <summary>
+            Purges the specified deleted records count.
+            </summary>
+            <param name="deletedRecordsCount">The deleted records count.</param>
+            <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Remove(System.Int32,System.Int64)">
+            <summary>
+            Removes a record by the identifier.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="position">Record position.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot,System.Collections.Generic.Dictionary{System.Int32,System.String}@)">
+            <summary>
+            Restores the specified snapshot.
+            </summary>
+            <param name="snapshot">The snapshot.</param>
+            <param name="exceptions">The exceptions.</param>
         </member>
         <member name="T:FileCabinetApp.Services.ServiceMeter">
             <summary>

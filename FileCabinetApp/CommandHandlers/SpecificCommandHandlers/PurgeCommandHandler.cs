@@ -41,10 +41,7 @@ namespace FileCabinetApp.CommandHandlers
         private void Purge(string parameters)
         {
             this.Service.Purge(out int deletedRecordsCount, out int recordsCount);
-            if (this.Service is FileCabinetFilesystemService)
-            {
-                Console.WriteLine($"Data file processing is completed: {deletedRecordsCount} of {recordsCount} records were purged.");
-            }
+            Console.WriteLine($"Data file processing is completed: {deletedRecordsCount} of {recordsCount} records were purged.");
         }
     }
 }

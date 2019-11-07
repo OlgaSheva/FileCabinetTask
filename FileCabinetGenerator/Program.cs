@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Reflection;
+using System.Resources;
 using System.Xml.Serialization;
 
 using CommandLine;
@@ -15,6 +18,8 @@ namespace FileCabinetGenerator
     /// </summary>
     public static class Program
     {
+        private static ResourceManager stringManager = new ResourceManager("en-US", Assembly.GetExecutingAssembly());
+
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
@@ -49,8 +54,8 @@ namespace FileCabinetGenerator
                     Console.WriteLine($"{recordAmount} records were written to {output}.");
                     break;
                 default:
-                    Console.WriteLine($"Records were not written.");
-                    throw new Exception(nameof(outputType));
+                    Console.WriteLine(stringManager.GetString("Records were not written.", CultureInfo.CurrentUICulture));
+                    throw new Exception(stringManager.GetString(nameof(outputType), CultureInfo.CurrentUICulture));
             }
         }
 

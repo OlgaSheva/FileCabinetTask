@@ -257,7 +257,7 @@ namespace FileCabinetApp
         public void Purge(out int deletedRecordsCount, out int recordsCount)
         {
             deletedRecordsCount = 0;
-            recordsCount = 0;
+            recordsCount = this.list.Count;
         }
 
         private List<FileCabinetRecord> GenerateNewListWithExistAndRestoreRecords(
