@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using FileCabinetApp.Iterators;
 
 namespace FileCabinetApp.Services
 {
@@ -79,7 +80,7 @@ namespace FileCabinetApp.Services
         /// All records with specified parameters.
         /// </returns>
         /// <exception cref="ArgumentNullException">parameters is null.</exception>
-        public ReadOnlyCollection<FileCabinetRecord> Find(string parameters)
+        public IRecordIterator Find(string parameters)
         {
             if (parameters == null)
             {
@@ -91,7 +92,7 @@ namespace FileCabinetApp.Services
                 $"Calling Find() with parameters '{p[0]}' - '{p[1]}'");
             var result = this.service.Find(parameters);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Find() returned {result.Count} records");
+                $"Find() returned records");
             return result;
         }
 
@@ -101,13 +102,13 @@ namespace FileCabinetApp.Services
         /// <returns>
         /// All existing records.
         /// </returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IRecordIterator GetRecords()
         {
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Calling GetRecords()");
             var result = this.service.GetRecords();
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"GetRecords() returned {result.Count} records");
+                $"GetRecords() returned records");
             return result;
         }
 

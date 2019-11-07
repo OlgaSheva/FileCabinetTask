@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using FileCabinetApp.Iterators;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
@@ -11,14 +12,14 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class ListCommandHandler : ServiceCommandHandlerBase
     {
-        private readonly Action<IEnumerable<FileCabinetRecord>> printer;
+        private readonly Action<IRecordIterator> printer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="printer">The printer.</param>
-        public ListCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
+        public ListCommandHandler(IFileCabinetService service, Action<IRecordIterator> printer)
             : base(service)
         {
             this.printer = printer;
@@ -35,7 +36,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "list")
             {
-                ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = this.Service.GetRecords();
+                var fileCabinetRecords = this.Service.GetRecords();
                 this.printer(fileCabinetRecords);
                 return null;
             }

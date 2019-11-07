@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 
+using FileCabinetApp.Iterators;
 using FileCabinetApp.Services;
 using FileCabinetApp.Validators;
 
@@ -97,9 +97,9 @@ namespace FileCabinetApp
         /// Gets the records.
         /// </summary>
         /// <returns>All existing records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IRecordIterator GetRecords()
         {
-            var copy = new ReadOnlyCollection<FileCabinetRecord>(this.list);
+            var copy = new MemoryIterator(this.list);
             return copy;
         }
 
@@ -164,14 +164,14 @@ namespace FileCabinetApp
         /// <returns>All records with specified parameters.</returns>
         /// <exception cref="InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
         /// <exception cref="ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
-        public ReadOnlyCollection<FileCabinetRecord> Find(string parameters)
+        public IRecordIterator Find(string parameters)
         {
             if (parameters == null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
 
-            var param = parameters.Split(' ');
+            var param = parameters.Split(' ', 2);
             string parameterName = param[0];
             string parameterValue = param[1].Trim('"');
 
@@ -179,19 +179,19 @@ namespace FileCabinetApp
             parameterValue = textInfo.ToTitleCase(textInfo.ToLower(parameterValue));
             parameterName = textInfo.ToTitleCase(textInfo.ToLower(parameterName));
 
-            ReadOnlyCollection<FileCabinetRecord> findCollection = null;
+            MemoryIterator iterator = null;
             try
             {
                 switch (parameterName)
                 {
                     case "Firstname":
-                        findCollection = this.firstNameDictionary[parameterValue].AsReadOnly();
+                        iterator = new MemoryIterator(this.firstNameDictionary[parameterValue]);
                         break;
                     case "Lastname":
-                        findCollection = this.lastNameDictionary[parameterValue].AsReadOnly();
+                        iterator = new MemoryIterator(this.lastNameDictionary[parameterValue]);
                         break;
                     case "Dateofbirth":
-                        findCollection = this.FindByDateOfBirth(parameterValue);
+                        iterator = this.FindByDateOfBirth(parameterValue);
                         break;
                     default:
                         throw new InvalidOperationException($"The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
@@ -202,7 +202,7 @@ namespace FileCabinetApp
                 throw new ArgumentException($"The record with {parameterName} '{parameterValue}' doesn't exist.");
             }
 
-            return findCollection;
+            return iterator;
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace FileCabinetApp
             return newList;
         }
 
-        private ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        private MemoryIterator FindByDateOfBirth(string dateOfBirth)
         {
             var dateList = new List<FileCabinetRecord>();
             foreach (var item in this.list)
@@ -333,7 +333,7 @@ namespace FileCabinetApp
                 }
             }
 
-            var dateCollection = new ReadOnlyCollection<FileCabinetRecord>(dateList);
+            var dateCollection = new MemoryIterator(dateList);
             return dateCollection;
         }
 

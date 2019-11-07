@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using FileCabinetApp.Iterators;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
@@ -11,14 +12,14 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class FindCommandHandler : ServiceCommandHandlerBase
     {
-        private Action<IEnumerable<FileCabinetRecord>> printer;
+        private Action<IRecordIterator> printer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="printer">The printer.</param>
-        public FindCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
+        public FindCommandHandler(IFileCabinetService service, Action<IRecordIterator> printer)
             : base(service)
         {
             this.printer = printer;
@@ -37,7 +38,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 try
                 {
-                    ReadOnlyCollection<FileCabinetRecord> findList = this.Service.Find(request.Parameters);
+                    var findList = this.Service.Find(request.Parameters);
                     this.printer(findList);
                 }
                 catch (InvalidOperationException ioex)

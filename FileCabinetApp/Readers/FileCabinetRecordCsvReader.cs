@@ -28,6 +28,7 @@ namespace FileCabinetApp.Readers
         public IList<FileCabinetRecord> ReadAll()
         {
             var list = new List<FileCabinetRecord>();
+            var textInfo = new CultureInfo("ru-RU").TextInfo;
             this.reader.ReadLine();
             while (!this.reader.EndOfStream)
             {
@@ -35,8 +36,8 @@ namespace FileCabinetApp.Readers
                 var record = new FileCabinetRecord()
                 {
                     Id = int.Parse(elements[0], CultureInfo.InvariantCulture),
-                    FirstName = elements[1],
-                    LastName = elements[2],
+                    FirstName = textInfo.ToTitleCase(textInfo.ToLower(elements[1])),
+                    LastName = textInfo.ToTitleCase(textInfo.ToLower(elements[2])),
                     DateOfBirth = DateTime.Parse(elements[3], CultureInfo.InvariantCulture),
                     Gender = char.Parse(elements[4]),
                     Office = short.Parse(elements[5], CultureInfo.InvariantCulture),

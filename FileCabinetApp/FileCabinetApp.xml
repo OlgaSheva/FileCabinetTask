@@ -82,7 +82,7 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{FileCabinetApp.Iterators.IRecordIterator})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.
             </summary>
@@ -214,7 +214,7 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
+        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{FileCabinetApp.Iterators.IRecordIterator})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.FindCommandHandler"/> class.
             </summary>
@@ -568,6 +568,82 @@
             The memory.
             </summary>
         </member>
+        <member name="T:FileCabinetApp.Iterators.FilesystemIterator">
+            <summary>
+            File system iterator.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Iterators.IRecordIterator" />
+        </member>
+        <member name="M:FileCabinetApp.Iterators.FilesystemIterator.#ctor(System.IO.FileStream,System.Collections.Generic.List{System.Int64})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Iterators.FilesystemIterator"/> class.
+            </summary>
+            <param name="fileStream">The file stream.</param>
+            <param name="positions">The positions.</param>
+        </member>
+        <member name="M:FileCabinetApp.Iterators.FilesystemIterator.GetNext">
+            <summary>
+            Gets the next record.
+            </summary>
+            <returns>
+            The next record.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Iterators.FilesystemIterator.HasMore">
+            <summary>
+            Determines whether this instance has more.
+            </summary>
+            <returns>
+            <c>true</c> if this instance has more; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.Iterators.IRecordIterator">
+            <summary>
+            Record iterator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Iterators.IRecordIterator.GetNext">
+            <summary>
+            Gets the next record.
+            </summary>
+            <returns>The next record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Iterators.IRecordIterator.HasMore">
+            <summary>
+            Determines whether this instance has more.
+            </summary>
+            <returns>
+              <c>true</c> if this instance has more; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.Iterators.MemoryIterator">
+            <summary>
+            Memory iterator.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Iterators.IRecordIterator" />
+        </member>
+        <member name="M:FileCabinetApp.Iterators.MemoryIterator.#ctor(System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Iterators.MemoryIterator"/> class.
+            </summary>
+            <param name="records">The records.</param>
+        </member>
+        <member name="M:FileCabinetApp.Iterators.MemoryIterator.GetNext">
+            <summary>
+            Gets the next record.
+            </summary>
+            <returns>
+            The next record.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Iterators.MemoryIterator.HasMore">
+            <summary>
+            Determines whether this instance has more.
+            </summary>
+            <returns>
+            <c>true</c> if this instance has more; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
             The class to subscribe file cabinet record.
@@ -760,6 +836,14 @@
             <param name="fileStream">The file stream.</param>
             <param name="validator">The validator.</param>
         </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateNewFileCabinetRecord(System.IO.BinaryReader)">
+            <summary>
+            Creates the new file cabinet record.
+            </summary>
+            <param name="binaryReader">The binary reader.</param>
+            <returns>New record.</returns>
+            <exception cref="T:System.ArgumentNullException">binaryReader is null.</exception>
+        </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.RecordParameters)">
             <summary>
             Creates the record.
@@ -774,7 +858,7 @@
             Edits the record.
             </summary>
             <param name="id">The identifier.</param>
-            <param name="record">The record.</param>
+            <param name="parameters">The record.</param>
         </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Find(System.String)">
             <summary>
