@@ -26,7 +26,7 @@ namespace FileCabinetApp.Services
         private const int DecimalInBitesLength = 16;
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
-        private readonly SortedList<int, long> idpositionPairs = new SortedList<int, long>();
+        private readonly SortedDictionary<int, long> idpositionPairs;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
@@ -37,6 +37,7 @@ namespace FileCabinetApp.Services
         {
             this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream));
             this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
+            this.idpositionPairs = new SortedDictionary<int, long>();
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace FileCabinetApp.Services
                 new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
             var record = new FileCabinetRecord
             {
-                Id = this.idpositionPairs.Count > 0 ? this.idpositionPairs.Keys[this.idpositionPairs.Count - 1] + 1 : 1,
+                Id = this.idpositionPairs.Count > 0 ? this.idpositionPairs.Keys.Last() + 1 : 1,
                 FirstName = rec.FirstName,
                 LastName = rec.LastName,
                 DateOfBirth = rec.DateOfBirth,
