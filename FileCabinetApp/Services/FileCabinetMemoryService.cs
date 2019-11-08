@@ -98,7 +98,10 @@ namespace FileCabinetApp
         /// <returns>All existing records.</returns>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            return this.list;
+            foreach (var record in this.list)
+            {
+                yield return record;
+            }
         }
 
         /// <summary>
@@ -177,19 +180,19 @@ namespace FileCabinetApp
             parameterValue = textInfo.ToTitleCase(textInfo.ToLower(parameterValue));
             parameterName = textInfo.ToTitleCase(textInfo.ToLower(parameterName));
 
-            IEnumerable<FileCabinetRecord> iterator = null;
+            List<FileCabinetRecord> findedRecords = null;
             try
             {
                 switch (parameterName)
                 {
                     case "Firstname":
-                        iterator = this.firstNameDictionary[parameterValue];
+                        findedRecords = this.firstNameDictionary[parameterValue];
                         break;
                     case "Lastname":
-                        iterator = this.lastNameDictionary[parameterValue];
+                        findedRecords = this.lastNameDictionary[parameterValue];
                         break;
                     case "Dateofbirth":
-                        iterator = this.FindByDateOfBirth(parameterValue);
+                        findedRecords = this.FindByDateOfBirth(parameterValue);
                         break;
                     default:
                         throw new InvalidOperationException($"The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
@@ -200,7 +203,10 @@ namespace FileCabinetApp
                 throw new ArgumentException($"The record with {parameterName} '{parameterValue}' doesn't exist.");
             }
 
-            return iterator;
+            foreach (var record in findedRecords)
+            {
+                yield return record;
+            }
         }
 
         /// <summary>

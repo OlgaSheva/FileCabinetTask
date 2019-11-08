@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using FileCabinetApp.Iterators;
 using FileCabinetApp.Validators;
 
 namespace FileCabinetApp.Services
@@ -38,34 +37,6 @@ namespace FileCabinetApp.Services
             this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
 
             this.IdAndPositionSortedListGenerator();
-        }
-
-        /// <summary>
-        /// Creates the new file cabinet record.
-        /// </summary>
-        /// <param name="binaryReader">The binary reader.</param>
-        /// <returns>New record.</returns>
-        /// <exception cref="ArgumentNullException">binaryReader is null.</exception>
-        public static FileCabinetRecord CreateNewFileCabinetRecord(BinaryReader binaryReader)
-        {
-            if (binaryReader == null)
-            {
-                throw new ArgumentNullException(nameof(binaryReader));
-            }
-
-            binaryReader.ReadBytes(ReservedFieldLength);
-            return new FileCabinetRecord
-            {
-                Id = binaryReader.ReadInt32(),
-                FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                LastName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
-                Gender = binaryReader.ReadChar(),
-                Office = binaryReader.ReadInt16(),
-                Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
-            };
         }
 
         /// <summary>
@@ -174,21 +145,21 @@ namespace FileCabinetApp.Services
             string key = par[0].ToLower(CultureInfo.CurrentCulture);
             string value = par[1].Trim().Trim('"');
 
-            Enumerable<FileCabinetRecord> iterator = null;
+            List<long> positions = null;
             try
             {
                 switch (key)
                 {
                     case "firstname":
-                        iterator = new Enumerable<FileCabinetRecord>(this.fileStream, this.firstNameDictionary[value]);
+                        positions = this.firstNameDictionary[value];
                         break;
                     case "lastname":
-                        iterator = new Enumerable<FileCabinetRecord>(this.fileStream, this.lastNameDictionary[value]);
+                        positions = this.lastNameDictionary[value];
                         break;
                     case "dateofbirth":
                         if (DateTime.TryParse(value, out DateTime date))
                         {
-                            iterator = new Enumerable<FileCabinetRecord>(this.fileStream, this.dateOfBirthDictionary[date]);
+                            positions = this.dateOfBirthDictionary[date];
                         }
 
                         break;
@@ -201,7 +172,14 @@ namespace FileCabinetApp.Services
                 throw new ArgumentException($"The record with {key} '{value}' doesn't exist.", knfex.Message);
             }
 
-            return iterator;
+            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            {
+                foreach (var position in positions)
+                {
+                    this.fileStream.Seek(position, SeekOrigin.Begin);
+                    yield return CreateNewFileCabinetRecord(binaryReader);
+                }
+            }
         }
 
         /// <summary>
@@ -212,14 +190,14 @@ namespace FileCabinetApp.Services
         /// </returns>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            List<long> positions = new List<long>(this.idpositionPairs.Count);
-            foreach (var position in this.idpositionPairs.Values)
+            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                positions.Add(position);
+                foreach (var position in this.idpositionPairs.Values)
+                {
+                    this.fileStream.Seek(position, SeekOrigin.Begin);
+                    yield return CreateNewFileCabinetRecord(binaryReader);
+                }
             }
-
-            Enumerable<FileCabinetRecord> iterator = new Enumerable<FileCabinetRecord>(this.fileStream, positions);
-            return iterator;
         }
 
         /// <summary>
@@ -443,6 +421,34 @@ namespace FileCabinetApp.Services
             }
 
             return new decimal(bits);
+        }
+
+        /// <summary>
+        /// Creates the new file cabinet record.
+        /// </summary>
+        /// <param name="binaryReader">The binary reader.</param>
+        /// <returns>New record.</returns>
+        /// <exception cref="ArgumentNullException">binaryReader is null.</exception>
+        private static FileCabinetRecord CreateNewFileCabinetRecord(BinaryReader binaryReader)
+        {
+            if (binaryReader == null)
+            {
+                throw new ArgumentNullException(nameof(binaryReader));
+            }
+
+            binaryReader.ReadBytes(ReservedFieldLength);
+            return new FileCabinetRecord
+            {
+                Id = binaryReader.ReadInt32(),
+                FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                LastName = System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
+                Gender = binaryReader.ReadChar(),
+                Office = binaryReader.ReadInt16(),
+                Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
+            };
         }
 
         private static RecordParameters CreteNewRecordParameters(BinaryReader binaryReader)

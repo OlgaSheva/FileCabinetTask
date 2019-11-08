@@ -568,93 +568,6 @@
             The memory.
             </summary>
         </member>
-        <member name="T:FileCabinetApp.Iterators.Enumerable`1">
-            <summary>
-            Records enumerable.
-            </summary>
-            <typeparam name="T">The FileCabinetRecord.</typeparam>
-            <seealso cref="T:System.Collections.Generic.IEnumerable`1" />
-        </member>
-        <member name="M:FileCabinetApp.Iterators.Enumerable`1.#ctor(System.IO.FileStream,System.Collections.Generic.List{System.Int64})">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.Iterators.Enumerable`1"/> class.
-            </summary>
-            <param name="fileStream">The file stream.</param>
-            <param name="positions">The positions.</param>
-        </member>
-        <member name="M:FileCabinetApp.Iterators.Enumerable`1.GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through the collection.
-            </summary>
-            <returns>
-            An enumerator that can be used to iterate through the collection.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Iterators.Enumerable`1.System#Collections#IEnumerable#GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through a collection.
-            </summary>
-            <returns>
-            An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
-            </returns>
-        </member>
-        <member name="T:FileCabinetApp.Iterators.Enumerator`1">
-            <summary>
-            Records enumerator.
-            </summary>
-            <typeparam name="T">The FileCabinetRecord.</typeparam>
-            <seealso cref="T:System.Collections.Generic.IEnumerator`1" />
-        </member>
-        <member name="M:FileCabinetApp.Iterators.Enumerator`1.#ctor(System.IO.FileStream,System.Collections.Generic.List{System.Int64})">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.Iterators.Enumerator`1"/> class.
-            </summary>
-            <param name="fileStream">The file stream.</param>
-            <param name="positions">The positions.</param>
-        </member>
-        <member name="P:FileCabinetApp.Iterators.Enumerator`1.Current">
-            <summary>
-            Gets the element in the collection at the current position of the enumerator.
-            </summary>
-            <exception cref="T:System.InvalidOperationException">current is null.</exception>
-            <value>
-            The element in the collection at the current position of the enumerator.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Iterators.Enumerator`1.System#Collections#Generic#IEnumerator{T}#Current">
-            <summary>
-            Gets the element in the collection at the current position of the enumerator.
-            </summary>
-            <value>
-            The element in the collection at the current position of the enumerator.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Iterators.Enumerator`1.System#Collections#IEnumerator#Current">
-            <summary>
-            Gets the element in the collection at the current position of the enumerator.
-            </summary>
-            <value>
-            The element in the collection at the current position of the enumerator.
-            </value>
-        </member>
-        <member name="M:FileCabinetApp.Iterators.Enumerator`1.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.Iterators.Enumerator`1.MoveNext">
-            <summary>
-            Advances the enumerator to the next element of the collection.
-            </summary>
-            <returns>
-            true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Iterators.Enumerator`1.Reset">
-            <summary>
-            Sets the enumerator to its initial position, which is before the first element in the collection.
-            </summary>
-        </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
             The class to subscribe file cabinet record.
@@ -847,14 +760,6 @@
             <param name="fileStream">The file stream.</param>
             <param name="validator">The validator.</param>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateNewFileCabinetRecord(System.IO.BinaryReader)">
-            <summary>
-            Creates the new file cabinet record.
-            </summary>
-            <param name="binaryReader">The binary reader.</param>
-            <returns>New record.</returns>
-            <exception cref="T:System.ArgumentNullException">binaryReader is null.</exception>
-        </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.RecordParameters)">
             <summary>
             Creates the record.
@@ -934,6 +839,14 @@
             </summary>
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateNewFileCabinetRecord(System.IO.BinaryReader)">
+            <summary>
+            Creates the new file cabinet record.
+            </summary>
+            <param name="binaryReader">The binary reader.</param>
+            <returns>New record.</returns>
+            <exception cref="T:System.ArgumentNullException">binaryReader is null.</exception>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
             <summary>

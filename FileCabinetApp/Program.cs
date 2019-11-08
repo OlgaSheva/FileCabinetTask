@@ -166,10 +166,9 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(records));
             }
 
-            var iterator = records.GetEnumerator();
-            while (iterator.MoveNext())
+            foreach (var record in records)
             {
-                Console.WriteLine(iterator.Current.ToString());
+                Console.WriteLine(record.ToString());
             }
         }
     }
