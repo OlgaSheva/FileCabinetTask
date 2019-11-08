@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
@@ -35,7 +34,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "list")
             {
-                ReadOnlyCollection<FileCabinetRecord> fileCabinetRecords = this.Service.GetRecords();
+                var fileCabinetRecords = this.Service.GetRecords();
                 this.printer(fileCabinetRecords);
                 return null;
             }

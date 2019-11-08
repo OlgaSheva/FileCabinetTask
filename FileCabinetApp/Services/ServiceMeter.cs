@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace FileCabinetApp.Services
@@ -65,7 +64,7 @@ namespace FileCabinetApp.Services
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <returns>Records by parameter.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> Find(string parameters)
+        public IEnumerable<FileCabinetRecord> Find(string parameters)
         {
             this.stopWatch.Reset();
             this.stopWatch.Start();
@@ -82,7 +81,7 @@ namespace FileCabinetApp.Services
         /// Gets the records.
         /// </summary>
         /// <returns>All records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
             this.stopWatch.Reset();
             this.stopWatch.Start();

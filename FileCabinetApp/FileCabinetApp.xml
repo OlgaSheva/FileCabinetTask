@@ -774,7 +774,7 @@
             Edits the record.
             </summary>
             <param name="id">The identifier.</param>
-            <param name="record">The record.</param>
+            <param name="parameters">The record.</param>
         </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Find(System.String)">
             <summary>
@@ -839,6 +839,14 @@
             </summary>
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateNewFileCabinetRecord(System.IO.BinaryReader)">
+            <summary>
+            Creates the new file cabinet record.
+            </summary>
+            <param name="binaryReader">The binary reader.</param>
+            <returns>New record.</returns>
+            <exception cref="T:System.ArgumentNullException">binaryReader is null.</exception>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
             <summary>

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using CommandLine;
+
 using FileCabinetApp.CommandHandlers;
 using FileCabinetApp.CommandLineOptions;
 using FileCabinetApp.Converters;
@@ -166,9 +166,9 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(records));
             }
 
-            foreach (var item in records)
+            foreach (var record in records)
             {
-                Console.WriteLine(item.ToString());
+                Console.WriteLine(record.ToString());
             }
         }
     }

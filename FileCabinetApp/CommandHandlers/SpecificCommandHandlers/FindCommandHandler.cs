@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
@@ -37,7 +36,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 try
                 {
-                    ReadOnlyCollection<FileCabinetRecord> findList = this.Service.Find(request.Parameters);
+                    var findList = this.Service.Find(request.Parameters);
                     this.printer(findList);
                 }
                 catch (InvalidOperationException ioex)

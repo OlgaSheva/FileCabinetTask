@@ -32,7 +32,7 @@ namespace FileCabinetApp.CommandLineOptions
         /// <value>
         /// The meter.
         /// </value>
-        [Option("use-stopwatch", Default = MeterStatus.On, HelpText = "Defines meter rules: on or off.")]
+        [Option("use-stopwatch", Default = MeterStatus.Off, HelpText = "Defines meter rules: On or Off.")]
         public MeterStatus Meter { get; set; }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace FileCabinetApp.CommandLineOptions
         /// <value>
         /// The logger.
         /// </value>
-        [Option("use-logger", Default = LoggerStatus.On, HelpText = "Defines logger rules: on or off.")]
+        [Option("use-logger", Default = LoggerStatus.Off, HelpText = "Defines logger rules: On or Off.")]
         public LoggerStatus Logger { get; set; }
     }
 }

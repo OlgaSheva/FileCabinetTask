@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-
 using FileCabinetApp.Validators;
 
 namespace FileCabinetApp.Services
@@ -19,14 +17,14 @@ namespace FileCabinetApp.Services
         private const int RecordInBytesLength = 278;
         private const int ReservedFieldLength = 2;
         private const int FirstNamePosition = 6;
-        private const int LastNamePosition = 126;
-        private const int DatePosition = 246;
-        private const int GenderPosition = 258;
         private const int StringInBitesLength = 120;
         private const int DecimalInBitesLength = 16;
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
-        private readonly SortedList<int, long> idpositionPairs = new SortedList<int, long>();
+        private SortedDictionary<int, long> idpositionPairs;
+        private Dictionary<string, List<long>> firstNameDictionary;
+        private Dictionary<string, List<long>> lastNameDictionary;
+        private Dictionary<DateTime, List<long>> dateOfBirthDictionary;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
@@ -37,6 +35,8 @@ namespace FileCabinetApp.Services
         {
             this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream));
             this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
+
+            this.IdAndPositionSortedListGenerator();
         }
 
         /// <summary>
@@ -53,12 +53,11 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(rec));
             }
 
-            this.IdAndPositionSortedList();
             this.validator.ValidateParameters(
                 new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
             var record = new FileCabinetRecord
             {
-                Id = this.idpositionPairs.Count > 0 ? this.idpositionPairs.Keys[this.idpositionPairs.Count - 1] + 1 : 1,
+                Id = this.idpositionPairs.Count > 0 ? this.idpositionPairs.Keys.Last() + 1 : 1,
                 FirstName = rec.FirstName,
                 LastName = rec.LastName,
                 DateOfBirth = rec.DateOfBirth,
@@ -68,7 +67,9 @@ namespace FileCabinetApp.Services
             };
 
             this.WriteToTheBinaryFile(record);
-            this.idpositionPairs.Add(record.Id, this.fileStream.Position - RecordInBytesLength);
+            long recordPosition = this.fileStream.Position - RecordInBytesLength;
+            this.idpositionPairs.Add(record.Id, recordPosition);
+            this.AddToDictionaries(rec, recordPosition);
 
             return record.Id;
         }
@@ -77,12 +78,12 @@ namespace FileCabinetApp.Services
         /// Edits the record.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="record">The record.</param>
-        public void EditRecord(int id, RecordParameters record)
+        /// <param name="parameters">The record.</param>
+        public void EditRecord(int id, RecordParameters parameters)
         {
-            if (record == null)
+            if (parameters == null)
             {
-                throw new ArgumentNullException(nameof(record));
+                throw new ArgumentNullException(nameof(parameters));
             }
 
             if (id <= 0)
@@ -96,16 +97,18 @@ namespace FileCabinetApp.Services
             }
 
             this.validator.ValidateParameters(
-                new RecordParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary));
+                new RecordParameters(parameters.FirstName, parameters.LastName, parameters.DateOfBirth, parameters.Gender, parameters.Office, parameters.Salary));
 
-            var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.FirstName.PadRight(60));
-            var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(record.LastName.PadRight(60));
-            var byteYear = BitConverter.GetBytes(record.DateOfBirth.Year);
-            var byteMonth = BitConverter.GetBytes(record.DateOfBirth.Month);
-            var byteDay = BitConverter.GetBytes(record.DateOfBirth.Day);
-            var byteGender = BitConverter.GetBytes(record.Gender);
-            var byteOffice = BitConverter.GetBytes(record.Office);
-            var byteSalary = GetBytes(record.Salary);
+            this.RemoveFromDictionaries(id);
+
+            var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(parameters.FirstName.PadRight(60));
+            var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(parameters.LastName.PadRight(60));
+            var byteYear = BitConverter.GetBytes(parameters.DateOfBirth.Year);
+            var byteMonth = BitConverter.GetBytes(parameters.DateOfBirth.Month);
+            var byteDay = BitConverter.GetBytes(parameters.DateOfBirth.Day);
+            var byteGender = BitConverter.GetBytes(parameters.Gender);
+            var byteOffice = BitConverter.GetBytes(parameters.Office);
+            var byteSalary = GetBytes(parameters.Salary);
 
             this.fileStream.Seek(position + FirstNamePosition, SeekOrigin.Begin);
 
@@ -120,6 +123,8 @@ namespace FileCabinetApp.Services
                 writeBinay.Write(byteOffice, 0, byteOffice.Length);
                 writeBinay.Write(byteSalary, 0, byteSalary.Length);
             }
+
+            this.AddToDictionaries(parameters, position);
         }
 
         /// <summary>
@@ -129,7 +134,7 @@ namespace FileCabinetApp.Services
         /// <returns>
         /// All records with specified parameters.
         /// </returns>
-        public ReadOnlyCollection<FileCabinetRecord> Find(string parameters)
+        public IEnumerable<FileCabinetRecord> Find(string parameters)
         {
             if (parameters == null)
             {
@@ -140,19 +145,23 @@ namespace FileCabinetApp.Services
             string key = par[0].ToLower(CultureInfo.CurrentCulture);
             string value = par[1].Trim().Trim('"');
 
-            ReadOnlyCollection<FileCabinetRecord> findCollection = null;
+            List<long> positions = null;
             try
             {
                 switch (key)
                 {
                     case "firstname":
-                        findCollection = this.FindByFirstName(value);
+                        positions = this.firstNameDictionary[value];
                         break;
                     case "lastname":
-                        findCollection = this.FindByLastName(value);
+                        positions = this.lastNameDictionary[value];
                         break;
                     case "dateofbirth":
-                        findCollection = this.FindByDateOfBirth(value);
+                        if (DateTime.TryParse(value, out DateTime date))
+                        {
+                            positions = this.dateOfBirthDictionary[date];
+                        }
+
                         break;
                     default:
                         throw new InvalidOperationException($"The {key} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
@@ -163,7 +172,14 @@ namespace FileCabinetApp.Services
                 throw new ArgumentException($"The record with {key} '{value}' doesn't exist.", knfex.Message);
             }
 
-            return findCollection;
+            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            {
+                foreach (var position in positions)
+                {
+                    this.fileStream.Seek(position, SeekOrigin.Begin);
+                    yield return CreateNewFileCabinetRecord(binaryReader);
+                }
+            }
         }
 
         /// <summary>
@@ -172,39 +188,16 @@ namespace FileCabinetApp.Services
         /// <returns>
         /// All existing records.
         /// </returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            this.fileStream.Position = 0;
-            List<FileCabinetRecord> records = new List<FileCabinetRecord>();
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                long count = this.fileStream.Length / RecordInBytesLength;
-                while (count-- > 0)
+                foreach (var position in this.idpositionPairs.Values)
                 {
-                    if (binaryReader.ReadBytes(2)[0] == 0)
-                    {
-                        records.Add(new FileCabinetRecord
-                        {
-                            Id = binaryReader.ReadInt32(),
-                            FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                            LastName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                            DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
-                            Gender = binaryReader.ReadChar(),
-                            Office = binaryReader.ReadInt16(),
-                            Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
-                        });
-                    }
-                    else
-                    {
-                        this.fileStream.Seek(RecordInBytesLength - ReservedFieldLength, SeekOrigin.Current);
-                    }
+                    this.fileStream.Seek(position, SeekOrigin.Begin);
+                    yield return CreateNewFileCabinetRecord(binaryReader);
                 }
             }
-
-            ReadOnlyCollection<FileCabinetRecord> result = new ReadOnlyCollection<FileCabinetRecord>(records);
-            return result;
         }
 
         /// <summary>
@@ -216,8 +209,6 @@ namespace FileCabinetApp.Services
         /// </returns>
         public int GetStat(out int deletedRecordsCount)
         {
-            this.IdAndPositionSortedList();
-
             this.fileStream.Seek(0, SeekOrigin.End);
             int recordsCount = (int)(this.fileStream.Position / RecordInBytesLength);
             deletedRecordsCount = recordsCount - this.idpositionPairs.Count;
@@ -271,7 +262,7 @@ namespace FileCabinetApp.Services
             var recordsFromFile = snapshot.FileCabinetRecords.ToList();
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                this.IdAndPositionSortedList();
+                this.IdAndPositionSortedListGenerator();
 
                 bool flag = false;
                 int existId = -1;
@@ -432,8 +423,19 @@ namespace FileCabinetApp.Services
             return new decimal(bits);
         }
 
+        /// <summary>
+        /// Creates the new file cabinet record.
+        /// </summary>
+        /// <param name="binaryReader">The binary reader.</param>
+        /// <returns>New record.</returns>
+        /// <exception cref="ArgumentNullException">binaryReader is null.</exception>
         private static FileCabinetRecord CreateNewFileCabinetRecord(BinaryReader binaryReader)
         {
+            if (binaryReader == null)
+            {
+                throw new ArgumentNullException(nameof(binaryReader));
+            }
+
             binaryReader.ReadBytes(ReservedFieldLength);
             return new FileCabinetRecord
             {
@@ -449,25 +451,48 @@ namespace FileCabinetApp.Services
             };
         }
 
-        private void IdAndPositionSortedList()
+        private static RecordParameters CreteNewRecordParameters(BinaryReader binaryReader)
         {
+            binaryReader.ReadBytes(ReservedFieldLength);
+            binaryReader.ReadInt32();
+            return new RecordParameters(
+                System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
+                binaryReader.ReadChar(),
+                binaryReader.ReadInt16(),
+                ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)));
+        }
+
+        private void IdAndPositionSortedListGenerator()
+        {
+            this.idpositionPairs = new SortedDictionary<int, long>();
+            this.firstNameDictionary = new Dictionary<string, List<long>>();
+            this.lastNameDictionary = new Dictionary<string, List<long>>();
+            this.dateOfBirthDictionary = new Dictionary<DateTime, List<long>>();
+
             this.fileStream.Seek(0, SeekOrigin.Begin);
             int id;
+            long position;
 
-            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
-                    if (binaryReader.ReadBytes(ReservedFieldLength)[0] == 0)
+                    if (reader.ReadBytes(ReservedFieldLength)[0] == 0)
                     {
-                        id = binaryReader.ReadInt32();
+                        id = reader.ReadInt32();
                         this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
+                        position = this.fileStream.Position;
                         if (!this.idpositionPairs.Keys.Contains(id))
                         {
-                            this.idpositionPairs.Add(id, this.fileStream.Position);
+                            this.idpositionPairs.Add(id, position);
                         }
 
-                        this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
+                        var parameters = CreteNewRecordParameters(reader);
+                        this.AddToDictionaries(parameters, position);
                     }
                     else
                     {
@@ -504,114 +529,62 @@ namespace FileCabinetApp.Services
             }
         }
 
-        private ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        private void AddToDictionaries(RecordParameters parameters, long recordPosition)
         {
-            var dateList = new List<FileCabinetRecord>();
-            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            if (!this.firstNameDictionary.ContainsKey(parameters.FirstName))
             {
-                int count = (int)(this.fileStream.Length / RecordInBytesLength);
-                this.fileStream.Seek(0, SeekOrigin.Begin);
-                string firstNameFromFile;
-                while (count-- > 0)
-                {
-                    if (binaryReader.ReadBytes(2)[0] == 0)
-                    {
-                        this.fileStream.Seek(-ReservedFieldLength + FirstNamePosition, SeekOrigin.Current);
-                        firstNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
-                            binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
-                        if (firstNameFromFile.Equals(firstName, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            this.fileStream.Seek(-LastNamePosition, SeekOrigin.Current);
-                            dateList.Add(CreateNewFileCabinetRecord(binaryReader));
-                        }
-                        else
-                        {
-                            this.fileStream.Seek(-LastNamePosition + RecordInBytesLength, SeekOrigin.Current);
-                        }
-                    }
-                    else
-                    {
-                        this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
-                    }
-                }
+                this.firstNameDictionary.Add(parameters.FirstName, new List<long>());
             }
 
-            var dateCollection = new ReadOnlyCollection<FileCabinetRecord>(dateList);
-            return dateCollection;
+            if (!this.lastNameDictionary.ContainsKey(parameters.LastName))
+            {
+                this.lastNameDictionary.Add(parameters.LastName, new List<long>());
+            }
+
+            if (!this.dateOfBirthDictionary.ContainsKey(parameters.DateOfBirth))
+            {
+                this.dateOfBirthDictionary.Add(parameters.DateOfBirth, new List<long>());
+            }
+
+            this.firstNameDictionary[parameters.FirstName].Add(recordPosition);
+            this.lastNameDictionary[parameters.LastName].Add(recordPosition);
+            this.dateOfBirthDictionary[parameters.DateOfBirth].Add(recordPosition);
         }
 
-        private ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        private void RemoveFromDictionaries(int id)
         {
-            var dateList = new List<FileCabinetRecord>();
-            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            long recordPositon = this.idpositionPairs[id];
+            this.fileStream.Seek(recordPositon + FirstNamePosition, SeekOrigin.Begin);
+            string firstName;
+            string lastName;
+            DateTime dateOfBirth;
+            using (var reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                int count = (int)(this.fileStream.Length / RecordInBytesLength);
-                this.fileStream.Seek(0, SeekOrigin.Begin);
-                string lastNameFromFile;
-                while (count-- > 0)
-                {
-                    if (binaryReader.ReadBytes(2)[0] == 0)
-                    {
-                        this.fileStream.Seek(-ReservedFieldLength + LastNamePosition, SeekOrigin.Current);
-                        lastNameFromFile = System.Text.UnicodeEncoding.Unicode.GetString(
-                            binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
-                        if (lastNameFromFile.Equals(lastName, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            this.fileStream.Seek(-DatePosition, SeekOrigin.Current);
-                            dateList.Add(CreateNewFileCabinetRecord(binaryReader));
-                        }
-                        else
-                        {
-                            this.fileStream.Seek(-DatePosition + RecordInBytesLength, SeekOrigin.Current);
-                        }
-                    }
-                    else
-                    {
-                        this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
-                    }
-                }
+                firstName = System.Text.UnicodeEncoding.Unicode.GetString(
+                            reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                lastName = System.Text.UnicodeEncoding.Unicode.GetString(
+                            reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                dateOfBirth = new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             }
 
-            var dateCollection = new ReadOnlyCollection<FileCabinetRecord>(dateList);
-            return dateCollection;
-        }
+            this.firstNameDictionary[firstName].Remove(recordPositon);
+            this.lastNameDictionary[lastName].Remove(recordPositon);
+            this.dateOfBirthDictionary[dateOfBirth].Remove(recordPositon);
 
-        private ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
-        {
-            var dateList = new List<FileCabinetRecord>();
-            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            if (this.firstNameDictionary[firstName].Count == 0)
             {
-                int count = (int)(this.fileStream.Length / RecordInBytesLength);
-                this.fileStream.Seek(0, SeekOrigin.Begin);
-                DateTime dateFromFile;
-                while (count-- > 0)
-                {
-                    if (binaryReader.ReadBytes(2)[0] == 0)
-                    {
-                        this.fileStream.Seek(-ReservedFieldLength + DatePosition, SeekOrigin.Current);
-                        dateFromFile = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32());
-                        if (DateTime.TryParse(dateOfBirth, out DateTime date))
-                        {
-                            if (DateTime.Compare(dateFromFile, date) == 0)
-                            {
-                                this.fileStream.Seek(-GenderPosition, SeekOrigin.Current);
-                                dateList.Add(CreateNewFileCabinetRecord(binaryReader));
-                            }
-                        }
-                        else
-                        {
-                            this.fileStream.Seek(-GenderPosition + RecordInBytesLength, SeekOrigin.Current);
-                        }
-                    }
-                    else
-                    {
-                        this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
-                    }
-                }
+                this.firstNameDictionary.Remove(firstName);
             }
 
-            var dateCollection = new ReadOnlyCollection<FileCabinetRecord>(dateList);
-            return dateCollection;
+            if (this.lastNameDictionary[lastName].Count == 0)
+            {
+                this.lastNameDictionary.Remove(lastName);
+            }
+
+            if (this.dateOfBirthDictionary[dateOfBirth].Count == 0)
+            {
+                this.dateOfBirthDictionary.Remove(dateOfBirth);
+            }
         }
     }
 }
