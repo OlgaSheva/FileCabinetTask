@@ -1,6 +1,4 @@
-﻿using FileCabinetApp.Iterators;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 
 namespace FileCabinetApp.Services
 {
@@ -20,7 +18,7 @@ namespace FileCabinetApp.Services
         /// Gets the records.
         /// </summary>
         /// <returns>All existing records.</returns>
-        IRecordIterator GetRecords();
+        IEnumerable<FileCabinetRecord> GetRecords();
 
         /// <summary>
         /// Gets the stat.
@@ -41,7 +39,7 @@ namespace FileCabinetApp.Services
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <returns>All records with specified parameters.</returns>
-        IRecordIterator Find(string parameters);
+        IEnumerable<FileCabinetRecord> Find(string parameters);
 
         /// <summary>
         /// Determines whether [is there a record with this identifier] [the specified identifier].

@@ -82,7 +82,7 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{FileCabinetApp.Iterators.IRecordIterator})">
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.
             </summary>
@@ -214,7 +214,7 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{FileCabinetApp.Iterators.IRecordIterator})">
+        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.FindCommandHandler"/> class.
             </summary>
@@ -568,81 +568,92 @@
             The memory.
             </summary>
         </member>
-        <member name="T:FileCabinetApp.Iterators.FilesystemIterator">
+        <member name="T:FileCabinetApp.Iterators.Enumerable`1">
             <summary>
-            File system iterator.
+            Records enumerable.
             </summary>
-            <seealso cref="T:FileCabinetApp.Iterators.IRecordIterator" />
+            <typeparam name="T">The FileCabinetRecord.</typeparam>
+            <seealso cref="T:System.Collections.Generic.IEnumerable`1" />
         </member>
-        <member name="M:FileCabinetApp.Iterators.FilesystemIterator.#ctor(System.IO.FileStream,System.Collections.Generic.List{System.Int64})">
+        <member name="M:FileCabinetApp.Iterators.Enumerable`1.#ctor(System.IO.FileStream,System.Collections.Generic.List{System.Int64})">
             <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.Iterators.FilesystemIterator"/> class.
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Iterators.Enumerable`1"/> class.
             </summary>
             <param name="fileStream">The file stream.</param>
             <param name="positions">The positions.</param>
         </member>
-        <member name="M:FileCabinetApp.Iterators.FilesystemIterator.GetNext">
+        <member name="M:FileCabinetApp.Iterators.Enumerable`1.GetEnumerator">
             <summary>
-            Gets the next record.
+            Returns an enumerator that iterates through the collection.
             </summary>
             <returns>
-            The next record.
+            An enumerator that can be used to iterate through the collection.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.Iterators.FilesystemIterator.HasMore">
+        <member name="M:FileCabinetApp.Iterators.Enumerable`1.System#Collections#IEnumerable#GetEnumerator">
             <summary>
-            Determines whether this instance has more.
+            Returns an enumerator that iterates through a collection.
             </summary>
             <returns>
-            <c>true</c> if this instance has more; otherwise, <c>false</c>.
+            An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
             </returns>
         </member>
-        <member name="T:FileCabinetApp.Iterators.IRecordIterator">
+        <member name="T:FileCabinetApp.Iterators.Enumerator`1">
             <summary>
-            Record iterator.
+            Records enumerator.
+            </summary>
+            <typeparam name="T">The FileCabinetRecord.</typeparam>
+            <seealso cref="T:System.Collections.Generic.IEnumerator`1" />
+        </member>
+        <member name="M:FileCabinetApp.Iterators.Enumerator`1.#ctor(System.IO.FileStream,System.Collections.Generic.List{System.Int64})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Iterators.Enumerator`1"/> class.
+            </summary>
+            <param name="fileStream">The file stream.</param>
+            <param name="positions">The positions.</param>
+        </member>
+        <member name="P:FileCabinetApp.Iterators.Enumerator`1.Current">
+            <summary>
+            Gets the element in the collection at the current position of the enumerator.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">current is null.</exception>
+            <value>
+            The element in the collection at the current position of the enumerator.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Iterators.Enumerator`1.System#Collections#Generic#IEnumerator{T}#Current">
+            <summary>
+            Gets the element in the collection at the current position of the enumerator.
+            </summary>
+            <value>
+            The element in the collection at the current position of the enumerator.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Iterators.Enumerator`1.System#Collections#IEnumerator#Current">
+            <summary>
+            Gets the element in the collection at the current position of the enumerator.
+            </summary>
+            <value>
+            The element in the collection at the current position of the enumerator.
+            </value>
+        </member>
+        <member name="M:FileCabinetApp.Iterators.Enumerator`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Iterators.IRecordIterator.GetNext">
+        <member name="M:FileCabinetApp.Iterators.Enumerator`1.MoveNext">
             <summary>
-            Gets the next record.
-            </summary>
-            <returns>The next record.</returns>
-        </member>
-        <member name="M:FileCabinetApp.Iterators.IRecordIterator.HasMore">
-            <summary>
-            Determines whether this instance has more.
+            Advances the enumerator to the next element of the collection.
             </summary>
             <returns>
-              <c>true</c> if this instance has more; otherwise, <c>false</c>.
+            true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.
             </returns>
         </member>
-        <member name="T:FileCabinetApp.Iterators.MemoryIterator">
+        <member name="M:FileCabinetApp.Iterators.Enumerator`1.Reset">
             <summary>
-            Memory iterator.
+            Sets the enumerator to its initial position, which is before the first element in the collection.
             </summary>
-            <seealso cref="T:FileCabinetApp.Iterators.IRecordIterator" />
-        </member>
-        <member name="M:FileCabinetApp.Iterators.MemoryIterator.#ctor(System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord})">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.Iterators.MemoryIterator"/> class.
-            </summary>
-            <param name="records">The records.</param>
-        </member>
-        <member name="M:FileCabinetApp.Iterators.MemoryIterator.GetNext">
-            <summary>
-            Gets the next record.
-            </summary>
-            <returns>
-            The next record.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Iterators.MemoryIterator.HasMore">
-            <summary>
-            Determines whether this instance has more.
-            </summary>
-            <returns>
-            <c>true</c> if this instance has more; otherwise, <c>false</c>.
-            </returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>

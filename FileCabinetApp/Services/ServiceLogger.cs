@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
-using FileCabinetApp.Iterators;
 
 namespace FileCabinetApp.Services
 {
@@ -80,7 +78,7 @@ namespace FileCabinetApp.Services
         /// All records with specified parameters.
         /// </returns>
         /// <exception cref="ArgumentNullException">parameters is null.</exception>
-        public IRecordIterator Find(string parameters)
+        public IEnumerable<FileCabinetRecord> Find(string parameters)
         {
             if (parameters == null)
             {
@@ -102,7 +100,7 @@ namespace FileCabinetApp.Services
         /// <returns>
         /// All existing records.
         /// </returns>
-        public IRecordIterator GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Calling GetRecords()");

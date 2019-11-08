@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-using FileCabinetApp.Iterators;
 using FileCabinetApp.Services;
 using FileCabinetApp.Validators;
 
@@ -97,10 +96,9 @@ namespace FileCabinetApp
         /// Gets the records.
         /// </summary>
         /// <returns>All existing records.</returns>
-        public IRecordIterator GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            var copy = new MemoryIterator(this.list);
-            return copy;
+            return this.list;
         }
 
         /// <summary>
@@ -164,7 +162,7 @@ namespace FileCabinetApp
         /// <returns>All records with specified parameters.</returns>
         /// <exception cref="InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
         /// <exception cref="ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
-        public IRecordIterator Find(string parameters)
+        public IEnumerable<FileCabinetRecord> Find(string parameters)
         {
             if (parameters == null)
             {
@@ -179,16 +177,16 @@ namespace FileCabinetApp
             parameterValue = textInfo.ToTitleCase(textInfo.ToLower(parameterValue));
             parameterName = textInfo.ToTitleCase(textInfo.ToLower(parameterName));
 
-            MemoryIterator iterator = null;
+            IEnumerable<FileCabinetRecord> iterator = null;
             try
             {
                 switch (parameterName)
                 {
                     case "Firstname":
-                        iterator = new MemoryIterator(this.firstNameDictionary[parameterValue]);
+                        iterator = this.firstNameDictionary[parameterValue];
                         break;
                     case "Lastname":
-                        iterator = new MemoryIterator(this.lastNameDictionary[parameterValue]);
+                        iterator = this.lastNameDictionary[parameterValue];
                         break;
                     case "Dateofbirth":
                         iterator = this.FindByDateOfBirth(parameterValue);
@@ -319,7 +317,7 @@ namespace FileCabinetApp
             return newList;
         }
 
-        private MemoryIterator FindByDateOfBirth(string dateOfBirth)
+        private List<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             var dateList = new List<FileCabinetRecord>();
             foreach (var item in this.list)
@@ -333,8 +331,7 @@ namespace FileCabinetApp
                 }
             }
 
-            var dateCollection = new MemoryIterator(dateList);
-            return dateCollection;
+            return dateList;
         }
 
         private void AddToDictionaries(FileCabinetRecord record)

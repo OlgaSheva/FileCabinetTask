@@ -18,9 +18,6 @@ namespace FileCabinetApp.Services
         private const int RecordInBytesLength = 278;
         private const int ReservedFieldLength = 2;
         private const int FirstNamePosition = 6;
-        private const int LastNamePosition = 126;
-        private const int DatePosition = 246;
-        private const int GenderPosition = 258;
         private const int StringInBitesLength = 120;
         private const int DecimalInBitesLength = 16;
         private readonly FileStream fileStream;
@@ -166,7 +163,7 @@ namespace FileCabinetApp.Services
         /// <returns>
         /// All records with specified parameters.
         /// </returns>
-        public IRecordIterator Find(string parameters)
+        public IEnumerable<FileCabinetRecord> Find(string parameters)
         {
             if (parameters == null)
             {
@@ -177,21 +174,21 @@ namespace FileCabinetApp.Services
             string key = par[0].ToLower(CultureInfo.CurrentCulture);
             string value = par[1].Trim().Trim('"');
 
-            FilesystemIterator iterator = null;
+            Enumerable<FileCabinetRecord> iterator = null;
             try
             {
                 switch (key)
                 {
                     case "firstname":
-                        iterator = new FilesystemIterator(this.fileStream, this.firstNameDictionary[value]);
+                        iterator = new Enumerable<FileCabinetRecord>(this.fileStream, this.firstNameDictionary[value]);
                         break;
                     case "lastname":
-                        iterator = new FilesystemIterator(this.fileStream, this.lastNameDictionary[value]);
+                        iterator = new Enumerable<FileCabinetRecord>(this.fileStream, this.lastNameDictionary[value]);
                         break;
                     case "dateofbirth":
                         if (DateTime.TryParse(value, out DateTime date))
                         {
-                            iterator = new FilesystemIterator(this.fileStream, this.dateOfBirthDictionary[date]);
+                            iterator = new Enumerable<FileCabinetRecord>(this.fileStream, this.dateOfBirthDictionary[date]);
                         }
 
                         break;
@@ -213,7 +210,7 @@ namespace FileCabinetApp.Services
         /// <returns>
         /// All existing records.
         /// </returns>
-        public IRecordIterator GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
             List<long> positions = new List<long>(this.idpositionPairs.Count);
             foreach (var position in this.idpositionPairs.Values)
@@ -221,7 +218,7 @@ namespace FileCabinetApp.Services
                 positions.Add(position);
             }
 
-            FilesystemIterator iterator = new FilesystemIterator(this.fileStream, positions);
+            Enumerable<FileCabinetRecord> iterator = new Enumerable<FileCabinetRecord>(this.fileStream, positions);
             return iterator;
         }
 

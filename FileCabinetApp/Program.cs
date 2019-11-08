@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CommandLine;
 
@@ -6,7 +7,6 @@ using FileCabinetApp.CommandHandlers;
 using FileCabinetApp.CommandLineOptions;
 using FileCabinetApp.Converters;
 using FileCabinetApp.Enums;
-using FileCabinetApp.Iterators;
 using FileCabinetApp.Services;
 using FileCabinetApp.Validators.InputValidator;
 using FileCabinetApp.Validators.RecordValidator;
@@ -92,7 +92,7 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHandlers()
         {
-            var recordPrinter = new Action<IRecordIterator>((x) => DefaultRecordPrint(x));
+            var recordPrinter = new Action<IEnumerable<FileCabinetRecord>>((x) => DefaultRecordPrint(x));
 
             var exitHandler = new ExitCommandHandler(fileStream, (x) => isRunning = x);
             var helpHandler = new HelpCommandHandler();
@@ -159,16 +159,17 @@ namespace FileCabinetApp
             return fileCabinetService;
         }
 
-        private static void DefaultRecordPrint(IRecordIterator records)
+        private static void DefaultRecordPrint(IEnumerable<FileCabinetRecord> records)
         {
             if (records is null)
             {
                 throw new ArgumentNullException(nameof(records));
             }
 
-            while (records.HasMore())
+            var iterator = records.GetEnumerator();
+            while (iterator.MoveNext())
             {
-                Console.WriteLine(records.GetNext().ToString());
+                Console.WriteLine(iterator.Current.ToString());
             }
         }
     }
