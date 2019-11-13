@@ -43,6 +43,23 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
+        /// Creates the record.
+        /// </summary>
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="id">The identifier.</param>
+        public void InsertRecord(RecordParameters recordParameters, int id)
+        {
+            this.stopWatch.Reset();
+            this.stopWatch.Start();
+            this.service.InsertRecord(recordParameters, id);
+
+            this.stopWatch.Stop();
+            this.ticks = this.stopWatch.ElapsedTicks;
+
+            Console.WriteLine($"Insert method execution duration is {this.ticks} ticks.");
+        }
+
+        /// <summary>
         /// Edits the record.
         /// </summary>
         /// <param name="id">The identifier.</param>

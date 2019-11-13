@@ -70,26 +70,33 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(rec));
             }
 
-            this.validator.ValidateParameters(
-                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
+            this.validator.ValidateParameters(rec);
+            int id = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id + 1 : 1;
+            this.CreateFileCabinetRecord(rec, id);
 
-            int newId = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id + 1 : 1;
+            return id;
+        }
 
-            var record = new FileCabinetRecord
+        /// <summary>
+        /// Inserts the record.
+        /// </summary>
+        /// <param name="rec">The record.</param>
+        /// <param name="id">The identifier.</param>
+        /// <exception cref="ArgumentNullException">rec is null.</exception>
+        /// <exception cref="ArgumentException">The id can not be less than one.</exception>
+        public void InsertRecord(RecordParameters rec, int id)
+        {
+            if (rec == null)
             {
-                Id = newId,
-                FirstName = rec.FirstName,
-                LastName = rec.LastName,
-                DateOfBirth = rec.DateOfBirth,
-                Gender = rec.Gender,
-                Office = rec.Office,
-                Salary = rec.Salary,
-            };
+                throw new ArgumentNullException(nameof(rec));
+            }
 
-            this.list.Add(record);
-            this.AddToDictionaries(record);
+            if (id < 1)
+            {
+                throw new ArgumentException($"The '{nameof(id)}' can not be less than one.", nameof(id));
+            }
 
-            return record.Id;
+            this.CreateFileCabinetRecord(rec, id);
         }
 
         /// <summary>
@@ -262,6 +269,24 @@ namespace FileCabinetApp
         {
             deletedRecordsCount = 0;
             recordsCount = this.list.Count;
+        }
+
+        private void CreateFileCabinetRecord(RecordParameters rec, int id)
+        {
+            this.validator.ValidateParameters(rec);
+            var record = new FileCabinetRecord
+            {
+                Id = id,
+                FirstName = rec.FirstName,
+                LastName = rec.LastName,
+                DateOfBirth = rec.DateOfBirth,
+                Gender = rec.Gender,
+                Office = rec.Office,
+                Salary = rec.Salary,
+            };
+
+            this.list.Add(record);
+            this.AddToDictionaries(record);
         }
 
         private List<FileCabinetRecord> GenerateNewListWithExistAndRestoreRecords(

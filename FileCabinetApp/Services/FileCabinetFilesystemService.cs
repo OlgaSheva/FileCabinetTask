@@ -53,25 +53,33 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(rec));
             }
 
-            this.validator.ValidateParameters(
-                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
-            var record = new FileCabinetRecord
+            int id = this.idpositionPairs.Count > 0 ? this.idpositionPairs.Keys.Last() + 1 : 1;
+
+            this.CreateFileCabinetRecord(rec, id);
+
+            return id;
+        }
+
+        /// <summary>
+        /// Inserts the record.
+        /// </summary>
+        /// <param name="rec">The record.</param>
+        /// <param name="id">The identifier.</param>
+        /// <exception cref="ArgumentNullException">rec is null.</exception>
+        /// <exception cref="ArgumentException">The '{nameof(id)}' can not be less than one.</exception>
+        public void InsertRecord(RecordParameters rec, int id)
+        {
+            if (rec == null)
             {
-                Id = this.idpositionPairs.Count > 0 ? this.idpositionPairs.Keys.Last() + 1 : 1,
-                FirstName = rec.FirstName,
-                LastName = rec.LastName,
-                DateOfBirth = rec.DateOfBirth,
-                Gender = rec.Gender,
-                Office = rec.Office,
-                Salary = rec.Salary,
-            };
+                throw new ArgumentNullException(nameof(rec));
+            }
 
-            this.WriteToTheBinaryFile(record);
-            long recordPosition = this.fileStream.Position - RecordInBytesLength;
-            this.idpositionPairs.Add(record.Id, recordPosition);
-            this.AddToDictionaries(rec, recordPosition);
+            if (id < 1)
+            {
+                throw new ArgumentException($"The '{nameof(id)}' can not be less than one.", nameof(id));
+            }
 
-            return record.Id;
+            this.CreateFileCabinetRecord(rec, id);
         }
 
         /// <summary>
@@ -324,13 +332,37 @@ namespace FileCabinetApp.Services
                 throw new ArgumentException($"{nameof(id)} have to be larger than zero.", nameof(id));
             }
 
-            if (id <= 0)
+            if (position < 0)
             {
                 throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
             }
 
             this.fileStream.Seek(position, SeekOrigin.Begin);
             this.fileStream.WriteByte(1);
+            this.idpositionPairs.Remove(id);
+        }
+
+        /// <summary>
+        /// Deletes the specified position.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <exception cref="ArgumentException">position is negaive.</exception>
+        public void Delete(long position)
+        {
+            if (position < 0)
+            {
+                throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
+            }
+
+            this.fileStream.Seek(position, SeekOrigin.Begin);
+            this.fileStream.WriteByte(1);
+            this.fileStream.Seek(position + ReservedFieldLength, SeekOrigin.Begin);
+            int id = -1;
+            using (var reader = new BinaryReader(this.fileStream))
+            {
+                id = reader.ReadInt32();
+            }
+
             this.idpositionPairs.Remove(id);
         }
 
@@ -423,12 +455,6 @@ namespace FileCabinetApp.Services
             return new decimal(bits);
         }
 
-        /// <summary>
-        /// Creates the new file cabinet record.
-        /// </summary>
-        /// <param name="binaryReader">The binary reader.</param>
-        /// <returns>New record.</returns>
-        /// <exception cref="ArgumentNullException">binaryReader is null.</exception>
         private static FileCabinetRecord CreateNewFileCabinetRecord(BinaryReader binaryReader)
         {
             if (binaryReader == null)
@@ -464,6 +490,26 @@ namespace FileCabinetApp.Services
                 binaryReader.ReadChar(),
                 binaryReader.ReadInt16(),
                 ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)));
+        }
+
+        private void CreateFileCabinetRecord(RecordParameters rec, int id)
+        {
+            this.validator.ValidateParameters(rec);
+            var record = new FileCabinetRecord
+            {
+                Id = id,
+                FirstName = rec.FirstName,
+                LastName = rec.LastName,
+                DateOfBirth = rec.DateOfBirth,
+                Gender = rec.Gender,
+                Office = rec.Office,
+                Salary = rec.Salary,
+            };
+
+            this.WriteToTheBinaryFile(record);
+            long recordPosition = this.fileStream.Position - RecordInBytesLength;
+            this.idpositionPairs.Add(record.Id, recordPosition);
+            this.AddToDictionaries(rec, recordPosition);
         }
 
         private void IdAndPositionSortedListGenerator()

@@ -76,28 +76,6 @@
             <param name="request">The request.</param>
             <returns>Class AppCommandRequest Instance.</returns>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.ListCommandHandler">
-            <summary>
-            List command handler.
-            </summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.
-            </summary>
-            <param name="service">The service.</param>
-            <param name="printer">The printer.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handles the specified request.
-            </summary>
-            <param name="request">The request.</param>
-            <returns>
-            Class AppCommandRequest Instance.
-            </returns>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase">
             <summary>
             The service command handler base.
@@ -134,6 +112,48 @@
             <param name="inputValidator">The input validator.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.CreateCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Handles the specified request.
+            </summary>
+            <param name="request">The request.</param>
+            <returns>
+            Class AppCommandRequest Instance.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.DeleteCommandHandler">
+            <summary>
+            Delete command handler.
+            </summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.DeleteCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.DeleteCommandHandler"/> class.
+            </summary>
+            <param name="service">The service.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.DeleteCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Handles the specified request.
+            </summary>
+            <param name="request">The request.</param>
+            <returns>
+            Class AppCommandRequest Instance.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.InsertCommandHandler">
+            <summary>
+            Insert command handler.
+            </summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.InsertCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.InsertCommandHandler"/> class.
+            </summary>
+            <param name="service">The service.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.InsertCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
             Handles the specified request.
             </summary>
@@ -258,6 +278,28 @@
             <param name="service">The service.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.ImportCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Handles the specified request.
+            </summary>
+            <param name="request">The request.</param>
+            <returns>
+            Class AppCommandRequest Instance.
+            </returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ListCommandHandler">
+            <summary>
+            List command handler.
+            </summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.
+            </summary>
+            <param name="service">The service.</param>
+            <param name="printer">The printer.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
             Handles the specified request.
             </summary>
@@ -769,6 +811,15 @@
             New file cabinet record.
             </returns>
         </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.InsertRecord(FileCabinetApp.RecordParameters,System.Int32)">
+            <summary>
+            Inserts the record.
+            </summary>
+            <param name="rec">The record.</param>
+            <param name="id">The identifier.</param>
+            <exception cref="T:System.ArgumentNullException">rec is null.</exception>
+            <exception cref="T:System.ArgumentException">The '{nameof(id)}' can not be less than one.</exception>
+        </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
             <summary>
             Edits the record.
@@ -833,20 +884,19 @@
             <param name="id">The identifier.</param>
             <param name="position">Record position.</param>
         </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Delete(System.Int64)">
+            <summary>
+            Deletes the specified position.
+            </summary>
+            <param name="position">The position.</param>
+            <exception cref="T:System.ArgumentException">position is negaive.</exception>
+        </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Purge(System.Int32@,System.Int32@)">
             <summary>
             Purges the specified deleted records count.
             </summary>
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
-        </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.CreateNewFileCabinetRecord(System.IO.BinaryReader)">
-            <summary>
-            Creates the new file cabinet record.
-            </summary>
-            <param name="binaryReader">The binary reader.</param>
-            <returns>New record.</returns>
-            <exception cref="T:System.ArgumentNullException">binaryReader is null.</exception>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
             <summary>
@@ -914,6 +964,13 @@
             </summary>
             <param name="record">The record.</param>
             <returns>Id of new file cabinet record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.InsertRecord(FileCabinetApp.RecordParameters,System.Int32)">
+            <summary>
+            Inserts the record.
+            </summary>
+            <param name="record">The record.</param>
+            <param name="id">The identifier.</param>
         </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.GetRecords">
             <summary>
@@ -999,6 +1056,14 @@
             <returns>
             Id of new file cabinet record.
             </returns>
+            <exception cref="T:System.ArgumentNullException">record is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.InsertRecord(FileCabinetApp.RecordParameters,System.Int32)">
+            <summary>
+            Inserts the record.
+            </summary>
+            <param name="record">The record.</param>
+            <param name="id">The identifier.</param>
             <exception cref="T:System.ArgumentNullException">record is null.</exception>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceLogger.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
@@ -1093,6 +1158,13 @@
             </summary>
             <param name="record">The record.</param>
             <returns>Id of new file cabinet record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.InsertRecord(FileCabinetApp.RecordParameters,System.Int32)">
+            <summary>
+            Creates the record.
+            </summary>
+            <param name="recordParameters">The record parameters.</param>
+            <param name="id">The identifier.</param>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceMeter.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
             <summary>
@@ -1193,6 +1265,15 @@
             </summary>
             <param name="rec">The record.</param>
             <returns>New file cabinet record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.InsertRecord(FileCabinetApp.RecordParameters,System.Int32)">
+            <summary>
+            Inserts the record.
+            </summary>
+            <param name="rec">The record.</param>
+            <param name="id">The identifier.</param>
+            <exception cref="T:System.ArgumentNullException">rec is null.</exception>
+            <exception cref="T:System.ArgumentException">The id can not be less than one.</exception>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecords">
             <summary>

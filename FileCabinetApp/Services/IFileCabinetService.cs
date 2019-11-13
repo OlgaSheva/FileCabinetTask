@@ -15,6 +15,13 @@ namespace FileCabinetApp.Services
         int CreateRecord(RecordParameters record);
 
         /// <summary>
+        /// Inserts the record.
+        /// </summary>
+        /// <param name="record">The record.</param>
+        /// <param name="id">The identifier.</param>
+        void InsertRecord(RecordParameters record, int id);
+
+        /// <summary>
         /// Gets the records.
         /// </summary>
         /// <returns>All existing records.</returns>

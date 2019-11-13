@@ -49,6 +49,28 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
+        /// Inserts the record.
+        /// </summary>
+        /// <param name="record">The record.</param>
+        /// <param name="id">The identifier.</param>
+        /// <exception cref="ArgumentNullException">record is null.</exception>
+        public void InsertRecord(RecordParameters record, int id)
+        {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Calling Insert() with Id = '{id}', FirstName = '{record.FirstName}', " +
+                $"LastName = '{record.LastName}', DateOfBirth = '{record.DateOfBirth.ToShortDateString()}', " +
+                $"Gender = '{record.Gender}', Office = '{record.Office}', Salary = '{record.Salary}'");
+            this.service.InsertRecord(record, id);
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Insert() inserted record");
+        }
+
+        /// <summary>
         /// Edits the record.
         /// </summary>
         /// <param name="id">The identifier.</param>
