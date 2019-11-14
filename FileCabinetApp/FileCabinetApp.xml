@@ -884,12 +884,25 @@
             <param name="id">The identifier.</param>
             <param name="position">Record position.</param>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Delete(System.Int64)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Delete(System.String,System.String)">
             <summary>
-            Deletes the specified position.
+            Deletes the specified key.
             </summary>
-            <param name="position">The position.</param>
-            <exception cref="T:System.ArgumentException">position is negaive.</exception>
+            <param name="key">The key.</param>
+            <param name="value">The value.</param>
+            <returns>
+            Deleted records id.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            key
+            or
+            value.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Search by key '{key}' does not supported. - key
+            or
+            There are no records with {key} = '{value}'.
+            </exception>
         </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Purge(System.Int32@,System.Int32@)">
             <summary>
@@ -1029,6 +1042,14 @@
             <param name="id">The identifier.</param>
             <param name="position">Record position.</param>
         </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Delete(System.String,System.String)">
+            <summary>
+            Deletes the specified key.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="value">The value.</param>
+            <returns>Deleted records id.</returns>
+        </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.Purge(System.Int32@,System.Int32@)">
             <summary>
             Purges the specified deleted records count.
@@ -1140,6 +1161,16 @@
             <param name="snapshot">The snapshot.</param>
             <param name="exceptions">The exceptions.</param>
         </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Delete(System.String,System.String)">
+            <summary>
+            Deletes the specified key.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="value">The value.</param>
+            <returns>
+            Deleted records id.
+            </returns>
+        </member>
         <member name="T:FileCabinetApp.Services.ServiceMeter">
             <summary>
             The servise meter.
@@ -1224,6 +1255,16 @@
             </summary>
             <param name="id">The identifier.</param>
             <param name="position">The position.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Delete(System.String,System.String)">
+            <summary>
+            Deletes the specified key.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="value">The value.</param>
+            <returns>
+            Deleted records id.
+            </returns>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceMeter.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot,System.Collections.Generic.Dictionary{System.Int32,System.String}@)">
             <summary>
@@ -1315,6 +1356,22 @@
             </summary>
             <param name="id">The identifier.</param>
             <param name="position">Record position.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Delete(System.String,System.String)">
+            <summary>
+            Deletes the specified key.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="value">The value.</param>
+            <returns>
+            Deleted records id.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            key
+            or
+            value.
+            </exception>
+            <exception cref="T:System.ArgumentException">Search by key '{key}' does not supported.</exception>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.IsThereARecordWithThisId(System.Int32,System.Int64@)">
             <summary>

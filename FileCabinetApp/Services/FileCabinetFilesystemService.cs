@@ -266,6 +266,7 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(snapshot));
             }
 
+            long position;
             exceptions = new Dictionary<int, string>();
             var recordsFromFile = snapshot.FileCabinetRecords.ToList();
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
@@ -304,12 +305,15 @@ namespace FileCabinetApp.Services
                             throw new ArgumentException(nameof(record.Id));
                         }
 
-                        this.validator.ValidateParameters(
-                            new RecordParameters(record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary));
+                        var r = new RecordParameters(
+                            record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
+                        this.validator.ValidateParameters(r);
                         this.WriteToTheBinaryFile(record);
                         if (!this.idpositionPairs.ContainsKey(record.Id))
                         {
-                            this.idpositionPairs.Add(record.Id, this.fileStream.Position - RecordInBytesLength);
+                            position = this.fileStream.Position - RecordInBytesLength;
+                            this.idpositionPairs.Add(record.Id, position);
+                            this.AddToDictionaries(r, position);
                         }
                     }
                     catch (ArgumentException ex)
@@ -343,27 +347,88 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Deletes the specified position.
+        /// Deletes the specified key.
         /// </summary>
-        /// <param name="position">The position.</param>
-        /// <exception cref="ArgumentException">position is negaive.</exception>
-        public void Delete(long position)
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// Deleted records id.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// key
+        /// or
+        /// value.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Search by key '{key}' does not supported. - key
+        /// or
+        /// There are no records with {key} = '{value}'.
+        /// </exception>
+        public List<int> Delete(string key, string value)
         {
-            if (position < 0)
+            if (key is null)
             {
-                throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
+                throw new ArgumentNullException(nameof(key));
             }
 
-            this.fileStream.Seek(position, SeekOrigin.Begin);
-            this.fileStream.WriteByte(1);
-            this.fileStream.Seek(position + ReservedFieldLength, SeekOrigin.Begin);
-            int id = -1;
-            using (var reader = new BinaryReader(this.fileStream))
+            if (value == null)
             {
-                id = reader.ReadInt32();
+                throw new ArgumentNullException(nameof(value));
             }
 
-            this.idpositionPairs.Remove(id);
+            var ids = new List<int>();
+            dynamic dictionary;
+            dynamic searchKey;
+            switch (key.ToLower(CultureInfo.CurrentCulture))
+            {
+                case "id":
+                    searchKey = int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+                    dictionary = new Dictionary<int, List<long>>()
+                        { { (int)searchKey, new List<long>() { this.idpositionPairs[searchKey] } }, };
+                    break;
+                case "firstname":
+                    dictionary = this.firstNameDictionary;
+                    searchKey = value;
+                    break;
+                case "lastname":
+                    dictionary = this.lastNameDictionary;
+                    searchKey = value;
+                    break;
+                case "dateofbirth":
+                    dictionary = this.dateOfBirthDictionary;
+                    searchKey = DateTime.Parse(value, CultureInfo.InvariantCulture);
+                    break;
+                default:
+                    throw new ArgumentException($"Search by key '{key}' does not supported.", nameof(key));
+            }
+
+            if (dictionary.TryGetValue(searchKey, out List<long> positionList))
+            {
+                foreach (var position in positionList)
+                {
+                    this.fileStream.Seek(position, SeekOrigin.Begin);
+                    this.fileStream.WriteByte(1);
+                    this.fileStream.Seek(position + ReservedFieldLength, SeekOrigin.Begin);
+                    int id = -1;
+                    using (var reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+                    {
+                        id = reader.ReadInt32();
+                        ids.Add(id);
+                    }
+                }
+
+                foreach (var id in ids)
+                {
+                    this.RemoveFromDictionaries(id);
+                    this.idpositionPairs.Remove(id);
+                }
+            }
+            else
+            {
+                throw new ArgumentException($"There are no records with {key} = '{value}'.");
+            }
+
+            return ids;
         }
 
         /// <summary>

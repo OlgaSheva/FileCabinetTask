@@ -79,6 +79,14 @@ namespace FileCabinetApp.Services
         void Remove(int id, long position);
 
         /// <summary>
+        /// Deletes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>Deleted records id.</returns>
+        List<int> Delete(string key, string value);
+
+        /// <summary>
         /// Purges the specified deleted records count.
         /// </summary>
         /// <param name="deletedRecordsCount">The deleted records count.</param>

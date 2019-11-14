@@ -228,13 +228,74 @@ namespace FileCabinetApp
                 throw new ArgumentException($"{nameof(id)} have to be larger than zero.", nameof(id));
             }
 
-            if (id <= 0)
+            if (position <= 0)
             {
                 throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
             }
 
             this.RemoveFromDictionaries((int)position);
             this.list.Remove(this.list[(int)position]);
+        }
+
+        /// <summary>
+        /// Deletes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// Deleted records id.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// key
+        /// or
+        /// value.
+        /// </exception>
+        /// <exception cref="ArgumentException">Search by key '{key}' does not supported.</exception>
+        public List<int> Delete(string key, string value)
+        {
+            if (key is null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            var ids = new List<int>();
+            bool flag = false;
+            for (var i = 0; i < this.list.Count; i++)
+            {
+                flag = false;
+                switch (key.ToLower(CultureInfo.CurrentCulture))
+                {
+                    case "id":
+                        flag = this.list[i].Id == int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+                        break;
+                    case "firstname":
+                        flag = this.list[i].FirstName.Equals(value, StringComparison.InvariantCultureIgnoreCase);
+                        break;
+                    case "lastname":
+                        flag = this.list[i].LastName.Equals(value, StringComparison.InvariantCultureIgnoreCase);
+                        break;
+                    case "dateofbirth":
+                        DateTime dateofbirth = DateTime.Parse(value, CultureInfo.InvariantCulture);
+                        flag = this.list[i].DateOfBirth == dateofbirth;
+                        break;
+                    default:
+                        throw new ArgumentException($"Search by key '{key}' does not supported.", nameof(key));
+                }
+
+                if (flag)
+                {
+                    ids.Add(this.list[i].Id);
+                    this.RemoveFromDictionaries(i);
+                    this.list.Remove(this.list[i]);
+                }
+            }
+
+            return ids;
         }
 
         /// <summary>

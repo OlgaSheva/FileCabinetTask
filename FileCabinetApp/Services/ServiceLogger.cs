@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 
 namespace FileCabinetApp.Services
 {
@@ -205,6 +206,38 @@ namespace FileCabinetApp.Services
         public void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions)
         {
             this.service.Restore(snapshot, out exceptions);
+        }
+
+        /// <summary>
+        /// Deletes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// Deleted records id.
+        /// </returns>
+        public List<int> Delete(string key, string value)
+        {
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Calling Delete() where {key} = '{value}'");
+            var ids = this.service.Delete(key, value);
+
+            var sb = new StringBuilder();
+            for (int i = 0; i < ids.Count; i++)
+            {
+                if (i < ids.Count - 1)
+                {
+                    sb.Append($"#{ids[i]}, ");
+                }
+                else
+                {
+                    sb.Append($"#{ids[i]} ");
+                }
+            }
+
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Delete() remove records {sb}");
+            return ids;
         }
     }
 }

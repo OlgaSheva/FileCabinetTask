@@ -184,6 +184,27 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
+        /// Deletes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// Deleted records id.
+        /// </returns>
+        public List<int> Delete(string key, string value)
+        {
+            this.stopWatch.Reset();
+            this.stopWatch.Start();
+            var result = this.service.Delete(key, value);
+
+            this.stopWatch.Stop();
+            this.ticks = this.stopWatch.ElapsedTicks;
+
+            Console.WriteLine($"Delete method execution duration is {this.ticks} ticks.");
+            return result;
+        }
+
+        /// <summary>
         /// Restores the specified snapshot.
         /// </summary>
         /// <param name="snapshot">The snapshot.</param>

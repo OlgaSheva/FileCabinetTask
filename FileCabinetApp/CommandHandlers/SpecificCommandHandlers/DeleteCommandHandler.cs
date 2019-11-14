@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using FileCabinetApp.Services;
@@ -45,7 +43,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
         private void Delete(string parameters)
         {
             var words = parameters.Split(
-                new char[] { ' ', ',', '.', ':', ';', '(', ')', '\'', '!', '?', '\t' }).Where(s => s.Length > 0).ToList();
+                new char[] { ' ', ',', '.', ':', ';', '-', '=', '(', ')', '\'', '!', '?', '\t' }).Where(s => s.Length > 0).ToList();
             string key = null;
             string value = null;
             if (words[0].Equals("where", StringComparison.InvariantCultureIgnoreCase))
@@ -54,44 +52,28 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
                 value = words[2];
             }
 
-            try
+            var ids = this.Service.Delete(key, value);
+
+            if (ids.Count > 0)
             {
-                switch (key.ToLower(CultureInfo.DefaultThreadCurrentCulture))
+                var sb = new StringBuilder();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    if (i < ids.Count - 1)
                     {
-                    case "id":
-                        DeleteById(value);
-                        break;
-                    case "firstname":
-                        break;
-                    case "lastname":
-                        break;
-                    case "dateofbirth":
-                        break;
-                    default:
-                        throw new ArgumentException(nameof(key), $"Search by key '{key}' does not supported.");
-                }
-            }
-            catch (ArgumentException)
-            {
-                throw;
-            }
-
-            void DeleteById(string parameter)
-            {
-                if (!int.TryParse(parameter, NumberStyles.Integer, CultureInfo.InvariantCulture, out int id) || id == 0)
-                {
-                    throw new ArgumentException($"Record with id = '{parameter}' does not exists.");
+                        sb.Append($"#{ids[i]}, ");
+                    }
+                    else
+                    {
+                        sb.Append($"#{ids[i]}");
+                    }
                 }
 
-                if (this.Service.IsThereARecordWithThisId(id, out long position))
-                {
-                    this.Service.Remove(id, position);
-                    Console.WriteLine($"Record #{id} is removed.");
-                }
-                else
-                {
-                    Console.WriteLine($"Record #{id} didn't found.");
-                }
+                Console.WriteLine($"Records {sb} are deleted.");
+            }
+            else
+            {
+                Console.WriteLine("There are no entries with this parameter.");
             }
         }
     }
