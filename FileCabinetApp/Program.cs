@@ -114,7 +114,7 @@ namespace FileCabinetApp
             var listHandle = new ListCommandHandler(fileCabinetService, recordPrinter);
             var statHandler = new StatCommandHandler(fileCabinetService);
             var purgeHadler = new PurgeCommandHandler(fileCabinetService);
-            var missedCommandHandler = new MissedCommandHandler();
+            var missedCommandHandler = new SimilarCommandHandler();
             helpHandler
                 .SetNext(exitHandler)
                 .SetNext(listHandle)
