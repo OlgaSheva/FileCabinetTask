@@ -9,7 +9,6 @@ namespace FileCabinetApp.Validators.RecordValidator
     /// <seealso cref="FileCabinetApp.Validators.IRecordValidator" />
     internal class FirstNameValidator : IRecordValidator
     {
-        private const string NamePattern = @"^[a-zA-Z '.-]*$";
         private readonly int minLength;
         private readonly int maxLength;
 
@@ -40,7 +39,6 @@ namespace FileCabinetApp.Validators.RecordValidator
 
             if ((firstname.Length < this.minLength)
                 || (firstname.Length >= this.maxLength)
-                || !Regex.IsMatch(firstname, NamePattern)
                 || string.IsNullOrWhiteSpace(firstname))
             {
                 throw new ArgumentException(nameof(parameters.FirstName));

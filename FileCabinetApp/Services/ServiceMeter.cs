@@ -60,23 +60,6 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Edits the record.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="record">The record.</param>
-        public void EditRecord(int id, RecordParameters record)
-        {
-            this.stopWatch.Reset();
-            this.stopWatch.Start();
-            this.service.EditRecord(id, record);
-
-            this.stopWatch.Stop();
-            this.ticks = this.stopWatch.ElapsedTicks;
-
-            Console.WriteLine($"Edit method execution duration is {this.ticks} ticks.");
-        }
-
-        /// <summary>
         /// Updates the specified record parameters.
         /// </summary>
         /// <param name="recordParameters">The record parameters.</param>
@@ -185,23 +168,6 @@ namespace FileCabinetApp.Services
             this.ticks = this.stopWatch.ElapsedTicks;
 
             Console.WriteLine($"Purge method execution duration is {this.ticks} ticks.");
-        }
-
-        /// <summary>
-        /// Removes the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="position">The position.</param>
-        public void Remove(int id, long position)
-        {
-            this.stopWatch.Reset();
-            this.stopWatch.Start();
-            this.service.Remove(id, position);
-
-            this.stopWatch.Stop();
-            this.ticks = this.stopWatch.ElapsedTicks;
-
-            Console.WriteLine($"Remove method execution duration is {this.ticks} ticks.");
         }
 
         /// <summary>

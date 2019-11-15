@@ -14,7 +14,7 @@ namespace FileCabinetApp.CommandLineOptions
         /// <value>
         /// The storage.
         /// </value>
-        [Option('s', "storage", Default = ServiceType.File, HelpText = "Defines storage location: Memory or File.")]
+        [Option('s', "storage", Default = ServiceType.Memory, HelpText = "Defines storage location: Memory or File.")]
         public ServiceType Storage { get; set; }
 
         /// <summary>

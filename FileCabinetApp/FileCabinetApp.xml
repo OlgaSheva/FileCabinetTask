@@ -183,29 +183,6 @@
             Class AppCommandRequest Instance.
             </returns>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.EditCommandHandler">
-            <summary>
-            Edit command handler.
-            </summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.EditCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,FileCabinetApp.Converters.IInputConverter,FileCabinetApp.Validators.InputValidator.IInputValidator)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.EditCommandHandler"/> class.
-            </summary>
-            <param name="fileCabinetService">The file cabinet service.</param>
-            <param name="inputConverter">The input converter.</param>
-            <param name="inputValidator">The input validator.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.EditCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handles the specified request.
-            </summary>
-            <param name="request">The request.</param>
-            <returns>
-            Class AppCommandRequest Instance.
-            </returns>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.ExitCommandHandler">
             <summary>
             Exit command handler.
@@ -357,27 +334,6 @@
             <param name="service">The service.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handles the specified request.
-            </summary>
-            <param name="request">The request.</param>
-            <returns>
-            Class AppCommandRequest Instance.
-            </returns>
-        </member>
-        <member name="T:FileCabinetApp.CommandHandlers.RemoveCommandHandler">
-            <summary>
-            Remove command handler.
-            </summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.RemoveCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.RemoveCommandHandler"/> class.
-            </summary>
-            <param name="service">The service.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.RemoveCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
             Handles the specified request.
             </summary>
@@ -841,13 +797,6 @@
             <exception cref="T:System.ArgumentNullException">rec is null.</exception>
             <exception cref="T:System.ArgumentException">The '{nameof(id)}' can not be less than one.</exception>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
-            <summary>
-            Edits the record.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="parameters">The record.</param>
-        </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
             <summary>
             Updates the specified record parameters.
@@ -923,13 +872,6 @@
             <param name="snapshot">The snapshot.</param>
             <param name="exceptions">The exceptions.</param>
             <exception cref="T:System.ArgumentNullException">Snapshot is null.</exception>
-        </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Remove(System.Int32,System.Int64)">
-            <summary>
-            Removes a record by the identifier.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="position">Record position.</param>
         </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Delete(System.String,System.String)">
             <summary>
@@ -1045,13 +987,6 @@
             <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>The quantity of records.</returns>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
-            <summary>
-            Edits the record.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="record">The record.</param>
-        </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
             <summary>
             Updates the specified record parameters.
@@ -1089,13 +1024,6 @@
             </summary>
             <param name="snapshot">The snapshot.</param>
             <param name="exceptions">The exceptions.</param>
-        </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.Remove(System.Int32,System.Int64)">
-            <summary>
-            Removes a record by the identifier.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="position">Record position.</param>
         </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.Delete(System.String,System.String)">
             <summary>
@@ -1140,14 +1068,6 @@
             </summary>
             <param name="record">The record.</param>
             <param name="id">The identifier.</param>
-            <exception cref="T:System.ArgumentNullException">record is null.</exception>
-        </member>
-        <member name="M:FileCabinetApp.Services.ServiceLogger.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
-            <summary>
-            Edits the record.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="record">The record.</param>
             <exception cref="T:System.ArgumentNullException">record is null.</exception>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceLogger.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
@@ -1217,13 +1137,6 @@
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
         </member>
-        <member name="M:FileCabinetApp.Services.ServiceLogger.Remove(System.Int32,System.Int64)">
-            <summary>
-            Removes a record by the identifier.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="position">Record position.</param>
-        </member>
         <member name="M:FileCabinetApp.Services.ServiceLogger.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot,System.Collections.Generic.Dictionary{System.Int32,System.String}@)">
             <summary>
             Restores the specified snapshot.
@@ -1266,13 +1179,6 @@
             </summary>
             <param name="recordParameters">The record parameters.</param>
             <param name="id">The identifier.</param>
-        </member>
-        <member name="M:FileCabinetApp.Services.ServiceMeter.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
-            <summary>
-            Edits the record.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="record">The record.</param>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceMeter.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
             <summary>
@@ -1328,13 +1234,6 @@
             </summary>
             <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
-        </member>
-        <member name="M:FileCabinetApp.Services.ServiceMeter.Remove(System.Int32,System.Int64)">
-            <summary>
-            Removes the specified identifier.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="position">The position.</param>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceMeter.Delete(System.String,System.String)">
             <summary>
@@ -1409,18 +1308,6 @@
             <param name="deletedRecordsCount">The deleted records count.</param>
             <returns>The quantity of records.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(System.Int32,FileCabinetApp.RecordParameters)">
-            <summary>
-            Edits the record.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="rec">The record.</param>
-            <exception cref="T:System.ArgumentException">
-            The {nameof(id)} can't be less than zero.
-            or
-            The {nameof(id)} doesn't exist.
-            </exception>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
             <summary>
             Updates the specified record parameters.
@@ -1457,13 +1344,6 @@
             <returns>All records with specified parameters.</returns>
             <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
             <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.Remove(System.Int32,System.Int64)">
-            <summary>
-            Removes a record by the identifier.
-            </summary>
-            <param name="id">The identifier.</param>
-            <param name="position">Record position.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.Delete(System.String,System.String)">
             <summary>

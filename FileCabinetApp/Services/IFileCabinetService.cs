@@ -35,13 +35,6 @@ namespace FileCabinetApp.Services
         int GetStat(out int deletedRecordsCount);
 
         /// <summary>
-        /// Edits the record.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="record">The record.</param>
-        void EditRecord(int id, RecordParameters record);
-
-        /// <summary>
         /// Updates the specified record parameters.
         /// </summary>
         /// <param name="recordParameters">The record parameters.</param>
@@ -78,13 +71,6 @@ namespace FileCabinetApp.Services
         /// <param name="snapshot">The snapshot.</param>
         /// <param name="exceptions">The exceptions.</param>
         void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions);
-
-        /// <summary>
-        /// Removes a record by the identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="position">Record position.</param>
-        void Remove(int id, long position);
 
         /// <summary>
         /// Deletes the specified key.

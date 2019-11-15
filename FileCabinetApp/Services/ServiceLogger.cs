@@ -72,28 +72,6 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Edits the record.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="record">The record.</param>
-        /// <exception cref="ArgumentNullException">record is null.</exception>
-        public void EditRecord(int id, RecordParameters record)
-        {
-            if (record == null)
-            {
-                throw new ArgumentNullException(nameof(record));
-            }
-
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling Edit() with id = '{id}'");
-            this.service.EditRecord(id, record);
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Edit() edit the record {id} with FirstName = '{record.FirstName}', " +
-                $"LastName = '{record.LastName}', DateOfBirth = '{record.DateOfBirth.ToShortDateString()}', " +
-                $"Gender = '{record.Gender}', Office = '{record.Office}', Salary = '{record.Salary}'");
-        }
-
-        /// <summary>
         /// Updates the specified record parameters.
         /// </summary>
         /// <param name="recordParameters">The record parameters.</param>
@@ -217,20 +195,6 @@ namespace FileCabinetApp.Services
             this.service.Purge(out deletedRecordsCount, out recordsCount);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Purge() done defragmentation");
-        }
-
-        /// <summary>
-        /// Removes a record by the identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="position">Record position.</param>
-        public void Remove(int id, long position)
-        {
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling Remove() with id - '{id}'");
-            this.service.Remove(id, position);
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Remove() remove record with id - '{id}'");
         }
 
         /// <summary>

@@ -18,7 +18,6 @@ namespace FileCabinetApp.Services
         private const int ReservedFieldLength = 2;
         private const int IdPosition = 2;
         private const int FirstNamePosition = 6;
-        private const int YearPosition = 246;
         private const int StringInBitesLength = 120;
         private const int DecimalInBitesLength = 16;
         private readonly FileStream fileStream;
@@ -57,7 +56,7 @@ namespace FileCabinetApp.Services
 
             int id = this.idpositionPairs.Count > 0 ? this.idpositionPairs.Keys.Last() + 1 : 1;
 
-            this.CreateFileCabinetRecord(rec, id);
+            this.InsertRecord(rec, id);
 
             return id;
         }
@@ -81,60 +80,8 @@ namespace FileCabinetApp.Services
                 throw new ArgumentException($"The '{nameof(id)}' can not be less than one.", nameof(id));
             }
 
+            this.validator.ValidateParameters(rec);
             this.CreateFileCabinetRecord(rec, id);
-        }
-
-        /// <summary>
-        /// Edits the record.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="parameters">The record.</param>
-        public void EditRecord(int id, RecordParameters parameters)
-        {
-            if (parameters == null)
-            {
-                throw new ArgumentNullException(nameof(parameters));
-            }
-
-            if (id <= 0)
-            {
-                throw new ArgumentException($"The {nameof(id)} have to be larger than zero.", nameof(id));
-            }
-
-            if (!this.IsThereARecordWithThisId(id, out long position))
-            {
-                throw new ArgumentException($"Record #{nameof(id)} doesn't exist.", nameof(id));
-            }
-
-            this.validator.ValidateParameters(
-                new RecordParameters(parameters.FirstName, parameters.LastName, parameters.DateOfBirth, parameters.Gender, parameters.Office, parameters.Salary));
-
-            this.RemoveFromDictionaries(id);
-
-            var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(parameters.FirstName.PadRight(60));
-            var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(parameters.LastName.PadRight(60));
-            var byteYear = BitConverter.GetBytes(parameters.DateOfBirth.Year);
-            var byteMonth = BitConverter.GetBytes(parameters.DateOfBirth.Month);
-            var byteDay = BitConverter.GetBytes(parameters.DateOfBirth.Day);
-            var byteGender = BitConverter.GetBytes(parameters.Gender);
-            var byteOffice = BitConverter.GetBytes(parameters.Office);
-            var byteSalary = GetBytes(parameters.Salary);
-
-            this.fileStream.Seek(position + FirstNamePosition, SeekOrigin.Begin);
-
-            using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
-            {
-                writeBinay.Write(byteFirstName, 0, byteFirstName.Length);
-                writeBinay.Write(byteLastName, 0, byteLastName.Length);
-                writeBinay.Write(byteYear, 0, byteYear.Length);
-                writeBinay.Write(byteMonth, 0, byteMonth.Length);
-                writeBinay.Write(byteDay, 0, byteDay.Length);
-                writeBinay.Write(byteGender, 0, byteGender.Length);
-                writeBinay.Write(byteOffice, 0, byteOffice.Length);
-                writeBinay.Write(byteSalary, 0, byteSalary.Length);
-            }
-
-            this.AddToDictionaries(parameters, position);
         }
 
         /// <summary>
@@ -248,91 +195,72 @@ namespace FileCabinetApp.Services
             char pgender = default(char);
             short poffice = -1;
             decimal psalary = -1;
+
             using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
             {
+                this.fileStream.Seek(position, SeekOrigin.Begin);
+                var existRecordsParameters = GetRecordParametersFromFile(reader);
                 this.fileStream.Seek(position + (long)IdPosition, SeekOrigin.Begin);
                 id = reader.ReadInt32();
-                this.RemoveFromDictionaries(id);
-                this.fileStream.Seek(position + (long)FirstNamePosition, SeekOrigin.Begin);
                 if (recordParameters.FirstName != null)
                 {
-                    var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(recordParameters.FirstName.PadRight(60));
-                    writeBinay.Write(byteFirstName, 0, byteFirstName.Length);
                     pfirstname = recordParameters.FirstName;
                 }
                 else
                 {
-                    pfirstname = System.Text.UnicodeEncoding.Unicode.GetString(
-                                reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                    pfirstname = existRecordsParameters.FirstName;
                 }
 
                 if (recordParameters.LastName != null)
                 {
-                    var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(recordParameters.LastName.PadRight(60));
-                    writeBinay.Write(byteLastName, 0, byteLastName.Length);
                     plastname = recordParameters.LastName;
                 }
                 else
                 {
-                    plastname = System.Text.UnicodeEncoding.Unicode.GetString(
-                               reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                    plastname = existRecordsParameters.LastName;
                 }
 
                 if (recordParameters.DateOfBirth != default(DateTime))
                 {
-                    var byteYear = BitConverter.GetBytes(recordParameters.DateOfBirth.Year);
-                    var byteMonth = BitConverter.GetBytes(recordParameters.DateOfBirth.Month);
-                    var byteDay = BitConverter.GetBytes(recordParameters.DateOfBirth.Day);
-                    writeBinay.Write(byteYear, 0, byteYear.Length);
-                    writeBinay.Write(byteMonth, 0, byteMonth.Length);
-                    writeBinay.Write(byteDay, 0, byteDay.Length);
                     pdateofbirth = recordParameters.DateOfBirth;
                 }
                 else
                 {
-                    this.fileStream.Seek(position + YearPosition, SeekOrigin.Begin);
-                    pdateofbirth = new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+                    pdateofbirth = existRecordsParameters.DateOfBirth;
                 }
 
                 if (recordParameters.Gender != default(char))
                 {
-                    var byteGender = BitConverter.GetBytes(recordParameters.Gender);
-                    writeBinay.Write(byteGender, 0, byteGender.Length);
                     pgender = recordParameters.Gender;
                 }
                 else
                 {
-                    pgender = reader.ReadChar();
+                    pgender = existRecordsParameters.Gender;
                 }
 
                 if (recordParameters.Office != -1)
                 {
-                    var byteOffice = BitConverter.GetBytes(recordParameters.Office);
-                    writeBinay.Write(byteOffice, 0, byteOffice.Length);
                     poffice = recordParameters.Office;
                 }
                 else
                 {
-                    poffice = reader.ReadInt16();
+                    poffice = existRecordsParameters.Office;
                 }
 
                 if (recordParameters.Salary != -1)
                 {
-                    var byteSalary = GetBytes(recordParameters.Salary);
-                    writeBinay.Write(byteSalary, 0, byteSalary.Length);
                     psalary = recordParameters.Salary;
                 }
                 else
                 {
-                    psalary = ToDecimal(reader.ReadBytes(DecimalInBitesLength));
+                    psalary = existRecordsParameters.Salary;
                 }
-
-                var newRecordParameters = new RecordParameters(pfirstname, plastname, pdateofbirth, pgender, poffice, psalary);
-                this.validator.ValidateParameters(newRecordParameters);
-                this.AddToDictionaries(newRecordParameters, position);
-                return id;
             }
+
+            var newRecordParameters = new RecordParameters(pfirstname, plastname, pdateofbirth, pgender, poffice, psalary);
+            this.EditRecord(id, newRecordParameters);
+            return id;
         }
 
         /// <summary>
@@ -385,7 +313,7 @@ namespace FileCabinetApp.Services
                 foreach (var position in positions)
                 {
                     this.fileStream.Seek(position, SeekOrigin.Begin);
-                    yield return CreateNewFileCabinetRecord(binaryReader);
+                    yield return GetFileCabinetRecordFromFile(binaryReader);
                 }
             }
         }
@@ -403,7 +331,7 @@ namespace FileCabinetApp.Services
                 foreach (var position in this.idpositionPairs.Values)
                 {
                     this.fileStream.Seek(position, SeekOrigin.Begin);
-                    yield return CreateNewFileCabinetRecord(binaryReader);
+                    yield return GetFileCabinetRecordFromFile(binaryReader);
                 }
             }
         }
@@ -522,28 +450,6 @@ namespace FileCabinetApp.Services
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Removes a record by the identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="position">Record position.</param>
-        public void Remove(int id, long position)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentException($"{nameof(id)} have to be larger than zero.", nameof(id));
-            }
-
-            if (position < 0)
-            {
-                throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
-            }
-
-            this.fileStream.Seek(position, SeekOrigin.Begin);
-            this.fileStream.WriteByte(1);
-            this.idpositionPairs.Remove(id);
         }
 
         /// <summary>
@@ -720,7 +626,7 @@ namespace FileCabinetApp.Services
             return new decimal(bits);
         }
 
-        private static FileCabinetRecord CreateNewFileCabinetRecord(BinaryReader binaryReader)
+        private static FileCabinetRecord GetFileCabinetRecordFromFile(BinaryReader binaryReader)
         {
             if (binaryReader == null)
             {
@@ -742,7 +648,7 @@ namespace FileCabinetApp.Services
             };
         }
 
-        private static RecordParameters CreteNewRecordParameters(BinaryReader binaryReader)
+        private static RecordParameters GetRecordParametersFromFile(BinaryReader binaryReader)
         {
             binaryReader.ReadBytes(ReservedFieldLength);
             binaryReader.ReadInt32();
@@ -755,6 +661,53 @@ namespace FileCabinetApp.Services
                 binaryReader.ReadChar(),
                 binaryReader.ReadInt16(),
                 ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)));
+        }
+
+        private void EditRecord(int id, RecordParameters parameters)
+        {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            if (id <= 0)
+            {
+                throw new ArgumentException($"The {nameof(id)} have to be larger than zero.", nameof(id));
+            }
+
+            if (!this.IsThereARecordWithThisId(id, out long position))
+            {
+                throw new ArgumentException($"Record #{nameof(id)} doesn't exist.", nameof(id));
+            }
+
+            this.validator.ValidateParameters(parameters);
+
+            this.RemoveFromDictionaries(id);
+
+            var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(parameters.FirstName.PadRight(60));
+            var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(parameters.LastName.PadRight(60));
+            var byteYear = BitConverter.GetBytes(parameters.DateOfBirth.Year);
+            var byteMonth = BitConverter.GetBytes(parameters.DateOfBirth.Month);
+            var byteDay = BitConverter.GetBytes(parameters.DateOfBirth.Day);
+            var byteGender = BitConverter.GetBytes(parameters.Gender);
+            var byteOffice = BitConverter.GetBytes(parameters.Office);
+            var byteSalary = GetBytes(parameters.Salary);
+
+            this.fileStream.Seek(position + FirstNamePosition, SeekOrigin.Begin);
+
+            using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
+            {
+                writeBinay.Write(byteFirstName, 0, byteFirstName.Length);
+                writeBinay.Write(byteLastName, 0, byteLastName.Length);
+                writeBinay.Write(byteYear, 0, byteYear.Length);
+                writeBinay.Write(byteMonth, 0, byteMonth.Length);
+                writeBinay.Write(byteDay, 0, byteDay.Length);
+                writeBinay.Write(byteGender, 0, byteGender.Length);
+                writeBinay.Write(byteOffice, 0, byteOffice.Length);
+                writeBinay.Write(byteSalary, 0, byteSalary.Length);
+            }
+
+            this.AddToDictionaries(parameters, position);
         }
 
         private void CreateFileCabinetRecord(RecordParameters rec, int id)
@@ -802,7 +755,7 @@ namespace FileCabinetApp.Services
                             this.idpositionPairs.Add(id, position);
                         }
 
-                        var parameters = CreteNewRecordParameters(reader);
+                        var parameters = GetRecordParametersFromFile(reader);
                         this.AddToDictionaries(parameters, position);
                     }
                     else
@@ -815,6 +768,7 @@ namespace FileCabinetApp.Services
 
         private void WriteToTheBinaryFile(FileCabinetRecord record)
         {
+            this.fileStream.Seek(0, SeekOrigin.End);
             using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
             {
                 var byteId = BitConverter.GetBytes(record.Id);
