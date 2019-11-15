@@ -162,6 +162,27 @@
             Class AppCommandRequest Instance.
             </returns>
         </member>
+        <member name="T:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.UpdateCommandHandler">
+            <summary>
+            Update command handler.
+            </summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.UpdateCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.UpdateCommandHandler"/> class.
+            </summary>
+            <param name="service">The service.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.UpdateCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Handles the specified request.
+            </summary>
+            <param name="request">The request.</param>
+            <returns>
+            Class AppCommandRequest Instance.
+            </returns>
+        </member>
         <member name="T:FileCabinetApp.CommandHandlers.EditCommandHandler">
             <summary>
             Edit command handler.
@@ -827,6 +848,32 @@
             <param name="id">The identifier.</param>
             <param name="parameters">The record.</param>
         </member>
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Updates the specified record parameters.
+            </summary>
+            <param name="recordParameters">The record parameters.</param>
+            <param name="keyValuePairs">The key value pairs.</param>
+            <returns>
+            Updated record id.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            recordParameters
+            or
+            keyValuePairs.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            There are several entries with such parameters.
+            or
+            There are no entries with such parameters.
+            or
+            There are no entries with such parameters.
+            or
+            Record whith firstname = '{firstname}' does not exist.
+            or
+            There are no entries with such parameters.
+            </exception>
+        </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Find(System.String)">
             <summary>
             Finds the specified parameters.
@@ -1005,6 +1052,14 @@
             <param name="id">The identifier.</param>
             <param name="record">The record.</param>
         </member>
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Updates the specified record parameters.
+            </summary>
+            <param name="recordParameters">The record parameters.</param>
+            <param name="keyValuePairs">The key value pairs.</param>
+            <returns>Updated record id.</returns>
+        </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.Find(System.String)">
             <summary>
             Finds the specified parameters.
@@ -1094,6 +1149,21 @@
             <param name="id">The identifier.</param>
             <param name="record">The record.</param>
             <exception cref="T:System.ArgumentNullException">record is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Updates the specified record parameters.
+            </summary>
+            <param name="recordParameters">The record parameters.</param>
+            <param name="keyValuePairs">The key value pairs.</param>
+            <returns>
+            Updated record id.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            recordParameters
+            or
+            keyValuePairs.
+            </exception>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceLogger.Find(System.String)">
             <summary>
@@ -1203,6 +1273,16 @@
             </summary>
             <param name="id">The identifier.</param>
             <param name="record">The record.</param>
+        </member>
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Updates the specified record parameters.
+            </summary>
+            <param name="recordParameters">The record parameters.</param>
+            <param name="keyValuePairs">The key value pairs.</param>
+            <returns>
+            Updated record id.
+            </returns>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceMeter.Find(System.String)">
             <summary>
@@ -1339,6 +1419,34 @@
             The {nameof(id)} can't be less than zero.
             or
             The {nameof(id)} doesn't exist.
+            </exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Update(FileCabinetApp.RecordParameters,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Updates the specified record parameters.
+            </summary>
+            <param name="recordParameters">The record parameters.</param>
+            <param name="keyValuePairs">The key value pairs.</param>
+            <returns>
+            Updated record id.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            recordParameters
+            or
+            keyValuePairs.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            There are several entries with such parameters.
+            or
+            There are no entries with such parameters.
+            or
+            There are no entries with such parameters.
+            or
+            Record whith firstname = '{firstname}' does not exist.
+            or
+            There are no entries with such parameters.
+            or
+            Record #{id} does not exist.
             </exception>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.Find(System.String)">

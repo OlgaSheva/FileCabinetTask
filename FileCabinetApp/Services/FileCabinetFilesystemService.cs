@@ -16,7 +16,9 @@ namespace FileCabinetApp.Services
     {
         private const int RecordInBytesLength = 278;
         private const int ReservedFieldLength = 2;
+        private const int IdPosition = 2;
         private const int FirstNamePosition = 6;
+        private const int YearPosition = 246;
         private const int StringInBitesLength = 120;
         private const int DecimalInBitesLength = 16;
         private readonly FileStream fileStream;
@@ -133,6 +135,204 @@ namespace FileCabinetApp.Services
             }
 
             this.AddToDictionaries(parameters, position);
+        }
+
+        /// <summary>
+        /// Updates the specified record parameters.
+        /// </summary>
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <returns>
+        /// Updated record id.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// recordParameters
+        /// or
+        /// keyValuePairs.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// There are several entries with such parameters.
+        /// or
+        /// There are no entries with such parameters.
+        /// or
+        /// There are no entries with such parameters.
+        /// or
+        /// Record whith firstname = '{firstname}' does not exist.
+        /// or
+        /// There are no entries with such parameters.
+        /// </exception>
+        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        {
+            if (recordParameters == null)
+            {
+                throw new ArgumentNullException(nameof(recordParameters));
+            }
+
+            if (keyValuePairs == null)
+            {
+                throw new ArgumentNullException(nameof(keyValuePairs));
+            }
+
+            int id = 0;
+            long position = 0;
+            string firstname;
+            string lastname;
+            List<long> firstnameList = new List<long>(),
+                       lastnameList = new List<long>(),
+                       firstAndLastNameList = new List<long>();
+            if (keyValuePairs["id"] != null)
+            {
+                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.CurrentCulture);
+                position = this.idpositionPairs[id];
+            }
+            else if ((firstname = keyValuePairs["firstname"]) != null)
+            {
+                if (this.firstNameDictionary.TryGetValue(firstname, out firstnameList))
+                {
+                    lastname = keyValuePairs["lastname"];
+                    if (firstnameList.Count == 1 && lastname == null)
+                    {
+                        position = firstnameList[0];
+                    }
+                    else if (lastname != null)
+                    {
+                        if (this.lastNameDictionary.TryGetValue(lastname, out lastnameList))
+                        {
+                            foreach (var fnp in firstnameList)
+                            {
+                                foreach (var lnp in lastnameList)
+                                {
+                                    if (fnp == lnp)
+                                    {
+                                        firstAndLastNameList.Add(fnp);
+                                    }
+                                }
+                            }
+
+                            if (firstAndLastNameList.Count == 1)
+                            {
+                                position = firstAndLastNameList[0];
+                            }
+                            else if (firstAndLastNameList.Count > 1)
+                            {
+                                throw new ArgumentException("There are several entries with such parameters.");
+                            }
+                        }
+                        else
+                        {
+                            throw new ArgumentException("There are no entries with such parameters.");
+                        }
+                    }
+                    else if (firstAndLastNameList.Count > 1 && lastname == null)
+                    {
+                        throw new ArgumentException("There are several entries with such parameters.");
+                    }
+                    else
+                    {
+                        throw new ArgumentException("There are no entries with such parameters.");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Record whith firstname = '{firstname}' does not exist.");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("There are no entries with such parameters.");
+            }
+
+            string pfirstname = null;
+            string plastname = null;
+            DateTime pdateofbirth = default(DateTime);
+            char pgender = default(char);
+            short poffice = -1;
+            decimal psalary = -1;
+            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
+            {
+                this.fileStream.Seek(position + (long)IdPosition, SeekOrigin.Begin);
+                id = reader.ReadInt32();
+                this.RemoveFromDictionaries(id);
+                this.fileStream.Seek(position + (long)FirstNamePosition, SeekOrigin.Begin);
+                if (recordParameters.FirstName != null)
+                {
+                    var byteFirstName = System.Text.UnicodeEncoding.Unicode.GetBytes(recordParameters.FirstName.PadRight(60));
+                    writeBinay.Write(byteFirstName, 0, byteFirstName.Length);
+                    pfirstname = recordParameters.FirstName;
+                }
+                else
+                {
+                    pfirstname = System.Text.UnicodeEncoding.Unicode.GetString(
+                                reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                }
+
+                if (recordParameters.LastName != null)
+                {
+                    var byteLastName = System.Text.UnicodeEncoding.Unicode.GetBytes(recordParameters.LastName.PadRight(60));
+                    writeBinay.Write(byteLastName, 0, byteLastName.Length);
+                    plastname = recordParameters.LastName;
+                }
+                else
+                {
+                    plastname = System.Text.UnicodeEncoding.Unicode.GetString(
+                               reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                }
+
+                if (recordParameters.DateOfBirth != default(DateTime))
+                {
+                    var byteYear = BitConverter.GetBytes(recordParameters.DateOfBirth.Year);
+                    var byteMonth = BitConverter.GetBytes(recordParameters.DateOfBirth.Month);
+                    var byteDay = BitConverter.GetBytes(recordParameters.DateOfBirth.Day);
+                    writeBinay.Write(byteYear, 0, byteYear.Length);
+                    writeBinay.Write(byteMonth, 0, byteMonth.Length);
+                    writeBinay.Write(byteDay, 0, byteDay.Length);
+                    pdateofbirth = recordParameters.DateOfBirth;
+                }
+                else
+                {
+                    this.fileStream.Seek(position + YearPosition, SeekOrigin.Begin);
+                    pdateofbirth = new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+                }
+
+                if (recordParameters.Gender != default(char))
+                {
+                    var byteGender = BitConverter.GetBytes(recordParameters.Gender);
+                    writeBinay.Write(byteGender, 0, byteGender.Length);
+                    pgender = recordParameters.Gender;
+                }
+                else
+                {
+                    pgender = reader.ReadChar();
+                }
+
+                if (recordParameters.Office != -1)
+                {
+                    var byteOffice = BitConverter.GetBytes(recordParameters.Office);
+                    writeBinay.Write(byteOffice, 0, byteOffice.Length);
+                    poffice = recordParameters.Office;
+                }
+                else
+                {
+                    poffice = reader.ReadInt16();
+                }
+
+                if (recordParameters.Salary != -1)
+                {
+                    var byteSalary = GetBytes(recordParameters.Salary);
+                    writeBinay.Write(byteSalary, 0, byteSalary.Length);
+                    psalary = recordParameters.Salary;
+                }
+                else
+                {
+                    psalary = ToDecimal(reader.ReadBytes(DecimalInBitesLength));
+                }
+
+                var newRecordParameters = new RecordParameters(pfirstname, plastname, pdateofbirth, pgender, poffice, psalary);
+                this.validator.ValidateParameters(newRecordParameters);
+                this.AddToDictionaries(newRecordParameters, position);
+                return id;
+            }
         }
 
         /// <summary>

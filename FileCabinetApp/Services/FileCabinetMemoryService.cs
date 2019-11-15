@@ -166,6 +166,128 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Updates the specified record parameters.
+        /// </summary>
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <returns>
+        /// Updated record id.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// recordParameters
+        /// or
+        /// keyValuePairs.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// There are several entries with such parameters.
+        /// or
+        /// There are no entries with such parameters.
+        /// or
+        /// There are no entries with such parameters.
+        /// or
+        /// Record whith firstname = '{firstname}' does not exist.
+        /// or
+        /// There are no entries with such parameters.
+        /// or
+        /// Record #{id} does not exist.
+        /// </exception>
+        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        {
+            if (recordParameters == null)
+            {
+                throw new ArgumentNullException(nameof(recordParameters));
+            }
+
+            if (keyValuePairs == null)
+            {
+                throw new ArgumentNullException(nameof(keyValuePairs));
+            }
+
+            int id = 0;
+            string firstname;
+            string lastname;
+            List<FileCabinetRecord> firstnameList = new List<FileCabinetRecord>(),
+                                    lastnameList = new List<FileCabinetRecord>();
+            if (keyValuePairs["id"] != null)
+            {
+                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.CurrentCulture);
+            }
+            else if ((firstname = keyValuePairs["firstname"]) != null)
+            {
+                if (this.firstNameDictionary.TryGetValue(firstname, out firstnameList))
+                {
+                    lastname = keyValuePairs["lastname"];
+                    if (firstnameList.Count == 1 && lastname == null)
+                    {
+                        id = firstnameList[0].Id;
+                    }
+                    else if (lastname != null)
+                    {
+                        foreach (var record in firstnameList)
+                        {
+                            if (record.LastName.Equals(lastname, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                lastnameList.Add(record);
+                            }
+                        }
+
+                        if (lastnameList.Count == 1)
+                        {
+                            id = lastnameList[0].Id;
+                        }
+                        else if (lastnameList.Count > 1)
+                        {
+                            throw new ArgumentException("There are several entries with such parameters.");
+                        }
+                        else
+                        {
+                            throw new ArgumentException("There are no entries with such parameters.");
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException("There are no entries with such parameters.");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Record whith firstname = '{firstname}' does not exist.");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("There are no entries with such parameters.");
+            }
+
+            if (this.IsThereARecordWithThisId(id, out long indexInList))
+            {
+                int index = (int)indexInList;
+                this.RemoveFromDictionaries(index);
+
+                this.list[index].FirstName = recordParameters.FirstName ?? this.list[index].FirstName;
+                this.list[index].LastName = recordParameters.LastName ?? this.list[index].LastName;
+                this.list[index].DateOfBirth = (!recordParameters.DateOfBirth.Equals(default(DateTime)))
+                    ? recordParameters.DateOfBirth : this.list[index].DateOfBirth;
+                this.list[index].Gender = (!recordParameters.Gender.Equals(default(char)))
+                    ? recordParameters.Gender : this.list[index].Gender;
+                this.list[index].Office = (recordParameters.Office != -1)
+                    ? recordParameters.Office : this.list[index].Office;
+                this.list[index].Salary = (recordParameters.Salary != -1)
+                    ? recordParameters.Salary : this.list[index].Salary;
+
+                this.EditDictionaries(
+                    new RecordParameters(
+                        this.list[index].FirstName, this.list[index].LastName, this.list[index].DateOfBirth, this.list[index].Gender, this.list[index].Office, this.list[index].Salary), index);
+            }
+            else
+            {
+                throw new ArgumentException($"Record #{id} does not exist.");
+            }
+
+            return id;
+        }
+
+        /// <summary>
         /// Finds the specified parameters.
         /// </summary>
         /// <param name="parameters">The parameters.</param>

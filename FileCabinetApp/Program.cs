@@ -107,6 +107,7 @@ namespace FileCabinetApp
             var createHandle = new CreateCommandHandler(fileCabinetService, converter, validator);
             var insertHandle = new InsertCommandHandler(fileCabinetService);
             var editHandler = new EditCommandHandler(fileCabinetService, converter, validator);
+            var updateHandler = new UpdateCommandHandler(fileCabinetService);
             var findHandler = new FindCommandHandler(fileCabinetService, recordPrinter);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var importHandler = new ImportCommandHandler(fileCabinetService);
@@ -123,6 +124,7 @@ namespace FileCabinetApp
                 .SetNext(createHandle)
                 .SetNext(insertHandle)
                 .SetNext(editHandler)
+                .SetNext(updateHandler)
                 .SetNext(findHandler)
                 .SetNext(removeHandler)
                 .SetNext(deleteHandler)

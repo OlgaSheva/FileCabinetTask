@@ -77,6 +77,27 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
+        /// Updates the specified record parameters.
+        /// </summary>
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <returns>
+        /// Updated record id.
+        /// </returns>
+        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        {
+            this.stopWatch.Reset();
+            this.stopWatch.Start();
+            int id = this.service.Update(recordParameters, keyValuePairs);
+
+            this.stopWatch.Stop();
+            this.ticks = this.stopWatch.ElapsedTicks;
+
+            Console.WriteLine($"Update method execution duration is {this.ticks} ticks.");
+            return id;
+        }
+
+        /// <summary>
         /// Finds the specified parameters.
         /// </summary>
         /// <param name="parameters">The parameters.</param>

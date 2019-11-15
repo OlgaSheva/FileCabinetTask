@@ -54,7 +54,11 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
             var ids = this.Service.Delete(key, value);
 
-            if (ids.Count > 0)
+            if (ids.Count == 1)
+            {
+                Console.WriteLine($"Record #{ids[0]} is deleted.");
+            }
+            else if (ids.Count > 0)
             {
                 var sb = new StringBuilder();
                 for (int i = 0; i < ids.Count; i++)

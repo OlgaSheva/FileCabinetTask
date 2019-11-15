@@ -42,6 +42,14 @@ namespace FileCabinetApp.Services
         void EditRecord(int id, RecordParameters record);
 
         /// <summary>
+        /// Updates the specified record parameters.
+        /// </summary>
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <returns>Updated record id.</returns>
+        int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs);
+
+        /// <summary>
         /// Finds the specified parameters.
         /// </summary>
         /// <param name="parameters">The parameters.</param>

@@ -94,6 +94,41 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
+        /// Updates the specified record parameters.
+        /// </summary>
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <returns>
+        /// Updated record id.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// recordParameters
+        /// or
+        /// keyValuePairs.
+        /// </exception>
+        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        {
+            if (recordParameters == null)
+            {
+                throw new ArgumentNullException(nameof(recordParameters));
+            }
+
+            if (keyValuePairs == null)
+            {
+                throw new ArgumentNullException(nameof(keyValuePairs));
+            }
+
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Calling Update() with parameters FirstNme = '{recordParameters?.FirstName}', LastName = '{recordParameters.LastName}', " +
+                $"DateOfBirth = '{recordParameters.DateOfBirth}', Gender = '{recordParameters.Gender}', " +
+                $"Office = '{recordParameters.Office}', Salary = '{recordParameters.Salary}'");
+            int id = this.service.Update(recordParameters, keyValuePairs);
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Update() update the record {id}.'");
+            return id;
+        }
+
+        /// <summary>
         /// Finds the specified parameters.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
