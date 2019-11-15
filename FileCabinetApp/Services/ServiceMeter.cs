@@ -43,20 +43,41 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Edits the record.
+        /// Creates the record.
         /// </summary>
+        /// <param name="recordParameters">The record parameters.</param>
         /// <param name="id">The identifier.</param>
-        /// <param name="record">The record.</param>
-        public void EditRecord(int id, RecordParameters record)
+        public void InsertRecord(RecordParameters recordParameters, int id)
         {
             this.stopWatch.Reset();
             this.stopWatch.Start();
-            this.service.EditRecord(id, record);
+            this.service.InsertRecord(recordParameters, id);
 
             this.stopWatch.Stop();
             this.ticks = this.stopWatch.ElapsedTicks;
 
-            Console.WriteLine($"Edit method execution duration is {this.ticks} ticks.");
+            Console.WriteLine($"Insert method execution duration is {this.ticks} ticks.");
+        }
+
+        /// <summary>
+        /// Updates the specified record parameters.
+        /// </summary>
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <returns>
+        /// Updated record id.
+        /// </returns>
+        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        {
+            this.stopWatch.Reset();
+            this.stopWatch.Start();
+            int id = this.service.Update(recordParameters, keyValuePairs);
+
+            this.stopWatch.Stop();
+            this.ticks = this.stopWatch.ElapsedTicks;
+
+            Console.WriteLine($"Update method execution duration is {this.ticks} ticks.");
+            return id;
         }
 
         /// <summary>
@@ -150,20 +171,24 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Removes the specified identifier.
+        /// Deletes the specified key.
         /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="position">The position.</param>
-        public void Remove(int id, long position)
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// Deleted records id.
+        /// </returns>
+        public List<int> Delete(string key, string value)
         {
             this.stopWatch.Reset();
             this.stopWatch.Start();
-            this.service.Remove(id, position);
+            var result = this.service.Delete(key, value);
 
             this.stopWatch.Stop();
             this.ticks = this.stopWatch.ElapsedTicks;
 
-            Console.WriteLine($"Remove method execution duration is {this.ticks} ticks.");
+            Console.WriteLine($"Delete method execution duration is {this.ticks} ticks.");
+            return result;
         }
 
         /// <summary>

@@ -13,17 +13,78 @@ namespace FileCabinetApp.CommandHandlers
         private const int ExplanationHelpIndex = 2;
         private static string[][] helpMessages = new string[][]
         {
-            new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
-            new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
-            new string[] { "stat", "shows statistics by records", "The 'stat' command shows statistics by records" },
-            new string[] { "create", "creates a new record", "The 'create' command creates a new record." },
-            new string[] { "edit <ID>", "edits an existing entry", "The 'edit' command edits an existing entry." },
-            new string[] { "list", "returns a list of records added to the service", "The 'list' command returns a list of records added to the service." },
-            new string[] { "find <parameter name> <parameter value>", "returns a list of records with the given parameter", "The 'find firstname' command returns a list of records with the given parameter." },
-            new string[] { "export <csv/xml> <file adress>", "exports service data to a CSV or XML file", "The 'export' command exports service data to a CSV or XML file." },
-            new string[] { "import <csv/xml> <file adress>", "imports service data from a CSV or XML file", "The 'export' command imports service data from a CSV or XML file." },
-            new string[] { "remove <ID>", "removes a record by id", "The 'remove' command removes a record by id." },
-            new string[] { "purge", "defragment a data file", "The 'purge' command defragment a data file." },
+            new string[]
+            {
+                "help",
+                "prints the help screen",
+                "The 'help' command prints the help screen.",
+            },
+            new string[]
+            {
+                "exit",
+                "exits the application",
+                "The 'exit' command exits the application.",
+            },
+            new string[]
+            {
+                "stat",
+                "shows statistics by records",
+                "The 'stat' command shows statistics by records",
+            },
+            new string[]
+            {
+                "create",
+                "creates a new record",
+                "The 'create' command creates a new record.",
+            },
+            new string[]
+            {
+                "insert (parameters) values (values)",
+                "inserts a new record",
+                "The 'insert' command inserts a new record.",
+            },
+            new string[]
+            {
+                "update set <parameter> = '<value>', <parameter> = '<value>', ... where  <parameter> = '<value>'",
+                "updates the record",
+                "The 'update' command updates the record.",
+            },
+            new string[]
+            {
+                "list",
+                "returns a list of records added to the service",
+                "The 'list' command returns a list of records added to the service.",
+            },
+            new string[]
+            {
+                "find <parameter name> <parameter value>",
+                "returns a list of records with the given parameter",
+                "The 'find firstname' command returns a list of records with the given parameter.",
+            },
+            new string[]
+            {
+                "export <csv/xml> <file adress>",
+                "exports service data to a CSV or XML file",
+                "The 'export' command exports service data to a CSV or XML file.",
+            },
+            new string[]
+            {
+                "import <csv/xml> <file adress>",
+                "imports service data from a CSV or XML file",
+                "The 'export' command imports service data from a CSV or XML file.",
+            },
+            new string[]
+            {
+                "delete where <parameter> = '<value>'",
+                "deletes a record by parameter",
+                "The 'delete' command deletes a record by parameter.",
+            },
+            new string[]
+            {
+                "purge",
+                "defragment a data file",
+                "The 'purge' command defragment a data file.",
+            },
         };
 
         /// <summary>

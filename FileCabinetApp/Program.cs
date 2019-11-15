@@ -4,6 +4,7 @@ using System.IO;
 using CommandLine;
 
 using FileCabinetApp.CommandHandlers;
+using FileCabinetApp.CommandHandlers.SpecificCommandHandlers;
 using FileCabinetApp.CommandLineOptions;
 using FileCabinetApp.Converters;
 using FileCabinetApp.Enums;
@@ -85,7 +86,14 @@ namespace FileCabinetApp
                 var command = inputs[commandIndex];
                 const int parametersIndex = 1;
                 var parameters = inputs.Length > 1 ? inputs[parametersIndex] : string.Empty;
-                commandHandler.Handle(new AppCommandRequest(command, parameters));
+                try
+                {
+                    commandHandler.Handle(new AppCommandRequest(command, parameters));
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine($"Error. Invalid operation. {ex.Message}");
+                }
             }
             while (isRunning);
         }
@@ -97,23 +105,25 @@ namespace FileCabinetApp
             var exitHandler = new ExitCommandHandler(fileStream, (x) => isRunning = x);
             var helpHandler = new HelpCommandHandler();
             var createHandle = new CreateCommandHandler(fileCabinetService, converter, validator);
-            var editHandler = new EditCommandHandler(fileCabinetService, converter, validator);
+            var insertHandle = new InsertCommandHandler(fileCabinetService);
+            var updateHandler = new UpdateCommandHandler(fileCabinetService);
             var findHandler = new FindCommandHandler(fileCabinetService, recordPrinter);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var importHandler = new ImportCommandHandler(fileCabinetService);
-            var removeHandler = new RemoveCommandHandler(fileCabinetService);
+            var deleteHandler = new DeleteCommandHandler(fileCabinetService);
             var listHandle = new ListCommandHandler(fileCabinetService, recordPrinter);
             var statHandler = new StatCommandHandler(fileCabinetService);
             var purgeHadler = new PurgeCommandHandler(fileCabinetService);
-            var missedCommandHandler = new MissedCommandHandler();
+            var missedCommandHandler = new SimilarCommandHandler();
             helpHandler
                 .SetNext(exitHandler)
                 .SetNext(listHandle)
                 .SetNext(statHandler)
                 .SetNext(createHandle)
-                .SetNext(editHandler)
+                .SetNext(insertHandle)
+                .SetNext(updateHandler)
                 .SetNext(findHandler)
-                .SetNext(removeHandler)
+                .SetNext(deleteHandler)
                 .SetNext(exportHandler)
                 .SetNext(importHandler)
                 .SetNext(purgeHadler)

@@ -15,6 +15,13 @@ namespace FileCabinetApp.Services
         int CreateRecord(RecordParameters record);
 
         /// <summary>
+        /// Inserts the record.
+        /// </summary>
+        /// <param name="record">The record.</param>
+        /// <param name="id">The identifier.</param>
+        void InsertRecord(RecordParameters record, int id);
+
+        /// <summary>
         /// Gets the records.
         /// </summary>
         /// <returns>All existing records.</returns>
@@ -28,11 +35,12 @@ namespace FileCabinetApp.Services
         int GetStat(out int deletedRecordsCount);
 
         /// <summary>
-        /// Edits the record.
+        /// Updates the specified record parameters.
         /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="record">The record.</param>
-        void EditRecord(int id, RecordParameters record);
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <returns>Updated record id.</returns>
+        int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs);
 
         /// <summary>
         /// Finds the specified parameters.
@@ -65,11 +73,12 @@ namespace FileCabinetApp.Services
         void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions);
 
         /// <summary>
-        /// Removes a record by the identifier.
+        /// Deletes the specified key.
         /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="position">Record position.</param>
-        void Remove(int id, long position);
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>Deleted records id.</returns>
+        List<int> Delete(string key, string value);
 
         /// <summary>
         /// Purges the specified deleted records count.

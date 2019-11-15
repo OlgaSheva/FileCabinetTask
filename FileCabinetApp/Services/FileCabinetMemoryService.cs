@@ -70,26 +70,33 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(rec));
             }
 
-            this.validator.ValidateParameters(
-                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
+            int id = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id + 1 : 1;
+            this.InsertRecord(rec, id);
 
-            int newId = (this.list.Count > 0) ? this.list[this.list.Count - 1].Id + 1 : 1;
+            return id;
+        }
 
-            var record = new FileCabinetRecord
+        /// <summary>
+        /// Inserts the record.
+        /// </summary>
+        /// <param name="rec">The record.</param>
+        /// <param name="id">The identifier.</param>
+        /// <exception cref="ArgumentNullException">rec is null.</exception>
+        /// <exception cref="ArgumentException">The id can not be less than one.</exception>
+        public void InsertRecord(RecordParameters rec, int id)
+        {
+            if (rec == null)
             {
-                Id = newId,
-                FirstName = rec.FirstName,
-                LastName = rec.LastName,
-                DateOfBirth = rec.DateOfBirth,
-                Gender = rec.Gender,
-                Office = rec.Office,
-                Salary = rec.Salary,
-            };
+                throw new ArgumentNullException(nameof(rec));
+            }
 
-            this.list.Add(record);
-            this.AddToDictionaries(record);
+            if (id < 1)
+            {
+                throw new ArgumentException($"The '{nameof(id)}' can not be less than one.", nameof(id));
+            }
 
-            return record.Id;
+            this.validator.ValidateParameters(rec);
+            this.CreateFileCabinetRecord(rec, id);
         }
 
         /// <summary>
@@ -116,46 +123,131 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Edits the record.
+        /// Updates the specified record parameters.
         /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="rec">The record.</param>
-        /// <exception cref="ArgumentException">
-        /// The {nameof(id)} can't be less than zero.
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <returns>
+        /// Updated record id.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// recordParameters
         /// or
-        /// The {nameof(id)} doesn't exist.
+        /// keyValuePairs.
         /// </exception>
-        public void EditRecord(int id, RecordParameters rec)
+        /// <exception cref="ArgumentException">
+        /// There are several entries with such parameters.
+        /// or
+        /// There are no entries with such parameters.
+        /// or
+        /// There are no entries with such parameters.
+        /// or
+        /// Record whith firstname = '{firstname}' does not exist.
+        /// or
+        /// There are no entries with such parameters.
+        /// or
+        /// Record #{id} does not exist.
+        /// </exception>
+        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
         {
-            if (rec == null)
+            if (recordParameters == null)
             {
-                throw new ArgumentNullException(nameof(rec));
+                throw new ArgumentNullException(nameof(recordParameters));
             }
 
-            if (id < 0)
+            if (keyValuePairs == null)
             {
-                throw new ArgumentException($"The {nameof(id)} can't be less than zero.", nameof(id));
+                throw new ArgumentNullException(nameof(keyValuePairs));
             }
 
-            if (!this.IsThereARecordWithThisId(id, out long indexInList))
+            int id = 0;
+            string firstname;
+            string lastname;
+            List<FileCabinetRecord> firstnameList = new List<FileCabinetRecord>(),
+                                    lastnameList = new List<FileCabinetRecord>();
+            if (keyValuePairs["id"] != null)
             {
-                throw new ArgumentException($"The {nameof(id)} doesn't exist.", nameof(id));
+                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.CurrentCulture);
+            }
+            else if ((firstname = keyValuePairs["firstname"]) != null)
+            {
+                if (this.firstNameDictionary.TryGetValue(firstname, out firstnameList))
+                {
+                    lastname = keyValuePairs["lastname"];
+                    if (firstnameList.Count == 1 && lastname == null)
+                    {
+                        id = firstnameList[0].Id;
+                    }
+                    else if (lastname != null)
+                    {
+                        foreach (var record in firstnameList)
+                        {
+                            if (record.LastName.Equals(lastname, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                lastnameList.Add(record);
+                            }
+                        }
+
+                        if (lastnameList.Count == 1)
+                        {
+                            id = lastnameList[0].Id;
+                        }
+                        else if (lastnameList.Count > 1)
+                        {
+                            throw new ArgumentException("There are several entries with such parameters.");
+                        }
+                        else
+                        {
+                            throw new ArgumentException("There are no entries with such parameters.");
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException("There are no entries with such parameters.");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Record whith firstname = '{firstname}' does not exist.");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("There are no entries with such parameters.");
             }
 
-            int index = (int)indexInList;
-            this.validator.ValidateParameters(
-                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
+            if (this.IsThereARecordWithThisId(id, out long indexInList))
+            {
+                int index = (int)indexInList;
+                this.RemoveFromDictionaries(index);
 
-            this.RemoveFromDictionaries(index);
+                this.list[index].FirstName = recordParameters.FirstName ?? this.list[index].FirstName;
+                this.list[index].LastName = recordParameters.LastName ?? this.list[index].LastName;
+                this.list[index].DateOfBirth = (!recordParameters.DateOfBirth.Equals(default(DateTime)))
+                    ? recordParameters.DateOfBirth : this.list[index].DateOfBirth;
+                this.list[index].Gender = (!recordParameters.Gender.Equals(default(char)))
+                    ? recordParameters.Gender : this.list[index].Gender;
+                this.list[index].Office = (recordParameters.Office != -1)
+                    ? recordParameters.Office : this.list[index].Office;
+                this.list[index].Salary = (recordParameters.Salary != -1)
+                    ? recordParameters.Salary : this.list[index].Salary;
 
-            this.list[index].FirstName = rec.FirstName;
-            this.list[index].LastName = rec.LastName;
-            this.list[index].DateOfBirth = rec.DateOfBirth;
-            this.list[index].Gender = rec.Gender;
-            this.list[index].Office = rec.Office;
-            this.list[index].Salary = rec.Salary;
+                var newRecordParameters = new RecordParameters(
+                        this.list[index].FirstName,
+                        this.list[index].LastName,
+                        this.list[index].DateOfBirth,
+                        this.list[index].Gender,
+                        this.list[index].Office,
+                        this.list[index].Salary);
+                this.validator.ValidateParameters(newRecordParameters);
+                this.EditDictionaries(newRecordParameters, index);
+            }
+            else
+            {
+                throw new ArgumentException($"Record #{id} does not exist.");
+            }
 
-            this.EditDictionaries(rec, index);
+            return id;
         }
 
         /// <summary>
@@ -210,24 +302,64 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Removes a record by the identifier.
+        /// Deletes the specified key.
         /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="position">Record position.</param>
-        public void Remove(int id, long position)
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// Deleted records id.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// key
+        /// or
+        /// value.
+        /// </exception>
+        /// <exception cref="ArgumentException">Search by key '{key}' does not supported.</exception>
+        public List<int> Delete(string key, string value)
         {
-            if (id <= 0)
+            if (key is null)
             {
-                throw new ArgumentException($"{nameof(id)} have to be larger than zero.", nameof(id));
+                throw new ArgumentNullException(nameof(key));
             }
 
-            if (id <= 0)
+            if (value == null)
             {
-                throw new ArgumentException($"{nameof(position)} have to be larger than zero.", nameof(position));
+                throw new ArgumentNullException(nameof(value));
             }
 
-            this.RemoveFromDictionaries((int)position);
-            this.list.Remove(this.list[(int)position]);
+            var ids = new List<int>();
+            bool flag = false;
+            for (var i = 0; i < this.list.Count; i++)
+            {
+                flag = false;
+                switch (key.ToLower(CultureInfo.CurrentCulture))
+                {
+                    case "id":
+                        flag = this.list[i].Id == int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+                        break;
+                    case "firstname":
+                        flag = this.list[i].FirstName.Equals(value, StringComparison.InvariantCultureIgnoreCase);
+                        break;
+                    case "lastname":
+                        flag = this.list[i].LastName.Equals(value, StringComparison.InvariantCultureIgnoreCase);
+                        break;
+                    case "dateofbirth":
+                        DateTime dateofbirth = DateTime.Parse(value, CultureInfo.InvariantCulture);
+                        flag = this.list[i].DateOfBirth == dateofbirth;
+                        break;
+                    default:
+                        throw new ArgumentException($"Search by key '{key}' does not supported.", nameof(key));
+                }
+
+                if (flag)
+                {
+                    ids.Add(this.list[i].Id);
+                    this.RemoveFromDictionaries(i);
+                    this.list.Remove(this.list[i]);
+                }
+            }
+
+            return ids;
         }
 
         /// <summary>
@@ -262,6 +394,52 @@ namespace FileCabinetApp
         {
             deletedRecordsCount = 0;
             recordsCount = this.list.Count;
+        }
+
+        private void EditRecord(int id, RecordParameters rec)
+        {
+            if (id < 0)
+            {
+                throw new ArgumentException($"The {nameof(id)} can't be less than zero.", nameof(id));
+            }
+
+            if (!this.IsThereARecordWithThisId(id, out long indexInList))
+            {
+                throw new ArgumentException($"The {nameof(id)} doesn't exist.", nameof(id));
+            }
+
+            int index = (int)indexInList;
+            this.validator.ValidateParameters(
+                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
+
+            this.RemoveFromDictionaries(index);
+
+            this.list[index].FirstName = rec.FirstName;
+            this.list[index].LastName = rec.LastName;
+            this.list[index].DateOfBirth = rec.DateOfBirth;
+            this.list[index].Gender = rec.Gender;
+            this.list[index].Office = rec.Office;
+            this.list[index].Salary = rec.Salary;
+
+            this.EditDictionaries(rec, index);
+        }
+
+        private void CreateFileCabinetRecord(RecordParameters rec, int id)
+        {
+            this.validator.ValidateParameters(rec);
+            var record = new FileCabinetRecord
+            {
+                Id = id,
+                FirstName = rec.FirstName,
+                LastName = rec.LastName,
+                DateOfBirth = rec.DateOfBirth,
+                Gender = rec.Gender,
+                Office = rec.Office,
+                Salary = rec.Salary,
+            };
+
+            this.list.Add(record);
+            this.AddToDictionaries(record);
         }
 
         private List<FileCabinetRecord> GenerateNewListWithExistAndRestoreRecords(

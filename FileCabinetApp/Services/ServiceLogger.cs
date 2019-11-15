@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 
 namespace FileCabinetApp.Services
 {
@@ -49,12 +50,12 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Edits the record.
+        /// Inserts the record.
         /// </summary>
-        /// <param name="id">The identifier.</param>
         /// <param name="record">The record.</param>
+        /// <param name="id">The identifier.</param>
         /// <exception cref="ArgumentNullException">record is null.</exception>
-        public void EditRecord(int id, RecordParameters record)
+        public void InsertRecord(RecordParameters record, int id)
         {
             if (record == null)
             {
@@ -62,12 +63,47 @@ namespace FileCabinetApp.Services
             }
 
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling Edit() with id = '{id}'");
-            this.service.EditRecord(id, record);
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Edit() edit the record {id} with FirstName = '{record.FirstName}', " +
+                $"Calling Insert() with Id = '{id}', FirstName = '{record.FirstName}', " +
                 $"LastName = '{record.LastName}', DateOfBirth = '{record.DateOfBirth.ToShortDateString()}', " +
                 $"Gender = '{record.Gender}', Office = '{record.Office}', Salary = '{record.Salary}'");
+            this.service.InsertRecord(record, id);
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Insert() inserted record");
+        }
+
+        /// <summary>
+        /// Updates the specified record parameters.
+        /// </summary>
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <returns>
+        /// Updated record id.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// recordParameters
+        /// or
+        /// keyValuePairs.
+        /// </exception>
+        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        {
+            if (recordParameters == null)
+            {
+                throw new ArgumentNullException(nameof(recordParameters));
+            }
+
+            if (keyValuePairs == null)
+            {
+                throw new ArgumentNullException(nameof(keyValuePairs));
+            }
+
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Calling Update() with parameters FirstNme = '{recordParameters?.FirstName}', LastName = '{recordParameters.LastName}', " +
+                $"DateOfBirth = '{recordParameters.DateOfBirth}', Gender = '{recordParameters.Gender}', " +
+                $"Office = '{recordParameters.Office}', Salary = '{recordParameters.Salary}'");
+            int id = this.service.Update(recordParameters, keyValuePairs);
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Update() update the record {id}.'");
+            return id;
         }
 
         /// <summary>
@@ -162,20 +198,6 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Removes a record by the identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="position">Record position.</param>
-        public void Remove(int id, long position)
-        {
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling Remove() with id - '{id}'");
-            this.service.Remove(id, position);
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Remove() remove record with id - '{id}'");
-        }
-
-        /// <summary>
         /// Restores the specified snapshot.
         /// </summary>
         /// <param name="snapshot">The snapshot.</param>
@@ -183,6 +205,38 @@ namespace FileCabinetApp.Services
         public void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions)
         {
             this.service.Restore(snapshot, out exceptions);
+        }
+
+        /// <summary>
+        /// Deletes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// Deleted records id.
+        /// </returns>
+        public List<int> Delete(string key, string value)
+        {
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Calling Delete() where {key} = '{value}'");
+            var ids = this.service.Delete(key, value);
+
+            var sb = new StringBuilder();
+            for (int i = 0; i < ids.Count; i++)
+            {
+                if (i < ids.Count - 1)
+                {
+                    sb.Append($"#{ids[i]}, ");
+                }
+                else
+                {
+                    sb.Append($"#{ids[i]} ");
+                }
+            }
+
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Delete() remove records {sb}");
+            return ids;
         }
     }
 }
