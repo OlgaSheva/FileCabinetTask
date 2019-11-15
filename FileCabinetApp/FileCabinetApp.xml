@@ -249,28 +249,6 @@
             Class AppCommandRequest Instance.
             </returns>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.FindCommandHandler">
-            <summary>
-            Find command handler.
-            </summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.List{System.String},System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.FindCommandHandler"/> class.
-            </summary>
-            <param name="service">The service.</param>
-            <param name="printer">The printer.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handles the specified request.
-            </summary>
-            <param name="request">The request.</param>
-            <returns>
-            Class AppCommandRequest Instance.
-            </returns>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.HelpCommandHandler">
             <summary>
             Help command handler.
@@ -299,28 +277,6 @@
             <param name="service">The service.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.ImportCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handles the specified request.
-            </summary>
-            <param name="request">The request.</param>
-            <returns>
-            Class AppCommandRequest Instance.
-            </returns>
-        </member>
-        <member name="T:FileCabinetApp.CommandHandlers.ListCommandHandler">
-            <summary>
-            List command handler.
-            </summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.Collections.Generic.List{System.String},System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.
-            </summary>
-            <param name="service">The service.</param>
-            <param name="printer">The printer.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
             Handles the specified request.
             </summary>
@@ -1004,15 +960,6 @@
             There are no entries with such parameters.
             </exception>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Find(System.String)">
-            <summary>
-            Finds the specified parameters.
-            </summary>
-            <param name="parameters">The parameters.</param>
-            <returns>
-            All records with specified parameters.
-            </returns>
-        </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
             <summary>
             Selects the specified key value pairs.
@@ -1023,14 +970,6 @@
             <exception cref="T:System.ArgumentNullException">keyValuePairs is null.</exception>
             <exception cref="T:System.InvalidOperationException">The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
             <exception cref="T:System.ArgumentException">The record with {key} = '{value}' doesn't exist.</exception>
-        </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetRecords">
-            <summary>
-            Gets the records.
-            </summary>
-            <returns>
-            All existing records.
-            </returns>
         </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetStat(System.Int32@)">
             <summary>
@@ -1166,12 +1105,6 @@
             <param name="record">The record.</param>
             <param name="id">The identifier.</param>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetRecords">
-            <summary>
-            Gets the records.
-            </summary>
-            <returns>All existing records.</returns>
-        </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.GetStat(System.Int32@)">
             <summary>
             Gets the stat.
@@ -1186,13 +1119,6 @@
             <param name="recordParameters">The record parameters.</param>
             <param name="keyValuePairs">The key value pairs.</param>
             <returns>Updated record id.</returns>
-        </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.Find(System.String)">
-            <summary>
-            Finds the specified parameters.
-            </summary>
-            <param name="parameters">The parameters.</param>
-            <returns>All records with specified parameters.</returns>
         </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
             <summary>
@@ -1285,16 +1211,6 @@
             keyValuePairs.
             </exception>
         </member>
-        <member name="M:FileCabinetApp.Services.ServiceLogger.Find(System.String)">
-            <summary>
-            Finds the specified parameters.
-            </summary>
-            <param name="parameters">The parameters.</param>
-            <returns>
-            All records with specified parameters.
-            </returns>
-            <exception cref="T:System.ArgumentNullException">parameters is null.</exception>
-        </member>
         <member name="M:FileCabinetApp.Services.ServiceLogger.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
             <summary>
             Selects the specified key value pairs.
@@ -1303,14 +1219,6 @@
             <param name="condition">The condition.</param>
             <returns>
             All records with specified parameters.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Services.ServiceLogger.GetRecords">
-            <summary>
-            Gets the records.
-            </summary>
-            <returns>
-            All existing records.
             </returns>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceLogger.GetStat(System.Int32@)">
@@ -1400,13 +1308,6 @@
             Updated record id.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.Services.ServiceMeter.Find(System.String)">
-            <summary>
-            Finds the specified parameters.
-            </summary>
-            <param name="parameters">The parameters.</param>
-            <returns>Records by parameter.</returns>
-        </member>
         <member name="M:FileCabinetApp.Services.ServiceMeter.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
             <summary>
             Selects the specified key value pairs.
@@ -1416,12 +1317,6 @@
             <returns>
             All records with specified parameters.
             </returns>
-        </member>
-        <member name="M:FileCabinetApp.Services.ServiceMeter.GetRecords">
-            <summary>
-            Gets the records.
-            </summary>
-            <returns>All records.</returns>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceMeter.GetStat(System.Int32@)">
             <summary>
@@ -1515,12 +1410,6 @@
             <exception cref="T:System.ArgumentNullException">rec is null.</exception>
             <exception cref="T:System.ArgumentException">The id can not be less than one.</exception>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecords">
-            <summary>
-            Gets the records.
-            </summary>
-            <returns>All existing records.</returns>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.GetStat(System.Int32@)">
             <summary>
             Gets the stat.
@@ -1555,15 +1444,6 @@
             or
             Record #{id} does not exist.
             </exception>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.Find(System.String)">
-            <summary>
-            Finds the specified parameters.
-            </summary>
-            <param name="parameters">The parameters.</param>
-            <returns>All records with specified parameters.</returns>
-            <exception cref="T:System.InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
-            <exception cref="T:System.ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
             <summary>

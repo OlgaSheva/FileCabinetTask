@@ -23,12 +23,6 @@ namespace FileCabinetApp.Services
         void InsertRecord(RecordParameters record, int id);
 
         /// <summary>
-        /// Gets the records.
-        /// </summary>
-        /// <returns>All existing records.</returns>
-        IEnumerable<FileCabinetRecord> GetRecords();
-
-        /// <summary>
         /// Gets the stat.
         /// </summary>
         /// <param name="deletedRecordsCount">The deleted records count.</param>
@@ -42,13 +36,6 @@ namespace FileCabinetApp.Services
         /// <param name="keyValuePairs">The key value pairs.</param>
         /// <returns>Updated record id.</returns>
         int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs);
-
-        /// <summary>
-        /// Finds the specified parameters.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>All records with specified parameters.</returns>
-        IEnumerable<FileCabinetRecord> Find(string parameters);
 
         /// <summary>
         /// Selects the specified key value pairs.

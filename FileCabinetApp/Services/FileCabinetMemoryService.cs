@@ -100,18 +100,6 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Gets the records.
-        /// </summary>
-        /// <returns>All existing records.</returns>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            foreach (var record in this.list)
-            {
-                yield return record;
-            }
-        }
-
-        /// <summary>
         /// Gets the stat.
         /// </summary>
         /// <param name="deletedRecordsCount">The deleted records count.</param>
@@ -248,57 +236,6 @@ namespace FileCabinetApp
             }
 
             return id;
-        }
-
-        /// <summary>
-        /// Finds the specified parameters.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>All records with specified parameters.</returns>
-        /// <exception cref="InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
-        /// <exception cref="ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
-        public IEnumerable<FileCabinetRecord> Find(string parameters)
-        {
-            if (parameters == null)
-            {
-                throw new ArgumentNullException(nameof(parameters));
-            }
-
-            var param = parameters.Split(' ', 2);
-            string parameterName = param[0];
-            string parameterValue = param[1].Trim('"');
-
-            var textInfo = new CultureInfo("ru-RU").TextInfo;
-            parameterValue = textInfo.ToTitleCase(textInfo.ToLower(parameterValue));
-            parameterName = textInfo.ToTitleCase(textInfo.ToLower(parameterName));
-
-            List<FileCabinetRecord> findedRecords = null;
-            try
-            {
-                switch (parameterName)
-                {
-                    case "Firstname":
-                        findedRecords = this.firstNameDictionary[parameterValue];
-                        break;
-                    case "Lastname":
-                        findedRecords = this.lastNameDictionary[parameterValue];
-                        break;
-                    case "Dateofbirth":
-                        findedRecords = this.FindByDateOfBirth(parameterValue);
-                        break;
-                    default:
-                        throw new InvalidOperationException($"The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
-                }
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new ArgumentException($"The record with {parameterName} '{parameterValue}' doesn't exist.");
-            }
-
-            foreach (var record in findedRecords)
-            {
-                yield return record;
-            }
         }
 
         /// <summary>

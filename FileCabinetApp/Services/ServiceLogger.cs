@@ -108,30 +108,6 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Finds the specified parameters.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>
-        /// All records with specified parameters.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">parameters is null.</exception>
-        public IEnumerable<FileCabinetRecord> Find(string parameters)
-        {
-            if (parameters == null)
-            {
-                throw new ArgumentNullException(nameof(parameters));
-            }
-
-            var p = parameters.Split(' ', 2);
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling Find() with parameters '{p[0]}' - '{p[1]}'");
-            var result = this.service.Find(parameters);
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Find() returned records");
-            return result;
-        }
-
-        /// <summary>
         /// Selects the specified key value pairs.
         /// </summary>
         /// <param name="keyValuePairs">The key value pairs.</param>
@@ -157,22 +133,6 @@ namespace FileCabinetApp.Services
             var result = this.service.SelectRecords(keyValuePairs, condition);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Select() returned records");
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the records.
-        /// </summary>
-        /// <returns>
-        /// All existing records.
-        /// </returns>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling GetRecords()");
-            var result = this.service.GetRecords();
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"GetRecords() returned records");
             return result;
         }
 

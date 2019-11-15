@@ -265,61 +265,6 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Finds the specified parameters.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>
-        /// All records with specified parameters.
-        /// </returns>
-        public IEnumerable<FileCabinetRecord> Find(string parameters)
-        {
-            if (parameters == null)
-            {
-                throw new ArgumentNullException(nameof(parameters));
-            }
-
-            string[] par = parameters.Split(' ', 2);
-            string key = par[0].ToLower(CultureInfo.CurrentCulture);
-            string value = par[1].Trim().Trim('"');
-
-            List<long> positions = null;
-            try
-            {
-                switch (key)
-                {
-                    case "firstname":
-                        positions = this.firstNameDictionary[value];
-                        break;
-                    case "lastname":
-                        positions = this.lastNameDictionary[value];
-                        break;
-                    case "dateofbirth":
-                        if (DateTime.TryParse(value, out DateTime date))
-                        {
-                            positions = this.dateOfBirthDictionary[date];
-                        }
-
-                        break;
-                    default:
-                        throw new InvalidOperationException($"The {key} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
-                }
-            }
-            catch (KeyNotFoundException knfex)
-            {
-                throw new ArgumentException($"The record with {key} '{value}' doesn't exist.", knfex.Message);
-            }
-
-            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
-            {
-                foreach (var position in positions)
-                {
-                    this.fileStream.Seek(position, SeekOrigin.Begin);
-                    yield return GetFileCabinetRecordFromFile(binaryReader);
-                }
-            }
-        }
-
-        /// <summary>
         /// Selects the specified key value pairs.
         /// </summary>
         /// <param name="keyValuePairs">The key value pairs.</param>
@@ -432,24 +377,6 @@ namespace FileCabinetApp.Services
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
                 foreach (var position in positions)
-                {
-                    this.fileStream.Seek(position, SeekOrigin.Begin);
-                    yield return GetFileCabinetRecordFromFile(binaryReader);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the records.
-        /// </summary>
-        /// <returns>
-        /// All existing records.
-        /// </returns>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
-            {
-                foreach (var position in this.idpositionPairs.Values)
                 {
                     this.fileStream.Seek(position, SeekOrigin.Begin);
                     yield return GetFileCabinetRecordFromFile(binaryReader);
