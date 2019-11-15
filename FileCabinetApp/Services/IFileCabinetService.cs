@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Services
 {
@@ -48,6 +49,14 @@ namespace FileCabinetApp.Services
         /// <param name="parameters">The parameters.</param>
         /// <returns>All records with specified parameters.</returns>
         IEnumerable<FileCabinetRecord> Find(string parameters);
+
+        /// <summary>
+        /// Selects the specified key value pairs.
+        /// </summary>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>All records with specified parameters.</returns>
+        IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition);
 
         /// <summary>
         /// Determines whether [is there a record with this identifier] [the specified identifier].

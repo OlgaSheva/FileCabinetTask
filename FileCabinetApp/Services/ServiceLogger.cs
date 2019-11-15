@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Services
 {
@@ -127,6 +128,35 @@ namespace FileCabinetApp.Services
             var result = this.service.Find(parameters);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Find() returned records");
+            return result;
+        }
+
+        /// <summary>
+        /// Selects the specified key value pairs.
+        /// </summary>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>
+        /// All records with specified parameters.
+        /// </returns>
+        public IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
+        {
+            if (keyValuePairs == null)
+            {
+                throw new ArgumentNullException(nameof(keyValuePairs));
+            }
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var kv in keyValuePairs)
+            {
+                sb.Append($"{kv.Key} - '{kv.Value}' ");
+            }
+
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Calling Select() with parameters {sb}");
+            var result = this.service.SelectRecords(keyValuePairs, condition);
+            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
+                $"Select() returned records");
             return result;
         }
 

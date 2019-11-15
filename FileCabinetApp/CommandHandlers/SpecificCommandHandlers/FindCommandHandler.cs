@@ -10,14 +10,14 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class FindCommandHandler : ServiceCommandHandlerBase
     {
-        private Action<IEnumerable<FileCabinetRecord>> printer;
+        private Action<List<string>, IEnumerable<FileCabinetRecord>> printer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="printer">The printer.</param>
-        public FindCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
+        public FindCommandHandler(IFileCabinetService service, Action<List<string>, IEnumerable<FileCabinetRecord>> printer)
             : base(service)
         {
             this.printer = printer;
@@ -34,20 +34,6 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "find")
             {
-                try
-                {
-                    var findList = this.Service.Find(request.Parameters);
-                    this.printer(findList);
-                }
-                catch (InvalidOperationException ioex)
-                {
-                    Console.WriteLine($"The record didn't find.", ioex.Message);
-                }
-                catch (ArgumentException aex)
-                {
-                    Console.WriteLine($"The record didn't find.", aex.Message);
-                }
-
                 return null;
             }
             else

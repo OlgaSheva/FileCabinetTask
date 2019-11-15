@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using FileCabinetApp.Enums;
 using FileCabinetApp.Validators;
 
 namespace FileCabinetApp.Services
@@ -306,6 +307,126 @@ namespace FileCabinetApp.Services
             catch (KeyNotFoundException knfex)
             {
                 throw new ArgumentException($"The record with {key} '{value}' doesn't exist.", knfex.Message);
+            }
+
+            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            {
+                foreach (var position in positions)
+                {
+                    this.fileStream.Seek(position, SeekOrigin.Begin);
+                    yield return GetFileCabinetRecordFromFile(binaryReader);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Selects the specified key value pairs.
+        /// </summary>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>All records with specified parameters.</returns>
+        /// <exception cref="ArgumentNullException">keyValuePairs is null.</exception>
+        /// <exception cref="InvalidOperationException">The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
+        /// <exception cref="ArgumentException">The record with {key} = '{value}' doesn't exist.</exception>
+        public IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
+        {
+            if (keyValuePairs == null)
+            {
+                throw new ArgumentNullException(nameof(keyValuePairs));
+            }
+
+            List<long> positions = new List<long>();
+            if (keyValuePairs.Count == 0)
+            {
+                positions.AddRange(this.idpositionPairs.Values);
+            }
+            else
+            {
+                string key;
+                string value;
+                foreach (var criterion in keyValuePairs)
+                {
+                    key = criterion.Key;
+                    value = criterion.Value;
+                    try
+                    {
+                        switch (key)
+                        {
+                            case "id":
+                                int id = int.Parse(value, CultureInfo.CurrentCulture);
+                                if (this.idpositionPairs.TryGetValue(id, out long p))
+                                {
+                                    positions.Add(p);
+                                }
+
+                                break;
+                            case "firstname":
+                                if (condition.Equals(SearchCondition.Or))
+                                {
+                                    positions.AddRange(this.firstNameDictionary[value]);
+                                }
+                                else
+                                {
+                                    if (positions.Count == 0)
+                                    {
+                                        positions.AddRange(this.firstNameDictionary[value]);
+                                    }
+                                    else
+                                    {
+                                        positions = positions.Intersect(this.firstNameDictionary[value]).ToList();
+                                    }
+                                }
+
+                                break;
+                            case "lastname":
+                                if (condition.Equals(SearchCondition.Or))
+                                {
+                                    positions.AddRange(this.lastNameDictionary[value]);
+                                }
+                                else
+                                {
+                                    if (positions.Count == 0)
+                                    {
+                                        positions.AddRange(this.lastNameDictionary[value]);
+                                    }
+                                    else
+                                    {
+                                        positions = positions.Intersect(this.lastNameDictionary[value]).ToList();
+                                    }
+                                }
+
+                                break;
+                            case "dateofbirth":
+                                if (DateTime.TryParse(value, out DateTime date))
+                                {
+                                    if (condition.Equals(SearchCondition.Or))
+                                    {
+                                        positions.AddRange(this.dateOfBirthDictionary[date]);
+                                    }
+                                    else
+                                    {
+                                        if (positions.Count == 0)
+                                        {
+                                            positions.AddRange(this.dateOfBirthDictionary[date]);
+                                        }
+                                        else
+                                        {
+                                            positions = positions.Intersect(this.dateOfBirthDictionary[date]).ToList();
+                                        }
+                                    }
+                                }
+
+                                break;
+                            default:
+                                throw new InvalidOperationException(
+                                    $"The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.");
+                        }
+                    }
+                    catch (KeyNotFoundException knfex)
+                    {
+                        throw new ArgumentException($"The record with {key} = '{value}' doesn't exist.", knfex.Message);
+                    }
+                }
             }
 
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))

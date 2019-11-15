@@ -43,11 +43,25 @@ namespace FileCabinetApp.CommandHandlers
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
             Console.WriteLine($"'{request.Command}' is not a command. See 'help'.");
-            Console.WriteLine("The most similar commands are");
+            List<string> similarCommands = new List<string>();
             foreach (var command in this.commandList)
             {
                 int result = GetDamerauLevenshteinDistance(request.Command, command);
                 if (result < 4)
+                {
+                    similarCommands.Add(command);
+                }
+            }
+
+            if (similarCommands.Count == 1)
+            {
+                Console.WriteLine("The most similar commands is");
+                Console.WriteLine($"\t\t{similarCommands[0]}");
+            }
+            else if (similarCommands.Count > 1)
+            {
+                Console.WriteLine("The most similar commands are");
+                foreach (var command in similarCommands)
                 {
                     Console.WriteLine($"\t\t{command}");
                 }
