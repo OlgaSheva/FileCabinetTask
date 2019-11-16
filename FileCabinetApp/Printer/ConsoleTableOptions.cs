@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FileCabinetApp.Printer
 {
@@ -22,13 +23,5 @@ namespace FileCabinetApp.Printer
         ///   <c>true</c> if [enable count]; otherwise, <c>false</c>.
         /// </value>
         public bool EnableCount { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets the number alignment.
-        /// </summary>
-        /// <value>
-        /// The number alignment.
-        /// </value>
-        public Alignment NumberAlignment { get; set; } = Alignment.Left;
     }
 }

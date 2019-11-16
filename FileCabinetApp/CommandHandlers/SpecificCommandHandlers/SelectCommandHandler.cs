@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using FileCabinetApp.Enums;
+using FileCabinetApp.Memoizers;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
@@ -82,7 +83,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
                 }
             }
 
-            var records = this.Service.SelectRecords(keyValuePairs, condition);
+            var records = Memoizer.GetMemoizer(this.Service).Select(keyValuePairs, condition);
             this.printer(columns, records);
         }
     }

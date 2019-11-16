@@ -256,11 +256,22 @@ namespace FileCabinetApp.Printer
 
         private string GetNumberAlignment(int i)
         {
-            return this.Options.NumberAlignment == Alignment.Right
-                    && this.ColumnTypes != null
-                    && numericTypes.Contains(this.ColumnTypes[i])
-                ? string.Empty
-                : "-";
+            if (this.Columns[i].ToString().Equals("firstname", StringComparison.InvariantCultureIgnoreCase)
+                || this.Columns[i].ToString().Equals("lastname", StringComparison.InvariantCultureIgnoreCase)
+                || this.Columns[i].ToString().Equals("gender", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return this.ColumnTypes != null
+                      && numericTypes.Contains(this.ColumnTypes[i])
+                   ? string.Empty
+                   : "-";
+            }
+            else
+            {
+                return this.ColumnTypes != null
+                       && numericTypes.Contains(this.ColumnTypes[i])
+                    ? "-"
+                    : string.Empty;
+            }
         }
 
         private List<int> ColumnLengths()

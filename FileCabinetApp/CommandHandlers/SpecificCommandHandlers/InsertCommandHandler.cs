@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using FileCabinetApp.Memoizers;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
@@ -38,6 +39,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             if (request.Command == "insert")
             {
                 this.Insert(request.Parameters);
+                Memoizer.GetMemoizer(this.Service).MemoizerDictionary.Clear();
                 return null;
             }
             else
