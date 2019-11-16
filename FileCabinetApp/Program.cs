@@ -8,6 +8,7 @@ using FileCabinetApp.CommandHandlers.SpecificCommandHandlers;
 using FileCabinetApp.CommandLineOptions;
 using FileCabinetApp.Converters;
 using FileCabinetApp.Enums;
+using FileCabinetApp.Printer;
 using FileCabinetApp.Services;
 using FileCabinetApp.Validators.InputValidator;
 using FileCabinetApp.Validators.RecordValidator;
@@ -92,7 +93,7 @@ namespace FileCabinetApp
                 }
                 catch (ArgumentException ex)
                 {
-                    Console.WriteLine($"Error. Invalid operation. {ex.Message}");
+                    Console.WriteLine($"Error. {ex.Message}");
                 }
             }
             while (isRunning);
@@ -100,33 +101,31 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHandlers()
         {
-            var recordPrinter = new Action<IEnumerable<FileCabinetRecord>>((x) => DefaultRecordPrint(x));
+            var recordPrinter = new Action<List<string>, IEnumerable<FileCabinetRecord>>((x, y) => DefaultRecordPrint(x, y));
 
             var exitHandler = new ExitCommandHandler(fileStream, (x) => isRunning = x);
             var helpHandler = new HelpCommandHandler();
             var createHandle = new CreateCommandHandler(fileCabinetService, converter, validator);
             var insertHandle = new InsertCommandHandler(fileCabinetService);
             var updateHandler = new UpdateCommandHandler(fileCabinetService);
-            var findHandler = new FindCommandHandler(fileCabinetService, recordPrinter);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var importHandler = new ImportCommandHandler(fileCabinetService);
             var deleteHandler = new DeleteCommandHandler(fileCabinetService);
-            var listHandle = new ListCommandHandler(fileCabinetService, recordPrinter);
             var statHandler = new StatCommandHandler(fileCabinetService);
             var purgeHadler = new PurgeCommandHandler(fileCabinetService);
+            var selectHandler = new SelectCommandHandler(fileCabinetService, recordPrinter);
             var missedCommandHandler = new SimilarCommandHandler();
             helpHandler
                 .SetNext(exitHandler)
-                .SetNext(listHandle)
                 .SetNext(statHandler)
                 .SetNext(createHandle)
                 .SetNext(insertHandle)
                 .SetNext(updateHandler)
-                .SetNext(findHandler)
                 .SetNext(deleteHandler)
                 .SetNext(exportHandler)
                 .SetNext(importHandler)
                 .SetNext(purgeHadler)
+                .SetNext(selectHandler)
                 .SetNext(missedCommandHandler);
             return helpHandler;
         }
@@ -169,17 +168,64 @@ namespace FileCabinetApp
             return fileCabinetService;
         }
 
-        private static void DefaultRecordPrint(IEnumerable<FileCabinetRecord> records)
+        private static void DefaultRecordPrint(List<string> columns, IEnumerable<FileCabinetRecord> records)
         {
             if (records is null)
             {
                 throw new ArgumentNullException(nameof(records));
             }
 
+            if (columns is null)
+            {
+                throw new ArgumentNullException(nameof(columns));
+            }
+
+            if (columns.Count == 0)
+            {
+                throw new ArgumentException(
+                    $"You must specify at least one parameter to display information about records.",
+                    nameof(columns));
+            }
+
+            ConsoleTable consoleTable = new ConsoleTable(columns.ToArray());
             foreach (var record in records)
             {
-                Console.WriteLine(record.ToString());
+                object[] parameters = new object[columns.Count];
+                int i = 0;
+                foreach (var c in columns)
+                {
+                    switch (c)
+                    {
+                        case "id":
+                            parameters[i++] = record.Id;
+                            break;
+                        case "firstname":
+                            parameters[i++] = record.FirstName;
+                            break;
+                        case "lastname":
+                            parameters[i++] = record.LastName;
+                            break;
+                        case "dateofbirth":
+                            parameters[i++] = record.DateOfBirth;
+                            break;
+                        case "gender":
+                            parameters[i++] = record.Gender;
+                            break;
+                        case "office":
+                            parameters[i++] = record.Office;
+                            break;
+                        case "salary":
+                            parameters[i++] = record.Salary;
+                            break;
+                        default:
+                            throw new ArgumentException($"The '{c}' parameter does not exist.");
+                    }
+                }
+
+                consoleTable.AddRow(parameters);
             }
+
+            Console.WriteLine(consoleTable.ToString());
         }
     }
 }

@@ -14,7 +14,7 @@ namespace FileCabinetApp.CommandLineOptions
         /// <value>
         /// The storage.
         /// </value>
-        [Option('s', "storage", Default = ServiceType.Memory, HelpText = "Defines storage location: Memory or File.")]
+        [Option('s', "storage", Default = ServiceType.File, HelpText = "Defines storage location: Memory or File.")]
         public ServiceType Storage { get; set; }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace FileCabinetApp.CommandLineOptions
         /// <value>
         /// The meter.
         /// </value>
-        [Option("use-stopwatch", Default = MeterStatus.Off, HelpText = "Defines meter rules: On or Off.")]
+        [Option("use-stopwatch", Default = MeterStatus.On, HelpText = "Defines meter rules: On or Off.")]
         public MeterStatus Meter { get; set; }
 
         /// <summary>

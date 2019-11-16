@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Services
 {
@@ -81,37 +82,23 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Finds the specified parameters.
+        /// Selects the specified key value pairs.
         /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>Records by parameter.</returns>
-        public IEnumerable<FileCabinetRecord> Find(string parameters)
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>
+        /// All records with specified parameters.
+        /// </returns>
+        public IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
         {
             this.stopWatch.Reset();
             this.stopWatch.Start();
-            var result = this.service.Find(parameters);
+            var result = this.service.SelectRecords(keyValuePairs, condition);
 
             this.stopWatch.Stop();
             this.ticks = this.stopWatch.ElapsedTicks;
 
-            Console.WriteLine($"Find method execution duration is {this.ticks} ticks.");
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the records.
-        /// </summary>
-        /// <returns>All records.</returns>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            this.stopWatch.Reset();
-            this.stopWatch.Start();
-            var result = this.service.GetRecords();
-
-            this.stopWatch.Stop();
-            this.ticks = this.stopWatch.ElapsedTicks;
-
-            Console.WriteLine($"Create method execution duration is {this.ticks} ticks.");
+            Console.WriteLine($"Select method execution duration is {this.ticks} ticks.");
             return result;
         }
 

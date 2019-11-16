@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Services
 {
@@ -22,12 +23,6 @@ namespace FileCabinetApp.Services
         void InsertRecord(RecordParameters record, int id);
 
         /// <summary>
-        /// Gets the records.
-        /// </summary>
-        /// <returns>All existing records.</returns>
-        IEnumerable<FileCabinetRecord> GetRecords();
-
-        /// <summary>
         /// Gets the stat.
         /// </summary>
         /// <param name="deletedRecordsCount">The deleted records count.</param>
@@ -43,11 +38,12 @@ namespace FileCabinetApp.Services
         int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs);
 
         /// <summary>
-        /// Finds the specified parameters.
+        /// Selects the specified key value pairs.
         /// </summary>
-        /// <param name="parameters">The parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <param name="condition">The condition.</param>
         /// <returns>All records with specified parameters.</returns>
-        IEnumerable<FileCabinetRecord> Find(string parameters);
+        IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition);
 
         /// <summary>
         /// Determines whether [is there a record with this identifier] [the specified identifier].

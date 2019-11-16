@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using FileCabinetApp.Memoizers;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
@@ -32,6 +33,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             if (request.Command == "delete")
             {
                 this.Delete(request.Parameters);
+                Memoizer.GetMemoizer(this.Service).MemoizerDictionary.Clear();
                 return null;
             }
             else

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-
+using FileCabinetApp.Enums;
 using FileCabinetApp.Services;
 using FileCabinetApp.Validators;
 
@@ -97,18 +97,6 @@ namespace FileCabinetApp
 
             this.validator.ValidateParameters(rec);
             this.CreateFileCabinetRecord(rec, id);
-        }
-
-        /// <summary>
-        /// Gets the records.
-        /// </summary>
-        /// <returns>All existing records.</returns>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            foreach (var record in this.list)
-            {
-                yield return record;
-            }
         }
 
         /// <summary>
@@ -251,48 +239,115 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Finds the specified parameters.
+        /// Selects the specified key value pairs.
         /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>All records with specified parameters.</returns>
-        /// <exception cref="InvalidOperationException">The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
-        /// <exception cref="ArgumentException">The record with {parameterName} '{parameterValue}' doesn't exist.</exception>
-        public IEnumerable<FileCabinetRecord> Find(string parameters)
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>
+        /// All records with specified parameters.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">keyValuePairs is null.</exception>
+        /// <exception cref="InvalidOperationException">The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
+        /// <exception cref="ArgumentException">The record with {key} = '{value}' doesn't exist.</exception>
+        public IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
         {
-            if (parameters == null)
+            if (keyValuePairs == null)
             {
-                throw new ArgumentNullException(nameof(parameters));
+                throw new ArgumentNullException(nameof(keyValuePairs));
             }
 
-            var param = parameters.Split(' ', 2);
-            string parameterName = param[0];
-            string parameterValue = param[1].Trim('"');
-
-            var textInfo = new CultureInfo("ru-RU").TextInfo;
-            parameterValue = textInfo.ToTitleCase(textInfo.ToLower(parameterValue));
-            parameterName = textInfo.ToTitleCase(textInfo.ToLower(parameterName));
-
-            List<FileCabinetRecord> findedRecords = null;
-            try
+            List<FileCabinetRecord> findedRecords = new List<FileCabinetRecord>();
+            if (keyValuePairs.Count == 0)
             {
-                switch (parameterName)
+                findedRecords.AddRange(this.list);
+            }
+            else
+            {
+                string key;
+                string value;
+                foreach (var criterion in keyValuePairs)
                 {
-                    case "Firstname":
-                        findedRecords = this.firstNameDictionary[parameterValue];
-                        break;
-                    case "Lastname":
-                        findedRecords = this.lastNameDictionary[parameterValue];
-                        break;
-                    case "Dateofbirth":
-                        findedRecords = this.FindByDateOfBirth(parameterValue);
-                        break;
-                    default:
-                        throw new InvalidOperationException($"The {parameterName} isn't a search parameter name. Only 'FirstName', 'LastName' or 'DateOfBirth'.");
+                    key = criterion.Key;
+                    value = criterion.Value;
+                    try
+                    {
+                        switch (key)
+                        {
+                            case "id":
+                                int id = int.Parse(value, CultureInfo.CurrentCulture);
+                                if (this.IsThereARecordWithThisId(id, out long index))
+                                {
+                                    findedRecords.Add(this.list[(int)index]);
+                                }
+
+                                break;
+                            case "firstname":
+                                if (condition.Equals(SearchCondition.Or))
+                                {
+                                    findedRecords.AddRange(this.firstNameDictionary[value]);
+                                }
+                                else
+                                {
+                                    if (findedRecords.Count == 0)
+                                    {
+                                        findedRecords.AddRange(this.firstNameDictionary[value]);
+                                    }
+                                    else
+                                    {
+                                        findedRecords = findedRecords.Intersect(this.firstNameDictionary[value]).ToList();
+                                    }
+                                }
+
+                                break;
+                            case "lastname":
+                                if (condition.Equals(SearchCondition.Or))
+                                {
+                                    findedRecords.AddRange(this.lastNameDictionary[value]);
+                                }
+                                else
+                                {
+                                    if (findedRecords.Count == 0)
+                                    {
+                                        findedRecords.AddRange(this.lastNameDictionary[value]);
+                                    }
+                                    else
+                                    {
+                                        findedRecords = findedRecords.Intersect(this.lastNameDictionary[value]).ToList();
+                                    }
+                                }
+
+                                break;
+                            case "dateofbirth":
+                                if (DateTime.TryParse(value, out DateTime date))
+                                {
+                                    if (condition.Equals(SearchCondition.Or))
+                                    {
+                                        findedRecords.AddRange(this.dateOfBirthDictionary[date]);
+                                    }
+                                    else
+                                    {
+                                        if (findedRecords.Count == 0)
+                                        {
+                                            findedRecords.AddRange(this.dateOfBirthDictionary[date]);
+                                        }
+                                        else
+                                        {
+                                            findedRecords = findedRecords.Intersect(this.dateOfBirthDictionary[date]).ToList();
+                                        }
+                                    }
+                                }
+
+                                break;
+                            default:
+                                throw new InvalidOperationException(
+                                    $"The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.");
+                        }
+                    }
+                    catch (KeyNotFoundException knfex)
+                    {
+                        throw new ArgumentException($"The record with {key} = '{value}' doesn't exist.", knfex.Message);
+                    }
                 }
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new ArgumentException($"The record with {parameterName} '{parameterValue}' doesn't exist.");
             }
 
             foreach (var record in findedRecords)

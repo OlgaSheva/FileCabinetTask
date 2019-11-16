@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Services
 {
@@ -107,42 +108,31 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Finds the specified parameters.
+        /// Selects the specified key value pairs.
         /// </summary>
-        /// <param name="parameters">The parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <param name="condition">The condition.</param>
         /// <returns>
         /// All records with specified parameters.
         /// </returns>
-        /// <exception cref="ArgumentNullException">parameters is null.</exception>
-        public IEnumerable<FileCabinetRecord> Find(string parameters)
+        public IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
         {
-            if (parameters == null)
+            if (keyValuePairs == null)
             {
-                throw new ArgumentNullException(nameof(parameters));
+                throw new ArgumentNullException(nameof(keyValuePairs));
             }
 
-            var p = parameters.Split(' ', 2);
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling Find() with parameters '{p[0]}' - '{p[1]}'");
-            var result = this.service.Find(parameters);
-            this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Find() returned records");
-            return result;
-        }
+            StringBuilder sb = new StringBuilder();
+            foreach (var kv in keyValuePairs)
+            {
+                sb.Append($"{kv.Key} - '{kv.Value}' ");
+            }
 
-        /// <summary>
-        /// Gets the records.
-        /// </summary>
-        /// <returns>
-        /// All existing records.
-        /// </returns>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling GetRecords()");
-            var result = this.service.GetRecords();
+                $"Calling Select() with parameters {sb}");
+            var result = this.service.SelectRecords(keyValuePairs, condition);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"GetRecords() returned records");
+                $"Select() returned records");
             return result;
         }
 
