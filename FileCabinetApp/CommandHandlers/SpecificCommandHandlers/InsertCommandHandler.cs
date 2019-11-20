@@ -15,16 +15,19 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
     {
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private const int RecordsParametersCount = 6;
+        private static Action<string> write;
         private readonly Dictionary<string, string> values;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InsertCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public InsertCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public InsertCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
             this.values = new Dictionary<string, string>();
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -50,8 +53,11 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
         private void Insert(string parameters)
         {
-            var words = parameters.ToLower(CultureInfo.DefaultThreadCurrentCulture).Split(
-                new char[] { ' ', ',', '.', ':', ';', '(', ')', '\'', '!', '?', '\t' }).Where(s => s.Length > 0).ToList();
+            var words = parameters
+                .ToLower(CultureInfo.DefaultThreadCurrentCulture)
+                .Split(this.Separator.ToArray())
+                .Where(s => s.Length > 0)
+                .ToList();
             try
             {
                 for (int i = 0; i <= RecordsParametersCount; i++)
@@ -70,8 +76,8 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             }
             catch (ArgumentException aex)
             {
-                Console.WriteLine($"Record wasn't created. {aex.Message}");
-                Console.WriteLine(HintMessage);
+                write($"Record wasn't created. {aex.Message}");
+                write(HintMessage);
             }
         }
     }

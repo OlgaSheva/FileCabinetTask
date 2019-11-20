@@ -11,6 +11,7 @@ namespace FileCabinetApp.CommandHandlers
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+        private static Action<string> write;
         private static string[][] helpMessages = new string[][]
         {
             new string[]
@@ -51,15 +52,9 @@ namespace FileCabinetApp.CommandHandlers
             },
             new string[]
             {
-                "list",
-                "returns a list of records added to the service",
-                "The 'list' command returns a list of records added to the service.",
-            },
-            new string[]
-            {
-                "find <parameter name> <parameter value>",
-                "returns a list of records with the given parameter",
-                "The 'find firstname' command returns a list of records with the given parameter.",
+                "select <parameter>, <parameter>, ... where <parameter> = '<value>' or/and <parameter> = '<value>'",
+                "returns a list of records whith this parameters / all records",
+                "The 'select' command returns a list of records matching query parameters.",
             },
             new string[]
             {
@@ -88,6 +83,15 @@ namespace FileCabinetApp.CommandHandlers
         };
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="HelpCommandHandler"/> class.
+        /// </summary>
+        /// <param name="writeDelegate">The write delegate.</param>
+        public HelpCommandHandler(Action<string> writeDelegate)
+        {
+            write = writeDelegate;
+        }
+
+        /// <summary>
         /// Handles the specified request.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -114,24 +118,24 @@ namespace FileCabinetApp.CommandHandlers
                 var index = Array.FindIndex(helpMessages, 0, helpMessages.Length, i => string.Equals(i[CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
                 if (index >= 0)
                 {
-                    Console.WriteLine(helpMessages[index][ExplanationHelpIndex]);
+                    write(helpMessages[index][ExplanationHelpIndex]);
                 }
                 else
                 {
-                    Console.WriteLine($"There is no explanation for '{parameters}' command.");
+                    write($"There is no explanation for '{parameters}' command.");
                 }
             }
             else
             {
-                Console.WriteLine("Available commands:");
+                write("Available commands:");
 
                 foreach (var helpMessage in helpMessages)
                 {
-                    Console.WriteLine("\t{0}\t- {1}", helpMessage[CommandHelpIndex], helpMessage[DescriptionHelpIndex]);
+                    write($"\t{helpMessage[CommandHelpIndex]}\t- {helpMessage[DescriptionHelpIndex]}");
                 }
             }
 
-            Console.WriteLine();
+            write(string.Empty);
         }
     }
 }

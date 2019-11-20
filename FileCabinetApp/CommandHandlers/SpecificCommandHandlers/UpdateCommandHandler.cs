@@ -13,13 +13,17 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class UpdateCommandHandler : ServiceCommandHandlerBase
     {
+        private static Action<string> write;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public UpdateCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public UpdateCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -45,8 +49,10 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
         private void Update(string parameters)
         {
-            var words = parameters.Split(
-                new char[] { ' ', ',', ':', ';', '-', '=', '(', ')', '\'', '!', '?', '\t' }).Where(s => s.Length > 0).ToList();
+            var words = parameters
+                .Split(this.Separator.ToArray())
+                .Where(s => s.Length > 0)
+                .ToList();
             string firstname = null;
             string lastname = null;
             DateTime dateofbirth = default(DateTime);
@@ -106,7 +112,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
                 }
 
                 int id = this.Service.Update(setRecord, keyValuePairs);
-                Console.WriteLine($"Record #{id} has been updated.");
+                write($"Record #{id} has been updated.");
             }
             else
             {

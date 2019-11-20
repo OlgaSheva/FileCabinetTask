@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FileCabinetApp.Enums;
+using FileCabinetApp.Extensions;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.Memoizers
@@ -47,11 +48,10 @@ namespace FileCabinetApp.Memoizers
         /// <returns>Select records.</returns>
         public IEnumerable<FileCabinetRecord> Select(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
         {
-            List<FileCabinetRecord> results;
             var tuple = Tuple.Create(keyValuePairs, condition);
-            if (!this.MemoizerDictionary.TryGetValue(tuple, out results))
+            if (!this.MemoizerDictionary.TryGetValue(tuple, out List<FileCabinetRecord> results))
             {
-                results = service.SelectRecords(keyValuePairs, condition).ToList();
+                results = service.GetRecords().Where(keyValuePairs, condition).ToList();
                 this.MemoizerDictionary.Add(tuple, results);
             }
 

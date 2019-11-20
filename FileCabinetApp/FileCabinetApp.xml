@@ -89,6 +89,14 @@
             <param name="fileCabinetService">The file cabinet service.</param>
             <exception cref="T:System.ArgumentNullException">The fileCabinetService is null.</exception>
         </member>
+        <member name="P:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.Separator">
+            <summary>
+            Gets the separator.
+            </summary>
+            <value>
+            The separator.
+            </value>
+        </member>
         <member name="P:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.Service">
             <summary>
             Gets or sets the service.
@@ -103,13 +111,14 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.CreateCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,FileCabinetApp.Converters.IInputConverter,FileCabinetApp.Validators.InputValidator.IInputValidator)">
+        <member name="M:FileCabinetApp.CommandHandlers.CreateCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,FileCabinetApp.Converters.IInputConverter,FileCabinetApp.Validators.InputValidator.IInputValidator,System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.CreateCommandHandler"/> class.
             </summary>
             <param name="fileCabinetService">The file cabinet service.</param>
             <param name="inputConverter">The input converter.</param>
             <param name="inputValidator">The input validator.</param>
+            <param name="writeDelegate">The write delegate.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.CreateCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -126,11 +135,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.DeleteCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.DeleteCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.DeleteCommandHandler"/> class.
             </summary>
             <param name="service">The service.</param>
+            <param name="writeDelegate">The write delegate.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.DeleteCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -147,11 +157,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.InsertCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.InsertCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.InsertCommandHandler"/> class.
             </summary>
             <param name="service">The service.</param>
+            <param name="writeDelegate">The write delegate.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.InsertCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -191,11 +202,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.UpdateCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+        <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.UpdateCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.UpdateCommandHandler"/> class.
             </summary>
             <param name="service">The service.</param>
+            <param name="writeDelegate">The write delegate.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.SpecificCommandHandlers.UpdateCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -234,11 +246,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ExportCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+        <member name="M:FileCabinetApp.CommandHandlers.ExportCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ExportCommandHandler"/> class.
             </summary>
             <param name="service">The service.</param>
+            <param name="writeDelegate">The write delegate.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.ExportCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -255,6 +268,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
         </member>
+        <member name="M:FileCabinetApp.CommandHandlers.HelpCommandHandler.#ctor(System.Action{System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.HelpCommandHandler"/> class.
+            </summary>
+            <param name="writeDelegate">The write delegate.</param>
+        </member>
         <member name="M:FileCabinetApp.CommandHandlers.HelpCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
             Handles the specified request.
@@ -270,11 +289,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ImportCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+        <member name="M:FileCabinetApp.CommandHandlers.ImportCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ImportCommandHandler"/> class.
             </summary>
             <param name="service">The service.</param>
+            <param name="writeDelegate">The write delegate.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.ImportCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -291,11 +311,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+        <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.PurgeCommandHandler"/> class.
             </summary>
             <param name="service">The service.</param>
+            <param name="writeDelegate">The write delegate.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -332,11 +353,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.StatCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+        <member name="M:FileCabinetApp.CommandHandlers.StatCommandHandler.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.StatCommandHandler"/> class.
             </summary>
             <param name="service">The service.</param>
+            <param name="writeDelegate">The write delegate.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.StatCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -526,94 +548,6 @@
             <param name="input">The input.</param>
             <returns>Decimal representation.</returns>
         </member>
-        <member name="T:FileCabinetApp.Enums.LoggerStatus">
-            <summary>
-            Logger status.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Enums.LoggerStatus.On">
-            <summary>
-            Turn on logger.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Enums.LoggerStatus.Off">
-            <summary>
-            Turn off logger.
-            </summary>
-        </member>
-        <member name="T:FileCabinetApp.Enums.MeterStatus">
-            <summary>
-            Meter status.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Enums.MeterStatus.On">
-            <summary>
-            Turn on the meter.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Enums.MeterStatus.Off">
-            <summary>
-            Turn off the meter.
-            </summary>
-        </member>
-        <member name="T:FileCabinetApp.Enums.SearchCondition">
-            <summary>
-            Search conditions for records.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Enums.SearchCondition.And">
-            <summary>
-            The and condition.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Enums.SearchCondition.Or">
-            <summary>
-            The or condition.
-            </summary>
-        </member>
-        <member name="T:FileCabinetApp.Enums.ServiceType">
-            <summary>
-            Service type.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Enums.ServiceType.File">
-            <summary>
-            The file.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Enums.ServiceType.Memory">
-            <summary>
-            The memory.
-            </summary>
-        </member>
-        <member name="T:FileCabinetApp.Memoizers.Memoizer">
-            <summary>
-            Memoizer class for FileCabinetMemoryService.SelectRecords.
-            </summary>
-        </member>
-        <member name="P:FileCabinetApp.Memoizers.Memoizer.MemoizerDictionary">
-            <summary>
-            Gets the memoizer dictionary.
-            </summary>
-            <value>
-            The memoizer dictionary.
-            </value>
-        </member>
-        <member name="M:FileCabinetApp.Memoizers.Memoizer.GetMemoizer(FileCabinetApp.Services.IFileCabinetService)">
-            <summary>
-            Gets the memoizer.
-            </summary>
-            <param name="fileCabinetService">The file cabinet service.</param>
-            <returns>Memoizer object.</returns>
-        </member>
-        <member name="M:FileCabinetApp.Memoizers.Memoizer.Select(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
-            <summary>
-            Selects the specified key value pairs.
-            </summary>
-            <param name="keyValuePairs">The key value pairs.</param>
-            <param name="condition">The condition.</param>
-            <returns>Select records.</returns>
-        </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
             The class to subscribe file cabinet record.
@@ -747,6 +681,108 @@
             The cats budget.
             </value>
         </member>
+        <member name="T:FileCabinetApp.Enums.LoggerStatus">
+            <summary>
+            Logger status.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.LoggerStatus.On">
+            <summary>
+            Turn on logger.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.LoggerStatus.Off">
+            <summary>
+            Turn off logger.
+            </summary>
+        </member>
+        <member name="T:FileCabinetApp.Enums.MeterStatus">
+            <summary>
+            Meter status.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.MeterStatus.On">
+            <summary>
+            Turn on the meter.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.MeterStatus.Off">
+            <summary>
+            Turn off the meter.
+            </summary>
+        </member>
+        <member name="T:FileCabinetApp.Enums.SearchCondition">
+            <summary>
+            Search conditions for records.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.SearchCondition.And">
+            <summary>
+            The and condition.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.SearchCondition.Or">
+            <summary>
+            The or condition.
+            </summary>
+        </member>
+        <member name="T:FileCabinetApp.Enums.ServiceType">
+            <summary>
+            Service type.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.ServiceType.File">
+            <summary>
+            The file.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Enums.ServiceType.Memory">
+            <summary>
+            The memory.
+            </summary>
+        </member>
+        <member name="T:FileCabinetApp.Extensions.FileCabinetRecordExtension">
+            <summary>
+            Extension for FileCabinetRecords to find records whith some properties.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Extensions.FileCabinetRecordExtension.Where(System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord},System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
+            <summary>
+            Wheres the specified key value pairs.
+            </summary>
+            <param name="records">The records.</param>
+            <param name="keyValuePairs">The key value pairs.</param>
+            <param name="condition">The condition.</param>
+            <returns>Records that contains some parameters.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Memoizers.Memoizer">
+            <summary>
+            Memoizer class for FileCabinetMemoryService.SelectRecords.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Memoizers.Memoizer.MemoizerDictionary">
+            <summary>
+            Gets the memoizer dictionary.
+            </summary>
+            <value>
+            The memoizer dictionary.
+            </value>
+        </member>
+        <member name="M:FileCabinetApp.Memoizers.Memoizer.GetMemoizer(FileCabinetApp.Services.IFileCabinetService)">
+            <summary>
+            Gets the memoizer.
+            </summary>
+            <param name="fileCabinetService">The file cabinet service.</param>
+            <returns>Memoizer object.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Memoizers.Memoizer.Select(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
+            <summary>
+            Selects the specified key value pairs.
+            </summary>
+            <param name="keyValuePairs">The key value pairs.</param>
+            <param name="condition">The condition.</param>
+            <returns>Select records.</returns>
+        </member>
         <member name="T:FileCabinetApp.Printer.Alignment">
             <summary>
             The console table aligment.
@@ -812,12 +848,13 @@
             The column types.
             </value>
         </member>
-        <member name="M:FileCabinetApp.Printer.ConsoleTable.From``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:FileCabinetApp.Printer.ConsoleTable.From``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.List{System.String})">
             <summary>
             Froms the specified values.
             </summary>
             <typeparam name="T">The t.</typeparam>
             <param name="values">The values.</param>
+            <param name="columnsList">The columns list.</param>
             <returns>Console table.</returns>
         </member>
         <member name="M:FileCabinetApp.Printer.ConsoleTable.AddColumn(System.Collections.Generic.IEnumerable{System.String})">
@@ -980,16 +1017,13 @@
             There are no entries with such parameters.
             </exception>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetRecords">
             <summary>
-            Selects the specified key value pairs.
+            Gets the records.
             </summary>
-            <param name="keyValuePairs">The key value pairs.</param>
-            <param name="condition">The condition.</param>
-            <returns>All records with specified parameters.</returns>
-            <exception cref="T:System.ArgumentNullException">keyValuePairs is null.</exception>
-            <exception cref="T:System.InvalidOperationException">The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
-            <exception cref="T:System.ArgumentException">The record with {key} = '{value}' doesn't exist.</exception>
+            <returns>
+            All records.
+            </returns>
         </member>
         <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.GetStat(System.Int32@)">
             <summary>
@@ -1140,13 +1174,11 @@
             <param name="keyValuePairs">The key value pairs.</param>
             <returns>Updated record id.</returns>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.GetRecords">
             <summary>
-            Selects the specified key value pairs.
+            Gets the records.
             </summary>
-            <param name="keyValuePairs">The key value pairs.</param>
-            <param name="condition">The condition.</param>
-            <returns>All records with specified parameters.</returns>
+            <returns>All records.</returns>
         </member>
         <member name="M:FileCabinetApp.Services.IFileCabinetService.IsThereARecordWithThisId(System.Int32,System.Int64@)">
             <summary>
@@ -1231,14 +1263,12 @@
             keyValuePairs.
             </exception>
         </member>
-        <member name="M:FileCabinetApp.Services.ServiceLogger.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
+        <member name="M:FileCabinetApp.Services.ServiceLogger.GetRecords">
             <summary>
             Selects the specified key value pairs.
             </summary>
-            <param name="keyValuePairs">The key value pairs.</param>
-            <param name="condition">The condition.</param>
             <returns>
-            All records with specified parameters.
+            All records.
             </returns>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceLogger.GetStat(System.Int32@)">
@@ -1298,11 +1328,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.Services.IFileCabinetService" />
         </member>
-        <member name="M:FileCabinetApp.Services.ServiceMeter.#ctor(FileCabinetApp.Services.IFileCabinetService)">
+        <member name="M:FileCabinetApp.Services.ServiceMeter.#ctor(FileCabinetApp.Services.IFileCabinetService,System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.Services.ServiceMeter"/> class.
             </summary>
             <param name="service">The service.</param>
+            <param name="write">The write.</param>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceMeter.CreateRecord(FileCabinetApp.RecordParameters)">
             <summary>
@@ -1328,12 +1359,10 @@
             Updated record id.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.Services.ServiceMeter.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
+        <member name="M:FileCabinetApp.Services.ServiceMeter.GetRecords">
             <summary>
             Selects the specified key value pairs.
             </summary>
-            <param name="keyValuePairs">The key value pairs.</param>
-            <param name="condition">The condition.</param>
             <returns>
             All records with specified parameters.
             </returns>
@@ -1441,8 +1470,8 @@
             <summary>
             Updates the specified record parameters.
             </summary>
-            <param name="recordParameters">The record parameters.</param>
-            <param name="keyValuePairs">The key value pairs.</param>
+            <param name="recordParameters">The record parameters with new parameters.</param>
+            <param name="keyValuePairs">The key value pairs for search.</param>
             <returns>
             Updated record id.
             </returns>
@@ -1465,18 +1494,13 @@
             Record #{id} does not exist.
             </exception>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.SelectRecords(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecords">
             <summary>
-            Selects the specified key value pairs.
+            Gets the records.
             </summary>
-            <param name="keyValuePairs">The key value pairs.</param>
-            <param name="condition">The condition.</param>
             <returns>
-            All records with specified parameters.
+            All records.
             </returns>
-            <exception cref="T:System.ArgumentNullException">keyValuePairs is null.</exception>
-            <exception cref="T:System.InvalidOperationException">The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
-            <exception cref="T:System.ArgumentException">The record with {key} = '{value}' doesn't exist.</exception>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.Delete(System.String,System.String)">
             <summary>
@@ -1669,125 +1693,165 @@
             The maximum.
             </value>
         </member>
+        <member name="T:FileCabinetApp.Validators.InputValidator.AbstractInputValidator">
+            <summary>
+            Abstract input validator.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Validators.InputValidator.IInputValidator" />
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.Gender">
+            <summary>
+            Gets the gender.
+            </summary>
+            <value>
+            The gender.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MinDate">
+            <summary>
+            Gets the minimum date.
+            </summary>
+            <value>
+            The minimum date.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MaxDate">
+            <summary>
+            Gets the maximum date.
+            </summary>
+            <value>
+            The maximum date.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MinOffice">
+            <summary>
+            Gets the minimum office.
+            </summary>
+            <value>
+            The minimum office.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MaxOffice">
+            <summary>
+            Gets the maximum office.
+            </summary>
+            <value>
+            The maximum office.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MinSalary">
+            <summary>
+            Gets the minimum salary.
+            </summary>
+            <value>
+            The minimum salary.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MaxSalary">
+            <summary>
+            Gets the maximum salary.
+            </summary>
+            <value>
+            The maximum salary.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.FirstNameMinLength">
+            <summary>
+            Gets the first length of the name minimum.
+            </summary>
+            <value>
+            The first length of the name minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.FirstNameMaxLength">
+            <summary>
+            Gets the first length of the name maximum.
+            </summary>
+            <value>
+            The first length of the name maximum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.LastNameMinLength">
+            <summary>
+            Gets the last length of the name minimum.
+            </summary>
+            <value>
+            The last length of the name minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.LastNameMaxLength">
+            <summary>
+            Gets the last length of the name maximum.
+            </summary>
+            <value>
+            The last length of the name maximum.
+            </value>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.DateOfBirthValidator(System.DateTime)">
+            <summary>
+            Dates the of birth validator.
+            </summary>
+            <param name="dateOfBirth">The date of birth.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.FirstNameValidator(System.String)">
+            <summary>
+            Firsts the name validator.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.GenderValidator(System.Char)">
+            <summary>
+            Genders the validator.
+            </summary>
+            <param name="gender">The gender.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.LastNameValidator(System.String)">
+            <summary>
+            Lasts the name validator.
+            </summary>
+            <param name="lastName">The last name.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.OfficeValidator(System.Int16)">
+            <summary>
+            Offices the validator.
+            </summary>
+            <param name="office">The office.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.SalaryValidator(System.Decimal)">
+            <summary>
+            Salaries the validator.
+            </summary>
+            <param name="salary">The salary.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.CustomInputValidator">
             <summary>
             Custom input parameters validator.
             </summary>
             <seealso cref="T:FileCabinetApp.Validators.InputValidator.IInputValidator" />
         </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.FirstNameValidator(System.String)">
-            <summary>
-            Firsts the name validator.
-            </summary>
-            <param name="firstName">The first name.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.LastNameValidator(System.String)">
-            <summary>
-            Lasts the name validator.
-            </summary>
-            <param name="lastName">The last name.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.DateOfBirthValidator(System.DateTime)">
-            <summary>
-            Dates the of birth validator.
-            </summary>
-            <param name="dateOfBirth">The date of birth.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.GenderValidator(System.Char)">
-            <summary>
-            Genders the validator.
-            </summary>
-            <param name="gender">The gender.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.OfficeValidator(System.Int16)">
-            <summary>
-            Offices the validator.
-            </summary>
-            <param name="office">The office.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.CustomInputValidator.SalaryValidator(System.Decimal)">
-            <summary>
-            Salaries the validator.
-            </summary>
-            <param name="salary">The salary.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.DefaultInputValidator">
             <summary>
             Default input parameters validator.
             </summary>
             <seealso cref="T:FileCabinetApp.Validators.InputValidator.IInputValidator" />
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.FirstNameValidator(System.String)">
-            <summary>
-            Firsts the name validator.
-            </summary>
-            <param name="firstName">The first name.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.LastNameValidator(System.String)">
-            <summary>
-            Lasts the name validator.
-            </summary>
-            <param name="lastName">The last name.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.DateOfBirthValidator(System.DateTime)">
-            <summary>
-            Dates the of birth validator.
-            </summary>
-            <param name="dateOfBirth">The date of birth.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.GenderValidator(System.Char)">
-            <summary>
-            Genders the validator.
-            </summary>
-            <param name="gender">The gender.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.OfficeValidator(System.Int16)">
-            <summary>
-            Offices the validator.
-            </summary>
-            <param name="office">The office.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.DefaultInputValidator.SalaryValidator(System.Decimal)">
-            <summary>
-            Salaries the validator.
-            </summary>
-            <param name="salary">The salary.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
         </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.IInputValidator">
             <summary>
@@ -1835,6 +1899,23 @@
             </summary>
             <param name="salary">The salary.</param>
             <returns>Is parameter valid.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.InputValidator.InputValidatorBuilder">
+            <summary>
+            Input validator builder.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.InputValidatorBuilder.CreateDefault">
+            <summary>
+            Creates the default.
+            </summary>
+            <returns>Default input validator.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.InputValidatorBuilder.CreateCustom">
+            <summary>
+            Creates the custom.
+            </summary>
+            <returns>Custom input validator.</returns>
         </member>
         <member name="T:FileCabinetApp.Validators.RecordValidator.CompositeValidator">
             <summary>
@@ -1909,7 +1990,7 @@
             <param name="max">The maximum.</param>
             <returns>This validator builder.</returns>
         </member>
-        <member name="M:FileCabinetApp.Validators.RecordValidator.ValidatorBuilder.ValidateSalary(System.Int32,System.Int32)">
+        <member name="M:FileCabinetApp.Validators.RecordValidator.ValidatorBuilder.ValidateSalary(System.Decimal,System.Decimal)">
             <summary>
             Validates the salary.
             </summary>
@@ -2046,7 +2127,7 @@
             </summary>
             <seealso cref="T:FileCabinetApp.Validators.IRecordValidator" />
         </member>
-        <member name="M:FileCabinetApp.Validators.RecordValidator.SalaryValidator.#ctor(System.Int32,System.Int32)">
+        <member name="M:FileCabinetApp.Validators.RecordValidator.SalaryValidator.#ctor(System.Decimal,System.Decimal)">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.RecordValidator.SalaryValidator"/> class.
             </summary>

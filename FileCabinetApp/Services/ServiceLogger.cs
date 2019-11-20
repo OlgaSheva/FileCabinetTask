@@ -110,27 +110,14 @@ namespace FileCabinetApp.Services
         /// <summary>
         /// Selects the specified key value pairs.
         /// </summary>
-        /// <param name="keyValuePairs">The key value pairs.</param>
-        /// <param name="condition">The condition.</param>
         /// <returns>
-        /// All records with specified parameters.
+        /// All records.
         /// </returns>
-        public IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            if (keyValuePairs == null)
-            {
-                throw new ArgumentNullException(nameof(keyValuePairs));
-            }
-
-            StringBuilder sb = new StringBuilder();
-            foreach (var kv in keyValuePairs)
-            {
-                sb.Append($"{kv.Key} - '{kv.Value}' ");
-            }
-
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling Select() with parameters {sb}");
-            var result = this.service.SelectRecords(keyValuePairs, condition);
+                $"Calling Select() with parameters");
+            var result = this.service.GetRecords();
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Select() returned records");
             return result;

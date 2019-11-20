@@ -78,15 +78,16 @@ namespace FileCabinetApp.Printer
         /// </summary>
         /// <typeparam name="T">The t.</typeparam>
         /// <param name="values">The values.</param>
+        /// <param name="columnsList">The columns list.</param>
         /// <returns>Console table.</returns>
-        public static ConsoleTable From<T>(IEnumerable<T> values)
+        public static ConsoleTable From<T>(IEnumerable<T> values, List<string> columnsList)
         {
             var table = new ConsoleTable
             {
                 ColumnTypes = GetColumnsType<T>().ToList(),
             };
 
-            var columns = GetColumns<T>();
+            var columns = GetColumns<T>(columnsList);
 
             table.AddColumn(columns);
 
@@ -178,6 +179,21 @@ namespace FileCabinetApp.Printer
         /// </returns>
         public override string ToString()
         {
+            if (this.Columns.Contains("DateOfBirth"))
+            {
+                int j = 0;
+                for (; j < this.Columns.Count; j++)
+                {
+                    if (this.Columns[j].Equals("DateOfBirth"))
+                    {
+                        for (int i = 0; i < this.Rows.Count; i++)
+                        {
+                            this.Rows[i][j] = ((DateTime)this.Rows[i][j]).ToString("dd'/'MM'/'yyyy", CultureInfo.CurrentCulture);
+                        }
+                    }
+                }
+            }
+
             var builder = new StringBuilder();
             var columnLengths = this.ColumnLengths();
             var columnAlignment = Enumerable.Range(0, this.Columns.Count)
@@ -210,14 +226,18 @@ namespace FileCabinetApp.Printer
             return builder.ToString();
         }
 
-        private static IEnumerable<string> GetColumns<T>()
+        private static IEnumerable<string> GetColumns<T>(List<string> listcolumns)
         {
-            return typeof(T).GetProperties().Select(x => x.Name).ToArray();
+            return typeof(T)
+                .GetProperties()
+                .Select(x => x.Name)
+                .Where(x => listcolumns.Contains(x.ToLower(CultureInfo.CurrentCulture)))
+                .ToArray();
         }
 
         private static object GetColumnValue<T>(object target, string column)
         {
-            return typeof(T).GetProperty(column).GetValue(target, null);
+            return typeof(T).GetProperty(column).GetValue(target);
         }
 
         private static IEnumerable<Type> GetColumnsType<T>()
@@ -256,22 +276,13 @@ namespace FileCabinetApp.Printer
 
         private string GetNumberAlignment(int i)
         {
-            if (this.Columns[i].ToString().Equals("firstname", StringComparison.InvariantCultureIgnoreCase)
-                || this.Columns[i].ToString().Equals("lastname", StringComparison.InvariantCultureIgnoreCase)
-                || this.Columns[i].ToString().Equals("gender", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return this.ColumnTypes != null
-                      && numericTypes.Contains(this.ColumnTypes[i])
-                   ? string.Empty
-                   : "-";
-            }
-            else
-            {
-                return this.ColumnTypes != null
-                       && numericTypes.Contains(this.ColumnTypes[i])
-                    ? "-"
-                    : string.Empty;
-            }
+            return this.ColumnTypes != null
+                  && numericTypes.Contains(this.ColumnTypes[i])
+                  && (this.ColumnTypes[i].Equals(typeof(int))
+                    || this.ColumnTypes[i].Equals(typeof(short))
+                    || this.ColumnTypes[i].Equals(typeof(decimal)))
+               ? string.Empty
+               : "-";
         }
 
         private List<int> ColumnLengths()

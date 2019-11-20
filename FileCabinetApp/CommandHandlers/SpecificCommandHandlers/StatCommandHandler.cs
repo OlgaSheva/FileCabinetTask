@@ -9,13 +9,17 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class StatCommandHandler : ServiceCommandHandlerBase
     {
+        private static Action<string> write;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StatCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public StatCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public StatCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -41,7 +45,7 @@ namespace FileCabinetApp.CommandHandlers
         private void Stat(string parameters)
         {
             var recordsCount = this.Service.GetStat(out int deletedRecordsCount);
-            Console.WriteLine($"{recordsCount} record(s). Number of deleted records: {deletedRecordsCount}.");
+            write($"{recordsCount} record(s). Number of deleted records: {deletedRecordsCount}.");
         }
     }
 }

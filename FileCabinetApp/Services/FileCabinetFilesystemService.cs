@@ -38,7 +38,7 @@ namespace FileCabinetApp.Services
             this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream));
             this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
 
-            this.IdAndPositionSortedListGenerator();
+            this.FillAllDictionaries();
         }
 
         /// <summary>
@@ -121,265 +121,26 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(keyValuePairs));
             }
 
-            int id = 0;
-            long position = 0;
-            string firstname;
-            string lastname;
-            List<long> firstnameList = new List<long>(),
-                       lastnameList = new List<long>(),
-                       firstAndLastNameList = new List<long>();
-            if (keyValuePairs["id"] != null)
-            {
-                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.CurrentCulture);
-                position = this.idpositionPairs[id];
-            }
-            else if ((firstname = keyValuePairs["firstname"]) != null)
-            {
-                if (this.firstNameDictionary.TryGetValue(firstname, out firstnameList))
-                {
-                    lastname = keyValuePairs["lastname"];
-                    if (firstnameList.Count == 1 && lastname == null)
-                    {
-                        position = firstnameList[0];
-                    }
-                    else if (lastname != null)
-                    {
-                        if (this.lastNameDictionary.TryGetValue(lastname, out lastnameList))
-                        {
-                            foreach (var fnp in firstnameList)
-                            {
-                                foreach (var lnp in lastnameList)
-                                {
-                                    if (fnp == lnp)
-                                    {
-                                        firstAndLastNameList.Add(fnp);
-                                    }
-                                }
-                            }
-
-                            if (firstAndLastNameList.Count == 1)
-                            {
-                                position = firstAndLastNameList[0];
-                            }
-                            else if (firstAndLastNameList.Count > 1)
-                            {
-                                throw new ArgumentException("There are several entries with such parameters.");
-                            }
-                        }
-                        else
-                        {
-                            throw new ArgumentException("There are no entries with such parameters.");
-                        }
-                    }
-                    else if (firstAndLastNameList.Count > 1 && lastname == null)
-                    {
-                        throw new ArgumentException("There are several entries with such parameters.");
-                    }
-                    else
-                    {
-                        throw new ArgumentException("There are no entries with such parameters.");
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Record whith firstname = '{firstname}' does not exist.");
-                }
-            }
-            else
-            {
-                throw new ArgumentException("There are no entries with such parameters.");
-            }
-
-            string pfirstname = null;
-            string plastname = null;
-            DateTime pdateofbirth = default(DateTime);
-            char pgender = default(char);
-            short poffice = -1;
-            decimal psalary = -1;
-
-            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
-            using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
-            {
-                this.fileStream.Seek(position, SeekOrigin.Begin);
-                var existRecordsParameters = GetRecordParametersFromFile(reader);
-                this.fileStream.Seek(position + (long)IdPosition, SeekOrigin.Begin);
-                id = reader.ReadInt32();
-                if (recordParameters.FirstName != null)
-                {
-                    pfirstname = recordParameters.FirstName;
-                }
-                else
-                {
-                    pfirstname = existRecordsParameters.FirstName;
-                }
-
-                if (recordParameters.LastName != null)
-                {
-                    plastname = recordParameters.LastName;
-                }
-                else
-                {
-                    plastname = existRecordsParameters.LastName;
-                }
-
-                if (recordParameters.DateOfBirth != default(DateTime))
-                {
-                    pdateofbirth = recordParameters.DateOfBirth;
-                }
-                else
-                {
-                    pdateofbirth = existRecordsParameters.DateOfBirth;
-                }
-
-                if (recordParameters.Gender != default(char))
-                {
-                    pgender = recordParameters.Gender;
-                }
-                else
-                {
-                    pgender = existRecordsParameters.Gender;
-                }
-
-                if (recordParameters.Office != -1)
-                {
-                    poffice = recordParameters.Office;
-                }
-                else
-                {
-                    poffice = existRecordsParameters.Office;
-                }
-
-                if (recordParameters.Salary != -1)
-                {
-                    psalary = recordParameters.Salary;
-                }
-                else
-                {
-                    psalary = existRecordsParameters.Salary;
-                }
-            }
-
-            var newRecordParameters = new RecordParameters(pfirstname, plastname, pdateofbirth, pgender, poffice, psalary);
+            this.GetIdAndPositionOfSearchRecord(keyValuePairs, out int id, out long position);
+            this.GetRecordWithNewParameters(recordParameters, out id, position, out RecordParameters newRecordParameters);
             this.EditRecord(id, newRecordParameters);
+
             return id;
         }
 
         /// <summary>
-        /// Selects the specified key value pairs.
+        /// Gets the records.
         /// </summary>
-        /// <param name="keyValuePairs">The key value pairs.</param>
-        /// <param name="condition">The condition.</param>
-        /// <returns>All records with specified parameters.</returns>
-        /// <exception cref="ArgumentNullException">keyValuePairs is null.</exception>
-        /// <exception cref="InvalidOperationException">The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
-        /// <exception cref="ArgumentException">The record with {key} = '{value}' doesn't exist.</exception>
-        public IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
+        /// <returns>
+        /// All records.
+        /// </returns>
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            if (keyValuePairs == null)
-            {
-                throw new ArgumentNullException(nameof(keyValuePairs));
-            }
-
-            List<long> positions = new List<long>();
-            if (keyValuePairs.Count == 0)
-            {
-                positions.AddRange(this.idpositionPairs.Values);
-            }
-            else
-            {
-                string key;
-                string value;
-                foreach (var criterion in keyValuePairs)
-                {
-                    key = criterion.Key;
-                    value = criterion.Value;
-                    try
-                    {
-                        switch (key)
-                        {
-                            case "id":
-                                int id = int.Parse(value, CultureInfo.CurrentCulture);
-                                if (this.idpositionPairs.TryGetValue(id, out long p))
-                                {
-                                    positions.Add(p);
-                                }
-
-                                break;
-                            case "firstname":
-                                if (condition.Equals(SearchCondition.Or))
-                                {
-                                    positions.AddRange(this.firstNameDictionary[value]);
-                                }
-                                else
-                                {
-                                    if (positions.Count == 0)
-                                    {
-                                        positions.AddRange(this.firstNameDictionary[value]);
-                                    }
-                                    else
-                                    {
-                                        positions = positions.Intersect(this.firstNameDictionary[value]).ToList();
-                                    }
-                                }
-
-                                break;
-                            case "lastname":
-                                if (condition.Equals(SearchCondition.Or))
-                                {
-                                    positions.AddRange(this.lastNameDictionary[value]);
-                                }
-                                else
-                                {
-                                    if (positions.Count == 0)
-                                    {
-                                        positions.AddRange(this.lastNameDictionary[value]);
-                                    }
-                                    else
-                                    {
-                                        positions = positions.Intersect(this.lastNameDictionary[value]).ToList();
-                                    }
-                                }
-
-                                break;
-                            case "dateofbirth":
-                                if (DateTime.TryParse(value, out DateTime date))
-                                {
-                                    if (condition.Equals(SearchCondition.Or))
-                                    {
-                                        positions.AddRange(this.dateOfBirthDictionary[date]);
-                                    }
-                                    else
-                                    {
-                                        if (positions.Count == 0)
-                                        {
-                                            positions.AddRange(this.dateOfBirthDictionary[date]);
-                                        }
-                                        else
-                                        {
-                                            positions = positions.Intersect(this.dateOfBirthDictionary[date]).ToList();
-                                        }
-                                    }
-                                }
-
-                                break;
-                            default:
-                                throw new InvalidOperationException(
-                                    $"The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.");
-                        }
-                    }
-                    catch (KeyNotFoundException knfex)
-                    {
-                        throw new ArgumentException($"The record with {key} = '{value}' doesn't exist.", knfex.Message);
-                    }
-                }
-            }
-
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                foreach (var position in positions)
+                foreach (var item in this.idpositionPairs)
                 {
-                    this.fileStream.Seek(position, SeekOrigin.Begin);
-                    yield return GetFileCabinetRecordFromFile(binaryReader);
+                    yield return this.GetFileCabinetRecordFromFile(binaryReader, item.Value);
                 }
             }
         }
@@ -447,7 +208,7 @@ namespace FileCabinetApp.Services
             var recordsFromFile = snapshot.FileCabinetRecords.ToList();
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                this.IdAndPositionSortedListGenerator();
+                this.FillAllDictionaries();
 
                 bool flag = false;
                 int existId = -1;
@@ -481,15 +242,15 @@ namespace FileCabinetApp.Services
                             throw new ArgumentException(nameof(record.Id));
                         }
 
-                        var r = new RecordParameters(
+                        var recordParameters = new RecordParameters(
                             record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
-                        this.validator.ValidateParameters(r);
+                        this.validator.ValidateParameters(recordParameters);
                         this.WriteToTheBinaryFile(record);
                         if (!this.idpositionPairs.ContainsKey(record.Id))
                         {
                             position = this.fileStream.Position - RecordInBytesLength;
                             this.idpositionPairs.Add(record.Id, position);
-                            this.AddToDictionaries(r, position);
+                            this.AddToDictionaries(recordParameters, position);
                         }
                     }
                     catch (ArgumentException ex)
@@ -530,57 +291,19 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(value));
             }
 
-            var ids = new List<int>();
+            List<int> ids;
             dynamic dictionary;
             dynamic searchKey;
-            switch (key.ToLower(CultureInfo.CurrentCulture))
+            try
             {
-                case "id":
-                    searchKey = int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                    dictionary = new Dictionary<int, List<long>>()
-                        { { (int)searchKey, new List<long>() { this.idpositionPairs[searchKey] } }, };
-                    break;
-                case "firstname":
-                    dictionary = this.firstNameDictionary;
-                    searchKey = value;
-                    break;
-                case "lastname":
-                    dictionary = this.lastNameDictionary;
-                    searchKey = value;
-                    break;
-                case "dateofbirth":
-                    dictionary = this.dateOfBirthDictionary;
-                    searchKey = DateTime.Parse(value, CultureInfo.InvariantCulture);
-                    break;
-                default:
-                    throw new ArgumentException($"Search by key '{key}' does not supported.", nameof(key));
+                ids = this.GetIdsOfRecordsThatMathForKeyValue(key, value, out dictionary, out searchKey);
             }
-
-            if (dictionary.TryGetValue(searchKey, out List<long> positionList))
-            {
-                foreach (var position in positionList)
-                {
-                    this.fileStream.Seek(position, SeekOrigin.Begin);
-                    this.fileStream.WriteByte(1);
-                    this.fileStream.Seek(position + ReservedFieldLength, SeekOrigin.Begin);
-                    int id = -1;
-                    using (var reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
-                    {
-                        id = reader.ReadInt32();
-                        ids.Add(id);
-                    }
-                }
-
-                foreach (var id in ids)
-                {
-                    this.RemoveFromDictionaries(id);
-                    this.idpositionPairs.Remove(id);
-                }
-            }
-            else
+            catch (KeyNotFoundException)
             {
                 throw new ArgumentException($"There are no records with {key} = '{value}'.");
             }
+
+            this.RemoveRecords(ids, dictionary, searchKey);
 
             return ids;
         }
@@ -674,28 +397,6 @@ namespace FileCabinetApp.Services
             return new decimal(bits);
         }
 
-        private static FileCabinetRecord GetFileCabinetRecordFromFile(BinaryReader binaryReader)
-        {
-            if (binaryReader == null)
-            {
-                throw new ArgumentNullException(nameof(binaryReader));
-            }
-
-            binaryReader.ReadBytes(ReservedFieldLength);
-            return new FileCabinetRecord
-            {
-                Id = binaryReader.ReadInt32(),
-                FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                LastName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
-                Gender = binaryReader.ReadChar(),
-                Office = binaryReader.ReadInt16(),
-                Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
-            };
-        }
-
         private static RecordParameters GetRecordParametersFromFile(BinaryReader binaryReader)
         {
             binaryReader.ReadBytes(ReservedFieldLength);
@@ -709,6 +410,29 @@ namespace FileCabinetApp.Services
                 binaryReader.ReadChar(),
                 binaryReader.ReadInt16(),
                 ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)));
+        }
+
+        private FileCabinetRecord GetFileCabinetRecordFromFile(BinaryReader binaryReader, long position)
+        {
+            if (binaryReader == null)
+            {
+                throw new ArgumentNullException(nameof(binaryReader));
+            }
+
+            this.fileStream.Seek(position, SeekOrigin.Begin);
+            binaryReader.ReadBytes(ReservedFieldLength);
+            return new FileCabinetRecord
+            {
+                Id = binaryReader.ReadInt32(),
+                FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                LastName = System.Text.UnicodeEncoding.Unicode.GetString(
+                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
+                Gender = binaryReader.ReadChar(),
+                Office = binaryReader.ReadInt16(),
+                Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
+            };
         }
 
         private void EditRecord(int id, RecordParameters parameters)
@@ -778,7 +502,7 @@ namespace FileCabinetApp.Services
             this.AddToDictionaries(rec, recordPosition);
         }
 
-        private void IdAndPositionSortedListGenerator()
+        private void FillAllDictionaries()
         {
             this.idpositionPairs = new SortedDictionary<int, long>();
             this.firstNameDictionary = new Dictionary<string, List<long>>();
@@ -897,6 +621,303 @@ namespace FileCabinetApp.Services
             if (this.dateOfBirthDictionary[dateOfBirth].Count == 0)
             {
                 this.dateOfBirthDictionary.Remove(dateOfBirth);
+            }
+        }
+
+        private void GetRecordWithNewParameters(RecordParameters recordParameters, out int id, long position, out RecordParameters newRecordParameters)
+        {
+            string pfirstname = null;
+            string plastname = null;
+            DateTime pdateofbirth = default(DateTime);
+            char pgender = default(char);
+            short poffice = -1;
+            decimal psalary = -1;
+
+            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
+            {
+                this.fileStream.Seek(position, SeekOrigin.Begin);
+                var existRecordsParameters = GetRecordParametersFromFile(reader);
+                this.fileStream.Seek(position + (long)IdPosition, SeekOrigin.Begin);
+                id = reader.ReadInt32();
+                if (recordParameters.FirstName != null)
+                {
+                    pfirstname = recordParameters.FirstName;
+                }
+                else
+                {
+                    pfirstname = existRecordsParameters.FirstName;
+                }
+
+                if (recordParameters.LastName != null)
+                {
+                    plastname = recordParameters.LastName;
+                }
+                else
+                {
+                    plastname = existRecordsParameters.LastName;
+                }
+
+                if (recordParameters.DateOfBirth != default(DateTime))
+                {
+                    pdateofbirth = recordParameters.DateOfBirth;
+                }
+                else
+                {
+                    pdateofbirth = existRecordsParameters.DateOfBirth;
+                }
+
+                if (recordParameters.Gender != default(char))
+                {
+                    pgender = recordParameters.Gender;
+                }
+                else
+                {
+                    pgender = existRecordsParameters.Gender;
+                }
+
+                if (recordParameters.Office != -1)
+                {
+                    poffice = recordParameters.Office;
+                }
+                else
+                {
+                    poffice = existRecordsParameters.Office;
+                }
+
+                if (recordParameters.Salary != -1)
+                {
+                    psalary = recordParameters.Salary;
+                }
+                else
+                {
+                    psalary = existRecordsParameters.Salary;
+                }
+            }
+
+            newRecordParameters = new RecordParameters(pfirstname, plastname, pdateofbirth, pgender, poffice, psalary);
+        }
+
+        private void GetIdAndPositionOfSearchRecord(Dictionary<string, string> keyValuePairs, out int id, out long position)
+        {
+            id = 0;
+            position = 0;
+            string firstname;
+            string lastname;
+            List<long> firstnameList = new List<long>(), lastnameList = new List<long>(), firstAndLastNameList = new List<long>();
+            if (keyValuePairs["id"] != null)
+            {
+                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.CurrentCulture);
+                position = this.idpositionPairs[id];
+            }
+            else if ((firstname = keyValuePairs["firstname"]) != null)
+            {
+                if (this.firstNameDictionary.TryGetValue(firstname, out firstnameList))
+                {
+                    lastname = keyValuePairs["lastname"];
+                    if (firstnameList.Count == 1 && lastname == null)
+                    {
+                        position = firstnameList[0];
+                    }
+                    else if (lastname != null)
+                    {
+                        if (this.lastNameDictionary.TryGetValue(lastname, out lastnameList))
+                        {
+                            foreach (var fnp in firstnameList)
+                            {
+                                foreach (var lnp in lastnameList)
+                                {
+                                    if (fnp == lnp)
+                                    {
+                                        firstAndLastNameList.Add(fnp);
+                                    }
+                                }
+                            }
+
+                            if (firstAndLastNameList.Count == 1)
+                            {
+                                position = firstAndLastNameList[0];
+                            }
+                            else if (firstAndLastNameList.Count > 1)
+                            {
+                                throw new ArgumentException("There are several entries with such parameters.");
+                            }
+                        }
+                        else
+                        {
+                            throw new ArgumentException("There are no entries with such parameters.");
+                        }
+                    }
+                    else if (firstAndLastNameList.Count > 1 && lastname == null)
+                    {
+                        throw new ArgumentException("There are several entries with such parameters.");
+                    }
+                    else
+                    {
+                        throw new ArgumentException("There are no entries with such parameters.");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Record whith firstname = '{firstname}' does not exist.");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("There are no entries with such parameters.");
+            }
+        }
+
+        private List<long> GetPositionsOfSelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
+        {
+            List<long> positions = new List<long>();
+            if (keyValuePairs.Count == 0)
+            {
+                positions.AddRange(this.idpositionPairs.Values);
+            }
+            else
+            {
+                string key;
+                string value;
+                foreach (var criterion in keyValuePairs)
+                {
+                    key = criterion.Key;
+                    value = criterion.Value;
+                    try
+                    {
+                        switch (key)
+                        {
+                            case "id":
+                                int id = int.Parse(value, CultureInfo.CurrentCulture);
+                                if (this.idpositionPairs.TryGetValue(id, out long p))
+                                {
+                                    positions.Add(p);
+                                }
+
+                                break;
+                            case "firstname":
+                                if (condition.Equals(SearchCondition.Or))
+                                {
+                                    positions.AddRange(this.firstNameDictionary[value]);
+                                }
+                                else
+                                {
+                                    if (positions.Count == 0)
+                                    {
+                                        positions.AddRange(this.firstNameDictionary[value]);
+                                    }
+                                    else
+                                    {
+                                        positions = positions.Intersect(this.firstNameDictionary[value]).ToList();
+                                    }
+                                }
+
+                                break;
+                            case "lastname":
+                                if (condition.Equals(SearchCondition.Or))
+                                {
+                                    positions.AddRange(this.lastNameDictionary[value]);
+                                }
+                                else
+                                {
+                                    if (positions.Count == 0)
+                                    {
+                                        positions.AddRange(this.lastNameDictionary[value]);
+                                    }
+                                    else
+                                    {
+                                        positions = positions.Intersect(this.lastNameDictionary[value]).ToList();
+                                    }
+                                }
+
+                                break;
+                            case "dateofbirth":
+                                if (DateTime.TryParse(value, out DateTime date))
+                                {
+                                    if (condition.Equals(SearchCondition.Or))
+                                    {
+                                        positions.AddRange(this.dateOfBirthDictionary[date]);
+                                    }
+                                    else
+                                    {
+                                        if (positions.Count == 0)
+                                        {
+                                            positions.AddRange(this.dateOfBirthDictionary[date]);
+                                        }
+                                        else
+                                        {
+                                            positions = positions.Intersect(this.dateOfBirthDictionary[date]).ToList();
+                                        }
+                                    }
+                                }
+
+                                break;
+                            default:
+                                throw new InvalidOperationException(
+                                    $"The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.");
+                        }
+                    }
+                    catch (KeyNotFoundException knfex)
+                    {
+                        throw new ArgumentException($"The record with {key} = '{value}' doesn't exist.", knfex.Message);
+                    }
+                }
+            }
+
+            return positions;
+        }
+
+        private List<int> GetIdsOfRecordsThatMathForKeyValue(string key, string value, out dynamic dictionary, out dynamic searchKey)
+        {
+            List<int> ids = new List<int>();
+            switch (key.ToLower(CultureInfo.CurrentCulture))
+            {
+                case "id":
+                    searchKey = int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+                    dictionary = new Dictionary<int, List<long>>()
+                        { { (int)searchKey, new List<long>() { this.idpositionPairs[searchKey] } }, };
+                    break;
+                case "firstname":
+                    dictionary = this.firstNameDictionary;
+                    searchKey = value;
+                    break;
+                case "lastname":
+                    dictionary = this.lastNameDictionary;
+                    searchKey = value;
+                    break;
+                case "dateofbirth":
+                    dictionary = this.dateOfBirthDictionary;
+                    searchKey = DateTime.Parse(value, CultureInfo.InvariantCulture);
+                    break;
+                default:
+                    throw new ArgumentException($"Search by key '{key}' does not supported.", nameof(key));
+            }
+
+            return ids;
+        }
+
+        private void RemoveRecords(List<int> ids, dynamic dictionary, dynamic searchKey)
+        {
+            if (dictionary.TryGetValue(searchKey, out List<long> positionList))
+            {
+                foreach (var position in positionList)
+                {
+                    this.fileStream.Seek(position, SeekOrigin.Begin);
+                    this.fileStream.WriteByte(1);
+                    this.fileStream.Seek(position + ReservedFieldLength, SeekOrigin.Begin);
+                    int id = -1;
+                    using (var reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+                    {
+                        id = reader.ReadInt32();
+                        ids.Add(id);
+                    }
+                }
+
+                foreach (var id in ids)
+                {
+                    this.RemoveFromDictionaries(id);
+                    this.idpositionPairs.Remove(id);
+                }
             }
         }
     }

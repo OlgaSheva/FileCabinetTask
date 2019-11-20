@@ -22,11 +22,9 @@ namespace FileCabinetApp.CommandHandlers
                 "delete",
                 "exit",
                 "export",
-                "find",
                 "help",
                 "import",
                 "insert",
-                "list",
                 "purge",
                 "stat",
                 "update",
@@ -47,7 +45,7 @@ namespace FileCabinetApp.CommandHandlers
             foreach (var command in this.commandList)
             {
                 int result = GetDamerauLevenshteinDistance(request.Command, command);
-                if (result < 4)
+                if (result < 3)
                 {
                     similarCommands.Add(command);
                 }

@@ -12,13 +12,17 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class DeleteCommandHandler : ServiceCommandHandlerBase
     {
+        private static Action<string> write;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public DeleteCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public DeleteCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -44,8 +48,10 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
         private void Delete(string parameters)
         {
-            var words = parameters.Split(
-                new char[] { ' ', ',', '.', ':', ';', '-', '=', '(', ')', '\'', '!', '?', '\t' }).Where(s => s.Length > 0).ToList();
+            var words = parameters
+                .Split(this.Separator.ToArray())
+                .Where(s => s.Length > 0)
+                .ToList();
             string key = null;
             string value = null;
             if (words[0].Equals("where", StringComparison.InvariantCultureIgnoreCase))
@@ -58,9 +64,9 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
             if (ids.Count == 1)
             {
-                Console.WriteLine($"Record #{ids[0]} is deleted.");
+                write($"Record #{ids[0]} is deleted.");
             }
-            else if (ids.Count > 0)
+            else if (ids.Count > 1)
             {
                 var sb = new StringBuilder();
                 for (int i = 0; i < ids.Count; i++)
@@ -75,11 +81,11 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
                     }
                 }
 
-                Console.WriteLine($"Records {sb} are deleted.");
+                write($"Records {sb} are deleted.");
             }
             else
             {
-                Console.WriteLine("There are no entries with this parameter.");
+                write("There are no entries with this parameter.");
             }
         }
     }

@@ -11,15 +11,20 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class ExportCommandHandler : ServiceCommandHandlerBase
     {
+        private const int FormatPosition = 0;
+        private const int PathPosition = 1;
+        private static Action<string> write;
         private static StreamWriter streamWriter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExportCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public ExportCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public ExportCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -45,15 +50,15 @@ namespace FileCabinetApp.CommandHandlers
         private void Export(string parameters)
         {
             string[] commands = parameters.Split(' ');
-            string format = commands[0];
-            string path = commands[1];
+            string format = commands[FormatPosition];
+            string path = commands[PathPosition];
             const string yesAnswer = "y";
             const string csvFileType = "csv";
             const string xmlFileType = "xml";
 
             if (File.Exists(path))
             {
-                Console.Write($"File is exist - rewrite {path}? [Y/n] ");
+                write($"File is exist - rewrite {path}? [Y/n] ");
                 if (char.TryParse(Console.ReadLine(), out char answer))
                 {
                     if (answer.ToString(CultureInfo.InvariantCulture).Equals(yesAnswer, StringComparison.InvariantCultureIgnoreCase))
@@ -89,17 +94,17 @@ namespace FileCabinetApp.CommandHandlers
                     {
                         snapshot.SaveToCSV(streamWriter);
                     }
-                    else if (commands[0] == xmlFileType)
+                    else if (commands[FormatPosition] == xmlFileType)
                     {
                         snapshot.SaveToXML(streamWriter);
                     }
                     else
                     {
-                        Console.WriteLine($"There is no {commands[0]} command.");
+                        write($"There is no {commands[FormatPosition]} command.");
                         return;
                     }
 
-                    Console.WriteLine($"All records are exported to file {p}.");
+                    write($"All records are exported to file {p}.");
                 }
             }
         }

@@ -9,13 +9,17 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class PurgeCommandHandler : ServiceCommandHandlerBase
     {
+        private static Action<string> write;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PurgeCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public PurgeCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public PurgeCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -41,7 +45,7 @@ namespace FileCabinetApp.CommandHandlers
         private void Purge(string parameters)
         {
             this.Service.Purge(out int deletedRecordsCount, out int recordsCount);
-            Console.WriteLine($"Data file processing is completed: {deletedRecordsCount} of {recordsCount} records were purged.");
+            write($"Data file processing is completed: {deletedRecordsCount} of {recordsCount} records were purged.");
         }
     }
 }

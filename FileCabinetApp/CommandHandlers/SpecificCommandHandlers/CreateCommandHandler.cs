@@ -13,6 +13,7 @@ namespace FileCabinetApp.CommandHandlers
     internal class CreateCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+        private static Action<string> write;
         private static IInputConverter converter;
         private static IInputValidator validator;
 
@@ -22,12 +23,14 @@ namespace FileCabinetApp.CommandHandlers
         /// <param name="fileCabinetService">The file cabinet service.</param>
         /// <param name="inputConverter">The input converter.</param>
         /// <param name="inputValidator">The input validator.</param>
+        /// <param name="writeDelegate">The write delegate.</param>
         public CreateCommandHandler(
-            IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator)
+            IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator, Action<string> writeDelegate)
             : base(fileCabinetService)
         {
             converter = inputConverter;
             validator = inputValidator;
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -61,7 +64,7 @@ namespace FileCabinetApp.CommandHandlers
 
                 if (!conversionResult.Item1)
                 {
-                    Console.WriteLine($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
+                    write($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
                     continue;
                 }
 
@@ -70,7 +73,7 @@ namespace FileCabinetApp.CommandHandlers
                 var validationResult = validator(value);
                 if (!validationResult.Item1)
                 {
-                    Console.WriteLine($"Validation failed: {validationResult.Item2}. Please, correct your input.");
+                    write($"Validation failed: {validationResult.Item2}. Please, correct your input.");
                     continue;
                 }
 
@@ -97,22 +100,22 @@ namespace FileCabinetApp.CommandHandlers
             Func<string, Tuple<bool, string, short>> shortConverter = converter.ShortConverter;
             Func<string, Tuple<bool, string, decimal>> decimalConverter = converter.DecimalConverter;
 
-            Console.Write("First name: ");
+            write("First name: ");
             var firstName = ReadInput(stringConverter, firstNameValidator);
 
-            Console.Write("Last name: ");
+            write("Last name: ");
             var lastName = ReadInput(stringConverter, lastNameValidator);
 
-            Console.Write("Date of birth: ");
+            write("Date of birth: ");
             var dateOfBirth = ReadInput(dateConverter, dateOfBirthValidator);
 
-            Console.Write("Gender M (male) / F (female) / O (other) / U (unknown): ");
+            write("Gender M (male) / F (female) / O (other) / U (unknown): ");
             var gender = ReadInput(charConverter, genderValidator);
 
-            Console.Write("Office: ");
+            write("Office: ");
             var office = ReadInput(shortConverter, officeValidator);
 
-            Console.Write("Salary: ");
+            write("Salary: ");
             var salary = ReadInput(decimalConverter, salaryValidator);
 
             return (firstName, lastName, dateOfBirth, gender, office, salary);
@@ -127,17 +130,17 @@ namespace FileCabinetApp.CommandHandlers
             {
                 RecordParameters record = new RecordParameters(firstName, lastName, dateOfBirth, gender, office, salary);
                 recordId = this.Service.CreateRecord(record);
-                Console.WriteLine($"Record #{recordId} is created.");
+                write($"Record #{recordId} is created.");
             }
             catch (ArgumentNullException anex)
             {
-                Console.WriteLine($"Record wasn't created. {anex.Message}");
-                Console.WriteLine(HintMessage);
+                write($"Record wasn't created. {anex.Message}");
+                write(HintMessage);
             }
             catch (ArgumentException aex)
             {
-                Console.WriteLine($"Record wasn't created. {aex.Message}");
-                Console.WriteLine(HintMessage);
+                write($"Record wasn't created. {aex.Message}");
+                write(HintMessage);
             }
         }
     }
