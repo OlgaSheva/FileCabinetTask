@@ -8,7 +8,7 @@ namespace FileCabinetApp.Validators.InputValidator
     /// Abstract input validator.
     /// </summary>
     /// <seealso cref="FileCabinetApp.Validators.InputValidator.IInputValidator" />
-    public abstract class AbstractInputValidator : IInputValidator
+    public class InputValidator : IInputValidator
     {
         /// <summary>
         /// Gets the gender.

@@ -15,7 +15,7 @@ namespace FileCabinetApp.Validators.InputValidator
             new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("validation-rules.json").Build();
 
         private static ValidatorSettings validatorSettings;
-        private static AbstractInputValidator validator;
+        private static InputValidator validator;
 
         /// <summary>
         /// Creates the default.
@@ -34,14 +34,13 @@ namespace FileCabinetApp.Validators.InputValidator
             if (validatorType.Equals("custom", StringComparison.InvariantCultureIgnoreCase))
             {
                 validatorSettings = Config.GetSection("custom").Get<ValidatorSettings>();
-                validator = new CustomInputValidator();
             }
             else
             {
                 validatorSettings = Config.GetSection("default").Get<ValidatorSettings>();
-                validator = new DefaultInputValidator();
             }
 
+            validator = new InputValidator();
             validator.FirstNameMinLength = validatorSettings.FirstName.Min;
             validator.FirstNameMaxLength = validatorSettings.FirstName.Max;
             validator.LastNameMinLength = validatorSettings.LastName.Min;

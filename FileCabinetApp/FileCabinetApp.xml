@@ -1693,166 +1693,6 @@
             The maximum.
             </value>
         </member>
-        <member name="T:FileCabinetApp.Validators.InputValidator.AbstractInputValidator">
-            <summary>
-            Abstract input validator.
-            </summary>
-            <seealso cref="T:FileCabinetApp.Validators.InputValidator.IInputValidator" />
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.Gender">
-            <summary>
-            Gets the gender.
-            </summary>
-            <value>
-            The gender.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MinDate">
-            <summary>
-            Gets the minimum date.
-            </summary>
-            <value>
-            The minimum date.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MaxDate">
-            <summary>
-            Gets the maximum date.
-            </summary>
-            <value>
-            The maximum date.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MinOffice">
-            <summary>
-            Gets the minimum office.
-            </summary>
-            <value>
-            The minimum office.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MaxOffice">
-            <summary>
-            Gets the maximum office.
-            </summary>
-            <value>
-            The maximum office.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MinSalary">
-            <summary>
-            Gets the minimum salary.
-            </summary>
-            <value>
-            The minimum salary.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.MaxSalary">
-            <summary>
-            Gets the maximum salary.
-            </summary>
-            <value>
-            The maximum salary.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.FirstNameMinLength">
-            <summary>
-            Gets the first length of the name minimum.
-            </summary>
-            <value>
-            The first length of the name minimum.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.FirstNameMaxLength">
-            <summary>
-            Gets the first length of the name maximum.
-            </summary>
-            <value>
-            The first length of the name maximum.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.LastNameMinLength">
-            <summary>
-            Gets the last length of the name minimum.
-            </summary>
-            <value>
-            The last length of the name minimum.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.LastNameMaxLength">
-            <summary>
-            Gets the last length of the name maximum.
-            </summary>
-            <value>
-            The last length of the name maximum.
-            </value>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.DateOfBirthValidator(System.DateTime)">
-            <summary>
-            Dates the of birth validator.
-            </summary>
-            <param name="dateOfBirth">The date of birth.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.FirstNameValidator(System.String)">
-            <summary>
-            Firsts the name validator.
-            </summary>
-            <param name="firstName">The first name.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.GenderValidator(System.Char)">
-            <summary>
-            Genders the validator.
-            </summary>
-            <param name="gender">The gender.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.LastNameValidator(System.String)">
-            <summary>
-            Lasts the name validator.
-            </summary>
-            <param name="lastName">The last name.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.OfficeValidator(System.Int16)">
-            <summary>
-            Offices the validator.
-            </summary>
-            <param name="office">The office.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="M:FileCabinetApp.Validators.InputValidator.AbstractInputValidator.SalaryValidator(System.Decimal)">
-            <summary>
-            Salaries the validator.
-            </summary>
-            <param name="salary">The salary.</param>
-            <returns>
-            Is parameter valid.
-            </returns>
-        </member>
-        <member name="T:FileCabinetApp.Validators.InputValidator.CustomInputValidator">
-            <summary>
-            Custom input parameters validator.
-            </summary>
-            <seealso cref="T:FileCabinetApp.Validators.InputValidator.IInputValidator" />
-        </member>
-        <member name="T:FileCabinetApp.Validators.InputValidator.DefaultInputValidator">
-            <summary>
-            Default input parameters validator.
-            </summary>
-            <seealso cref="T:FileCabinetApp.Validators.InputValidator.IInputValidator" />
-        </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.IInputValidator">
             <summary>
             Input parameters validator.
@@ -1899,6 +1739,154 @@
             </summary>
             <param name="salary">The salary.</param>
             <returns>Is parameter valid.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.InputValidator.InputValidator">
+            <summary>
+            Abstract input validator.
+            </summary>
+            <seealso cref="T:FileCabinetApp.Validators.InputValidator.IInputValidator" />
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.Gender">
+            <summary>
+            Gets the gender.
+            </summary>
+            <value>
+            The gender.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.MinDate">
+            <summary>
+            Gets the minimum date.
+            </summary>
+            <value>
+            The minimum date.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.MaxDate">
+            <summary>
+            Gets the maximum date.
+            </summary>
+            <value>
+            The maximum date.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.MinOffice">
+            <summary>
+            Gets the minimum office.
+            </summary>
+            <value>
+            The minimum office.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.MaxOffice">
+            <summary>
+            Gets the maximum office.
+            </summary>
+            <value>
+            The maximum office.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.MinSalary">
+            <summary>
+            Gets the minimum salary.
+            </summary>
+            <value>
+            The minimum salary.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.MaxSalary">
+            <summary>
+            Gets the maximum salary.
+            </summary>
+            <value>
+            The maximum salary.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.FirstNameMinLength">
+            <summary>
+            Gets the first length of the name minimum.
+            </summary>
+            <value>
+            The first length of the name minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.FirstNameMaxLength">
+            <summary>
+            Gets the first length of the name maximum.
+            </summary>
+            <value>
+            The first length of the name maximum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.LastNameMinLength">
+            <summary>
+            Gets the last length of the name minimum.
+            </summary>
+            <value>
+            The last length of the name minimum.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.InputValidator.InputValidator.LastNameMaxLength">
+            <summary>
+            Gets the last length of the name maximum.
+            </summary>
+            <value>
+            The last length of the name maximum.
+            </value>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.InputValidator.DateOfBirthValidator(System.DateTime)">
+            <summary>
+            Dates the of birth validator.
+            </summary>
+            <param name="dateOfBirth">The date of birth.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.InputValidator.FirstNameValidator(System.String)">
+            <summary>
+            Firsts the name validator.
+            </summary>
+            <param name="firstName">The first name.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.InputValidator.GenderValidator(System.Char)">
+            <summary>
+            Genders the validator.
+            </summary>
+            <param name="gender">The gender.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.InputValidator.LastNameValidator(System.String)">
+            <summary>
+            Lasts the name validator.
+            </summary>
+            <param name="lastName">The last name.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.InputValidator.OfficeValidator(System.Int16)">
+            <summary>
+            Offices the validator.
+            </summary>
+            <param name="office">The office.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.InputValidator.InputValidator.SalaryValidator(System.Decimal)">
+            <summary>
+            Salaries the validator.
+            </summary>
+            <param name="salary">The salary.</param>
+            <returns>
+            Is parameter valid.
+            </returns>
         </member>
         <member name="T:FileCabinetApp.Validators.InputValidator.InputValidatorBuilder">
             <summary>
