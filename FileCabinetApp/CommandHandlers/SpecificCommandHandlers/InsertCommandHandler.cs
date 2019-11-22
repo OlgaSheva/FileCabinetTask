@@ -53,30 +53,59 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
         private void Insert(string parameters)
         {
+            if (!parameters.Contains("values", StringComparison.InvariantCulture))
+            {
+                throw new ArgumentException(
+                    $"Invalid command format. Example:" +
+                    $" insert (id, firstname, lastname, dateofbirth, gender, office, salary) values ('1', 'John', 'Doe', '5/18/1986', 'M', '133', '1234.5')",
+                    nameof(parameters));
+            }
+
             var words = parameters
                 .ToUpperInvariant()
                 .Split(this.Separator.ToArray())
                 .Where(s => s.Length > 0)
                 .ToList();
+
+            if (words.Count != 15)
+            {
+                throw new ArgumentException(
+                    $"Invalid command format. Example:" +
+                    $" insert (id, firstname, lastname, dateofbirth, gender, office, salary) values ('1', 'John', 'Doe', '5/18/1986', 'M', '133', '1234.5')",
+                    nameof(parameters));
+            }
+
             try
             {
+                this.values.Clear();
                 for (int i = 0; i <= RecordsParametersCount; i++)
                 {
                     this.values.Add(words[i], words[i + RecordsParametersCount + 2]);
                 }
 
                 RecordParameters recordParameters = new RecordParameters(
-                    this.values["firstname"],
-                    this.values["lastname"],
-                    DateTime.Parse(this.values["dateofbirth"], CultureInfo.InvariantCulture),
-                    char.Parse(this.values["gender"]),
-                    short.Parse(this.values["office"], CultureInfo.InvariantCulture),
-                    decimal.Parse(this.values["salary"], CultureInfo.InvariantCulture));
-                this.Service.InsertRecord(recordParameters, int.Parse(this.values["id"], CultureInfo.InvariantCulture));
+                    CultureInfo.InvariantCulture.TextInfo.ToTitleCase(this.values["FIRSTNAME"].ToLowerInvariant()),
+                    CultureInfo.InvariantCulture.TextInfo.ToTitleCase(this.values["LASTNAME"].ToLowerInvariant()),
+                    DateTime.Parse(this.values["DATEOFBIRTH"], CultureInfo.InvariantCulture),
+                    char.Parse(this.values["GENDER"]),
+                    short.Parse(this.values["OFFICE"], CultureInfo.InvariantCulture),
+                    decimal.Parse(this.values["SALARY"], CultureInfo.InvariantCulture));
+                this.Service.InsertRecord(recordParameters, int.Parse(this.values["ID"], CultureInfo.InvariantCulture));
+                write($"Record #{this.values["ID"]} is created.");
             }
             catch (ArgumentException aex)
             {
                 write($"Record wasn't created. {aex.Message}");
+                write(HintMessage);
+            }
+            catch (FormatException fex)
+            {
+                write($"Record wasn't created. {fex.Message}");
+                write(HintMessage);
+            }
+            catch (OverflowException ofex)
+            {
+                write($"Record wasn't created. {ofex.Message}");
                 write(HintMessage);
             }
         }
