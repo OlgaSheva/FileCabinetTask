@@ -85,11 +85,17 @@ namespace FileCabinetApp.CommandHandlers
         {
             FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot();
             Dictionary<int, string> exceptions = new Dictionary<int, string>();
+            List<string> lineExceptions = new List<string>();
             int recordsCount = 0;
             using (StreamReader reader = new StreamReader(filePath))
             {
-                snapshot.LoadFromCSV(reader, out recordsCount);
+                snapshot.LoadFromCSV(reader, out recordsCount, out lineExceptions);
                 this.Service.Restore(snapshot, out exceptions);
+            }
+
+            foreach (var lex in lineExceptions)
+            {
+                write(lex);
             }
 
             foreach (var ex in exceptions)

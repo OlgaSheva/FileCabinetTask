@@ -936,10 +936,11 @@
             </summary>
             <param name="reader">The reader.</param>
         </member>
-        <member name="M:FileCabinetApp.Readers.FileCabinetRecordCsvReader.ReadAll">
+        <member name="M:FileCabinetApp.Readers.FileCabinetRecordCsvReader.ReadAll(System.Collections.Generic.List{System.String}@)">
             <summary>
             Reads all.
             </summary>
+            <param name="exceptions">The exceptions.</param>
             <returns>List of records.</returns>
         </member>
         <member name="T:FileCabinetApp.Readers.FileCabinetRecordXmlReader">
@@ -1124,12 +1125,13 @@
             <param name="writer">The writer.</param>
             <exception cref="T:System.ArgumentNullException">Writer is null.</exception>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.LoadFromCSV(System.IO.StreamReader,System.Int32@)">
+        <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.LoadFromCSV(System.IO.StreamReader,System.Int32@,System.Collections.Generic.List{System.String}@)">
             <summary>
             Loads from CSV.
             </summary>
             <param name="reader">The reader.</param>
             <param name="recordsCount">The records count.</param>
+            <param name="exceptions">The exseptions from reading file.</param>
             <exception cref="T:System.ArgumentNullException">Reader is null.</exception>
         </member>
         <member name="M:FileCabinetApp.Services.FileCabinetServiceSnapshot.LoadFromXML(System.IO.StreamReader,System.Int32@)">
