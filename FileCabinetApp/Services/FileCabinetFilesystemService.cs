@@ -325,6 +325,7 @@ namespace FileCabinetApp.Services
             int deadRecordsCount = 0;
             long lastAliveRecordEnd = 0;
             int id;
+            RecordParameters recordParameters;
 
             using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             using (BinaryWriter writer = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
@@ -342,6 +343,8 @@ namespace FileCabinetApp.Services
                     {
                         id = reader.ReadInt32();
                         this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
+                        recordParameters = GetRecordParametersFromFile(reader);
+                        this.fileStream.Seek(-RecordInBytesLength, SeekOrigin.Current);
                         if (deletedRecordPositions.TryDequeue(out lastDeletedRecordStart))
                         {
                             buffer = reader.ReadBytes(RecordInBytesLength);
@@ -350,7 +353,9 @@ namespace FileCabinetApp.Services
                             this.fileStream.WriteByte(1); // deleted
 
                             deadRecordsCount = (int)((this.fileStream.Position - lastAliveRecordEnd) / RecordInBytesLength);
+                            this.RemoveFromDictionaries(id);
                             this.idpositionPairs[id] = lastDeletedRecordStart;
+                            this.AddToDictionaries(recordParameters, lastDeletedRecordStart);
                             this.fileStream.Seek(lastDeletedRecordStart, SeekOrigin.Begin);
                             writer.Write(buffer, 0, RecordInBytesLength);
 
@@ -705,16 +710,16 @@ namespace FileCabinetApp.Services
             string firstname;
             string lastname;
             List<long> firstnameList = new List<long>(), lastnameList = new List<long>(), firstAndLastNameList = new List<long>();
-            if (keyValuePairs["id"] != null)
+            if (keyValuePairs["ID"] != null)
             {
-                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.InvariantCulture);
+                id = int.Parse(keyValuePairs["ID"], NumberStyles.Integer, CultureInfo.InvariantCulture);
                 position = this.idpositionPairs[id];
             }
-            else if ((firstname = keyValuePairs["firstname"]) != null)
+            else if ((firstname = keyValuePairs["FIRSTNAME"]) != null)
             {
                 if (this.firstNameDictionary.TryGetValue(firstname, out firstnameList))
                 {
-                    lastname = keyValuePairs["lastname"];
+                    lastname = keyValuePairs["LASTNAME"];
                     if (firstnameList.Count == 1 && lastname == null)
                     {
                         position = firstnameList[0];

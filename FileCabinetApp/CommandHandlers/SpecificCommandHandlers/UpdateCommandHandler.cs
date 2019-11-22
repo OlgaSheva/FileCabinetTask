@@ -49,6 +49,19 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
         private void Update(string parameters)
         {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            if (!parameters.Contains("set", StringComparison.InvariantCulture)
+                || !parameters.Contains("where", StringComparison.InvariantCulture))
+            {
+                throw new ArgumentException(
+                    "Invalid command. Example: update set firstname = 'John', lastname = 'Doe' , dateofbirth = '5/18/1986' where id = '1'",
+                    nameof(parameters));
+            }
+
             var words = parameters
                 .Split(this.Separator.ToArray())
                 .Where(s => s.Length > 0)
@@ -64,10 +77,10 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             FileCabinetRecord desiredRecord = new FileCabinetRecord();
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>()
             {
-                { "id", null },
-                { "firstname", null },
-                { "lastname", null },
-                { "dateofbirth", null },
+                { "ID", null },
+                { "FIRSTNAME", null },
+                { "LASTNAME", null },
+                { "DATEOFBIRTH", null },
             };
             if (words[0].Equals("set", StringComparison.InvariantCultureIgnoreCase))
             {

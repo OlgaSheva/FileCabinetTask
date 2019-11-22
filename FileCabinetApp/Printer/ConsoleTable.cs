@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -228,11 +229,8 @@ namespace FileCabinetApp.Printer
 
         private static IEnumerable<string> GetColumns<T>(List<string> listcolumns)
         {
-            return typeof(T)
-                .GetProperties()
-                .Select(x => x.Name)
-                .Where(x => listcolumns.Contains(x.ToUpperInvariant()))
-                .ToArray();
+            return listcolumns
+                .Select(column => typeof(T).GetProperty(column, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance).Name);
         }
 
         private static object GetColumnValue<T>(object target, string column)
