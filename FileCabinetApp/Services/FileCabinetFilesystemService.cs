@@ -186,7 +186,7 @@ namespace FileCabinetApp.Services
         /// <returns>The file cabinet service snapshot.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            var snapshot = new FileCabinetServiceSnapshot();
+            var snapshot = new FileCabinetServiceSnapshot(this.GetRecords().ToList());
             return snapshot;
         }
 

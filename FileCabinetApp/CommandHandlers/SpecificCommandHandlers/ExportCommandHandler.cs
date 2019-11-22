@@ -49,7 +49,17 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Export(string parameters)
         {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
             string[] commands = parameters.Split(' ');
+            if (commands.Length != 2)
+            {
+                throw new ArgumentException("Wrong command format. Example: export csv d:/records.csv", nameof(parameters));
+            }
+
             string format = commands[FormatPosition];
             string path = commands[PathPosition];
             const string yesAnswer = "y";
