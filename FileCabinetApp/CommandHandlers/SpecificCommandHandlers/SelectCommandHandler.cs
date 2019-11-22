@@ -72,7 +72,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
             while (++i < words.Count)
             {
-                keyValuePairs.Add(new KeyValuePair<string, string>(words[i].ToLower(CultureInfo.CurrentCulture), words[i + 1]));
+                keyValuePairs.Add(new KeyValuePair<string, string>(words[i].ToUpperInvariant(), words[i + 1]));
                 i += 2;
                 if (i < words.Count)
                 {
@@ -84,13 +84,13 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             {
                 columns = new List<string>
                 {
-                    "id",
-                    "firstname",
-                    "lastname",
-                    "dateofbirth",
-                    "gender",
-                    "office",
-                    "salary",
+                    "ID",
+                    "FIRSTNAME",
+                    "LASTNAME",
+                    "DATEOFBIRTH",
+                    "GENDER",
+                    "OFFICE",
+                    "SALARY",
                 };
             }
 

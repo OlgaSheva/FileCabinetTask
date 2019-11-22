@@ -195,24 +195,40 @@ namespace FileCabinetApp
             }
 
             var ids = new List<int>();
+            var indexes = new List<int>();
             bool flag = false;
             for (var i = 0; i < this.list.Count; i++)
             {
                 flag = false;
-                switch (key.ToLower(CultureInfo.CurrentCulture))
+                switch (key.ToUpperInvariant())
                 {
-                    case "id":
-                        flag = this.list[i].Id == int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+                    case "ID":
+                        if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int id))
+                        {
+                            flag = this.list[i].Id == int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            throw new ArgumentException("Wrong id format.", nameof(value));
+                        }
+
                         break;
-                    case "firstname":
+                    case "FIRSTNAME":
                         flag = this.list[i].FirstName.Equals(value, StringComparison.InvariantCultureIgnoreCase);
                         break;
-                    case "lastname":
+                    case "LASTNAME":
                         flag = this.list[i].LastName.Equals(value, StringComparison.InvariantCultureIgnoreCase);
                         break;
-                    case "dateofbirth":
-                        DateTime dateofbirth = DateTime.Parse(value, CultureInfo.InvariantCulture);
-                        flag = this.list[i].DateOfBirth == dateofbirth;
+                    case "DATEOFBIRTH":
+                        if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                        {
+                            flag = this.list[i].DateOfBirth == date;
+                        }
+                        else
+                        {
+                            throw new ArgumentException("You can use only the MM.DD.YYYY, MM/DD/YYYY, YYYY-MM-DD, format", nameof(value));
+                        }
+
                         break;
                     default:
                         throw new ArgumentException($"Search by key '{key}' does not supported.", nameof(key));
@@ -221,9 +237,14 @@ namespace FileCabinetApp
                 if (flag)
                 {
                     ids.Add(this.list[i].Id);
-                    this.RemoveFromDictionaries(i);
-                    this.list.Remove(this.list[i]);
+                    indexes.Add(i);
                 }
+            }
+
+            for (int i = indexes.Count - 1; i >= 0; i--)
+            {
+                this.RemoveFromDictionaries(indexes[i]);
+                this.list.Remove(this.list[indexes[i]]);
             }
 
             return ids;
@@ -478,7 +499,7 @@ namespace FileCabinetApp
             List<FileCabinetRecord> firstnameList = new List<FileCabinetRecord>(), lastnameList = new List<FileCabinetRecord>();
             if (keyValuePairs["id"] != null)
             {
-                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.CurrentCulture);
+                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.InvariantCulture);
             }
             else if ((firstname = keyValuePairs["firstname"]) != null)
             {
@@ -551,7 +572,7 @@ namespace FileCabinetApp
                         switch (key)
                         {
                             case "id":
-                                int id = int.Parse(value, CultureInfo.CurrentCulture);
+                                int id = int.Parse(value, CultureInfo.InvariantCulture);
                                 if (this.IsThereARecordWithThisId(id, out long index))
                                 {
                                     findedRecords.Add(this.list[(int)index]);

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using FileCabinetApp.Enums;
 using FileCabinetApp.Validators;
 
 namespace FileCabinetApp.Services
@@ -38,6 +37,7 @@ namespace FileCabinetApp.Services
             this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream));
             this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
 
+            this.fileStream.SetLength(0);
             this.FillAllDictionaries();
         }
 
@@ -707,7 +707,7 @@ namespace FileCabinetApp.Services
             List<long> firstnameList = new List<long>(), lastnameList = new List<long>(), firstAndLastNameList = new List<long>();
             if (keyValuePairs["id"] != null)
             {
-                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.CurrentCulture);
+                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.InvariantCulture);
                 position = this.idpositionPairs[id];
             }
             else if ((firstname = keyValuePairs["firstname"]) != null)
@@ -768,126 +768,142 @@ namespace FileCabinetApp.Services
             }
         }
 
-        private List<long> GetPositionsOfSelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
-        {
-            List<long> positions = new List<long>();
-            if (keyValuePairs.Count == 0)
-            {
-                positions.AddRange(this.idpositionPairs.Values);
-            }
-            else
-            {
-                string key;
-                string value;
-                foreach (var criterion in keyValuePairs)
-                {
-                    key = criterion.Key;
-                    value = criterion.Value;
-                    try
-                    {
-                        switch (key)
-                        {
-                            case "id":
-                                int id = int.Parse(value, CultureInfo.CurrentCulture);
-                                if (this.idpositionPairs.TryGetValue(id, out long p))
-                                {
-                                    positions.Add(p);
-                                }
+        //private List<long> GetPositionsOfSelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
+        //{
+        //    List<long> positions = new List<long>();
+        //    if (keyValuePairs.Count == 0)
+        //    {
+        //        positions.AddRange(this.idpositionPairs.Values);
+        //    }
+        //    else
+        //    {
+        //        string key;
+        //        string value;
+        //        foreach (var criterion in keyValuePairs)
+        //        {
+        //            key = criterion.Key;
+        //            value = criterion.Value;
+        //            try
+        //            {
+        //                switch (key)
+        //                {
+        //                    case "id":
+        //                        int id = int.Parse(value, CultureInfo.InvariantCulture);
+        //                        if (this.idpositionPairs.TryGetValue(id, out long p))
+        //                        {
+        //                            positions.Add(p);
+        //                        }
 
-                                break;
-                            case "firstname":
-                                if (condition.Equals(SearchCondition.Or))
-                                {
-                                    positions.AddRange(this.firstNameDictionary[value]);
-                                }
-                                else
-                                {
-                                    if (positions.Count == 0)
-                                    {
-                                        positions.AddRange(this.firstNameDictionary[value]);
-                                    }
-                                    else
-                                    {
-                                        positions = positions.Intersect(this.firstNameDictionary[value]).ToList();
-                                    }
-                                }
+        //                        break;
+        //                    case "firstname":
+        //                        if (condition.Equals(SearchCondition.Or))
+        //                        {
+        //                            positions.AddRange(this.firstNameDictionary[value]);
+        //                        }
+        //                        else
+        //                        {
+        //                            if (positions.Count == 0)
+        //                            {
+        //                                positions.AddRange(this.firstNameDictionary[value]);
+        //                            }
+        //                            else
+        //                            {
+        //                                positions = positions.Intersect(this.firstNameDictionary[value]).ToList();
+        //                            }
+        //                        }
 
-                                break;
-                            case "lastname":
-                                if (condition.Equals(SearchCondition.Or))
-                                {
-                                    positions.AddRange(this.lastNameDictionary[value]);
-                                }
-                                else
-                                {
-                                    if (positions.Count == 0)
-                                    {
-                                        positions.AddRange(this.lastNameDictionary[value]);
-                                    }
-                                    else
-                                    {
-                                        positions = positions.Intersect(this.lastNameDictionary[value]).ToList();
-                                    }
-                                }
+        //                        break;
+        //                    case "lastname":
+        //                        if (condition.Equals(SearchCondition.Or))
+        //                        {
+        //                            positions.AddRange(this.lastNameDictionary[value]);
+        //                        }
+        //                        else
+        //                        {
+        //                            if (positions.Count == 0)
+        //                            {
+        //                                positions.AddRange(this.lastNameDictionary[value]);
+        //                            }
+        //                            else
+        //                            {
+        //                                positions = positions.Intersect(this.lastNameDictionary[value]).ToList();
+        //                            }
+        //                        }
 
-                                break;
-                            case "dateofbirth":
-                                if (DateTime.TryParse(value, out DateTime date))
-                                {
-                                    if (condition.Equals(SearchCondition.Or))
-                                    {
-                                        positions.AddRange(this.dateOfBirthDictionary[date]);
-                                    }
-                                    else
-                                    {
-                                        if (positions.Count == 0)
-                                        {
-                                            positions.AddRange(this.dateOfBirthDictionary[date]);
-                                        }
-                                        else
-                                        {
-                                            positions = positions.Intersect(this.dateOfBirthDictionary[date]).ToList();
-                                        }
-                                    }
-                                }
+        //                        break;
+        //                    case "dateofbirth":
+        //                        if (DateTime.TryParse(value, out DateTime date))
+        //                        {
+        //                            if (condition.Equals(SearchCondition.Or))
+        //                            {
+        //                                positions.AddRange(this.dateOfBirthDictionary[date]);
+        //                            }
+        //                            else
+        //                            {
+        //                                if (positions.Count == 0)
+        //                                {
+        //                                    positions.AddRange(this.dateOfBirthDictionary[date]);
+        //                                }
+        //                                else
+        //                                {
+        //                                    positions = positions.Intersect(this.dateOfBirthDictionary[date]).ToList();
+        //                                }
+        //                            }
+        //                        }
 
-                                break;
-                            default:
-                                throw new InvalidOperationException(
-                                    $"The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.");
-                        }
-                    }
-                    catch (KeyNotFoundException knfex)
-                    {
-                        throw new ArgumentException($"The record with {key} = '{value}' doesn't exist.", knfex.Message);
-                    }
-                }
-            }
+        //                        break;
+        //                    default:
+        //                        throw new InvalidOperationException(
+        //                            $"The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.");
+        //                }
+        //            }
+        //            catch (KeyNotFoundException knfex)
+        //            {
+        //                throw new ArgumentException($"The record with {key} = '{value}' doesn't exist.", knfex.Message);
+        //            }
+        //        }
+        //    }
 
-            return positions;
-        }
+        //    return positions;
+        //}
 
         private List<int> GetIdsOfRecordsThatMathForKeyValue(string key, string value, out dynamic dictionary, out dynamic searchKey)
         {
             List<int> ids = new List<int>();
-            switch (key.ToLower(CultureInfo.CurrentCulture))
+            switch (key.ToUpperInvariant())
             {
-                case "id":
-                    searchKey = int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                    dictionary = new Dictionary<int, List<long>>()
+                case "ID":
+                    if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int id))
+                    {
+                        searchKey = id;
+                        dictionary = new Dictionary<int, List<long>>()
                         { { (int)searchKey, new List<long>() { this.idpositionPairs[searchKey] } }, };
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Wrong id format.", nameof(value));
+                    }
+
                     break;
-                case "firstname":
+                case "FIRSTNAME":
                     dictionary = this.firstNameDictionary;
                     searchKey = value;
                     break;
-                case "lastname":
+                case "LASTNAME":
                     dictionary = this.lastNameDictionary;
                     searchKey = value;
                     break;
-                case "dateofbirth":
-                    dictionary = this.dateOfBirthDictionary;
-                    searchKey = DateTime.Parse(value, CultureInfo.InvariantCulture);
+                case "DATEOFBIRTH":
+                    if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                    {
+                        searchKey = date;
+                        dictionary = this.dateOfBirthDictionary;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("You can use only the MM.DD.YYYY, MM/DD/YYYY, YYYY-MM-DD, format", nameof(value));
+                    }
+
                     break;
                 default:
                     throw new ArgumentException($"Search by key '{key}' does not supported.", nameof(key));

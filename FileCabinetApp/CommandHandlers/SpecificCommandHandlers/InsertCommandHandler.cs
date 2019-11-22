@@ -54,7 +54,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
         private void Insert(string parameters)
         {
             var words = parameters
-                .ToLower(CultureInfo.DefaultThreadCurrentCulture)
+                .ToUpperInvariant()
                 .Split(this.Separator.ToArray())
                 .Where(s => s.Length > 0)
                 .ToList();

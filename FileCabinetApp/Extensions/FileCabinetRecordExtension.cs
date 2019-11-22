@@ -17,13 +17,13 @@ namespace FileCabinetApp.Extensions
         private static readonly ParameterExpression Record = Expression.Parameter(typeof(FileCabinetRecord), "record");
         private static readonly Dictionary<string, MemberInfo> Properties = new Dictionary<string, MemberInfo>
         {
-            { "id", RecordType.GetProperty("Id") },
-            { "firstname", RecordType.GetProperty("FirstName") },
-            { "lastname", RecordType.GetProperty("LastName") },
-            { "dateofbirth", RecordType.GetProperty("DateOfBirth") },
-            { "gender", RecordType.GetProperty("Gender") },
-            { "office", RecordType.GetProperty("Office") },
-            { "salary", RecordType.GetProperty("Salary") },
+            { "ID", RecordType.GetProperty("Id") },
+            { "FIRSTNAME", RecordType.GetProperty("FirstName") },
+            { "LASTNAME", RecordType.GetProperty("LastName") },
+            { "DATEOFBIRTH", RecordType.GetProperty("DateOfBirth") },
+            { "GENDER", RecordType.GetProperty("Gender") },
+            { "OFFICE", RecordType.GetProperty("Office") },
+            { "SALARY", RecordType.GetProperty("Salary") },
         };
 
         /// <summary>
@@ -67,10 +67,10 @@ namespace FileCabinetApp.Extensions
             foreach (KeyValuePair<string, string> pair in keyValuePairs)
             {
                 var kv = pair;
-                switch (kv.Key)
+                switch (kv.Key.ToUpperInvariant())
                 {
-                    case "id":
-                        if (int.TryParse(kv.Value, NumberStyles.Integer, CultureInfo.CurrentCulture, out int id))
+                    case "ID":
+                        if (int.TryParse(kv.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int id))
                         {
                             filterExpressions.Add(MakeBinary(kv.Key, id, Record));
                         }
@@ -80,11 +80,11 @@ namespace FileCabinetApp.Extensions
                         }
 
                         break;
-                    case "firstname":
-                    case "lastname":
+                    case "FIRSTNAME":
+                    case "LASTNAME":
                         filterExpressions.Add(MakeBinary(kv.Key, kv.Value, Record));
                         break;
-                    case "dateofbirth":
+                    case "DATEOFBIRTH":
                         if (DateTime.TryParse(kv.Value, out DateTime dateofbirth))
                         {
                             filterExpressions.Add(MakeBinary(kv.Key, dateofbirth, Record));

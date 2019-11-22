@@ -25,6 +25,7 @@ namespace FileCabinetApp.CommandHandlers
                 "help",
                 "import",
                 "insert",
+                "select",
                 "purge",
                 "stat",
                 "update",

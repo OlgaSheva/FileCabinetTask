@@ -74,26 +74,30 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
                 int i = 1;
                 do
                 {
-                    key = words[i].ToLower(CultureInfo.CurrentCulture);
+                    key = words[i].ToUpperInvariant();
                     value = words[i + 1];
                     switch (key)
                     {
-                        case "firstname":
+                        case "FIRSTNAME":
                             firstname = value;
                             break;
-                        case "lastname":
+                        case "LASTNAME":
                             lastname = value;
                             break;
-                        case "dateofbirth":
-                            dateofbirth = DateTime.Parse(value, CultureInfo.InvariantCulture);
+                        case "DATEOFBIRTH":
+                            if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                            {
+                                dateofbirth = date;
+                            }
+
                             break;
-                        case "gender":
+                        case "GENDER":
                             gender = char.Parse(value);
                             break;
-                        case "office":
+                        case "OFFICE":
                             office = short.Parse(value, CultureInfo.InvariantCulture);
                             break;
-                        case "salary":
+                        case "SALARY":
                             salary = decimal.Parse(value, CultureInfo.InvariantCulture);
                             break;
                         default:
@@ -107,7 +111,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
                 while (++i < words.Count)
                 {
-                    keyValuePairs[words[i].ToLower(CultureInfo.CurrentCulture)] = words[i + 1];
+                    keyValuePairs[words[i].ToUpperInvariant()] = words[i + 1];
                     i += 2;
                 }
 

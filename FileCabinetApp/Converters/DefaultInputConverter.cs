@@ -36,7 +36,7 @@ namespace FileCabinetApp.Converters
         /// </returns>
         public Tuple<bool, string, DateTime> DateConverter(string input)
         {
-            bool flag = DateTime.TryParse(input, out DateTime date);
+            bool flag = DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
 
             var tuple = new Tuple<bool, string, DateTime>(flag, input, date);
             return tuple;

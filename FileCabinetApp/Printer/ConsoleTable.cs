@@ -188,7 +188,7 @@ namespace FileCabinetApp.Printer
                     {
                         for (int i = 0; i < this.Rows.Count; i++)
                         {
-                            this.Rows[i][j] = ((DateTime)this.Rows[i][j]).ToString("dd'/'MM'/'yyyy", CultureInfo.CurrentCulture);
+                            this.Rows[i][j] = ((DateTime)this.Rows[i][j]).ToString("MM'/'dd'/'yyyy", CultureInfo.InvariantCulture);
                         }
                     }
                 }
@@ -202,10 +202,10 @@ namespace FileCabinetApp.Printer
             var format = Enumerable.Range(0, this.Columns.Count)
                 .Select(i => " | {" + i + "," + columnAlignment[i] + columnLengths[i] + "}")
                 .Aggregate((s, a) => s + a) + " |";
-            var maxRowLength = Math.Max(0, this.Rows.Any() ? this.Rows.Max(row => string.Format(CultureInfo.CurrentCulture, format, row).Length) : 0);
-            var columnHeaders = string.Format(CultureInfo.CurrentCulture, format, this.Columns.ToArray());
+            var maxRowLength = Math.Max(0, this.Rows.Any() ? this.Rows.Max(row => string.Format(CultureInfo.InvariantCulture, format, row).Length) : 0);
+            var columnHeaders = string.Format(CultureInfo.InvariantCulture, format, this.Columns.ToArray());
             var longestLine = Math.Max(maxRowLength, columnHeaders.Length);
-            var results = this.Rows.Select(row => string.Format(CultureInfo.CurrentCulture, format, row)).ToList();
+            var results = this.Rows.Select(row => string.Format(CultureInfo.InvariantCulture, format, row)).ToList();
             var divider = " " + string.Join(string.Empty, Enumerable.Repeat("-", longestLine - 1)) + " ";
 
             builder.AppendLine(divider);
@@ -220,7 +220,7 @@ namespace FileCabinetApp.Printer
             if (this.Options.EnableCount)
             {
                 builder.AppendLine(string.Empty);
-                builder.AppendFormat(CultureInfo.CurrentCulture, " Count: {0}", this.Rows.Count);
+                builder.AppendFormat(CultureInfo.InvariantCulture, " Count: {0}", this.Rows.Count);
             }
 
             return builder.ToString();
@@ -231,7 +231,7 @@ namespace FileCabinetApp.Printer
             return typeof(T)
                 .GetProperties()
                 .Select(x => x.Name)
-                .Where(x => listcolumns.Contains(x.ToLower(CultureInfo.CurrentCulture)))
+                .Where(x => listcolumns.Contains(x.ToUpperInvariant()))
                 .ToArray();
         }
 
@@ -250,8 +250,8 @@ namespace FileCabinetApp.Printer
             var builder = new StringBuilder();
             var columnLengths = this.ColumnLengths();
             var format = this.Format(columnLengths, delimiter);
-            var columnHeaders = string.Format(CultureInfo.CurrentCulture, format, this.Columns.ToArray());
-            var results = this.Rows.Select(row => string.Format(CultureInfo.CurrentCulture, format, row)).ToList();
+            var columnHeaders = string.Format(CultureInfo.InvariantCulture, format, this.Columns.ToArray());
+            var results = this.Rows.Select(row => string.Format(CultureInfo.InvariantCulture, format, row)).ToList();
             var divider = Regex.Replace(columnHeaders, @"[^|]", "-");
 
             builder.AppendLine(columnHeaders);
@@ -267,7 +267,7 @@ namespace FileCabinetApp.Printer
                 .Select(this.GetNumberAlignment)
                 .ToList();
 
-            var delimiterStr = delimiter == char.MinValue ? string.Empty : delimiter.ToString(CultureInfo.CurrentCulture);
+            var delimiterStr = delimiter == char.MinValue ? string.Empty : delimiter.ToString(CultureInfo.InvariantCulture);
             var format = (Enumerable.Range(0, this.Columns.Count)
                 .Select(i => " " + delimiterStr + " {" + i + "," + columnAlignment[i] + columnLengths[i] + "}")
                 .Aggregate((s, a) => s + a) + " " + delimiterStr).Trim();
