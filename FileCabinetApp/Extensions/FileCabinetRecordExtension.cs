@@ -38,6 +38,11 @@ namespace FileCabinetApp.Extensions
             List<KeyValuePair<string, string>> keyValuePairs,
             SearchCondition condition)
         {
+            if (records == null)
+            {
+                throw new ArgumentNullException(nameof(records));
+            }
+
             var selectExpression = Expression
                 .Lambda<Func<FileCabinetRecord, FileCabinetRecord>>(Record, Record);
             Func<FileCabinetRecord, FileCabinetRecord> delegateForSelect = selectExpression.Compile();

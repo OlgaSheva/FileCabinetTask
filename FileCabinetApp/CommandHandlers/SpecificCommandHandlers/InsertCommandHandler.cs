@@ -39,6 +39,11 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (request.Command == "insert")
             {
                 this.Insert(request.Parameters);

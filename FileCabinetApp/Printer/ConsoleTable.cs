@@ -83,6 +83,16 @@ namespace FileCabinetApp.Printer
         /// <returns>Console table.</returns>
         public static ConsoleTable From<T>(IEnumerable<T> values, List<string> columnsList)
         {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            if (columnsList == null)
+            {
+                throw new ArgumentNullException(nameof(columnsList));
+            }
+
             var table = new ConsoleTable
             {
                 ColumnTypes = GetColumnsType<T>().ToList(),

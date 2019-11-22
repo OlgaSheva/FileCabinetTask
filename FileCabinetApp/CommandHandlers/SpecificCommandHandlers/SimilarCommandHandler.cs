@@ -41,6 +41,11 @@ namespace FileCabinetApp.CommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             Console.WriteLine($"'{request.Command}' is not a command. See 'help'.");
             List<string> similarCommands = new List<string>();
             foreach (var command in this.commandList)

@@ -184,7 +184,7 @@ namespace FileCabinetApp
         /// <exception cref="ArgumentException">Search by key '{key}' does not supported.</exception>
         public List<int> Delete(string key, string value)
         {
-            if (key is null)
+            if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }

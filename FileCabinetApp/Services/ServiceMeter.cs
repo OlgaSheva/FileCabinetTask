@@ -22,9 +22,9 @@ namespace FileCabinetApp.Services
         /// <param name="write">The write.</param>
         public ServiceMeter(IFileCabinetService service, Action<string> write)
         {
-            this.service = service;
+            this.service = service ?? throw new ArgumentNullException(nameof(service));
             this.stopWatch = new Stopwatch();
-            this.write = write;
+            this.write = write ?? throw new ArgumentNullException(nameof(write));
         }
 
         /// <summary>
@@ -34,6 +34,11 @@ namespace FileCabinetApp.Services
         /// <returns>Id of new file cabinet record.</returns>
         public int CreateRecord(RecordParameters record)
         {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             this.stopWatch.Reset();
             this.stopWatch.Start();
             var result = this.service.CreateRecord(record);
@@ -52,6 +57,11 @@ namespace FileCabinetApp.Services
         /// <param name="id">The identifier.</param>
         public void InsertRecord(RecordParameters recordParameters, int id)
         {
+            if (recordParameters == null)
+            {
+                throw new ArgumentNullException(nameof(recordParameters));
+            }
+
             this.stopWatch.Reset();
             this.stopWatch.Start();
             this.service.InsertRecord(recordParameters, id);
@@ -72,6 +82,16 @@ namespace FileCabinetApp.Services
         /// </returns>
         public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
         {
+            if (recordParameters == null)
+            {
+                throw new ArgumentNullException(nameof(recordParameters));
+            }
+
+            if (keyValuePairs == null)
+            {
+                throw new ArgumentNullException(nameof(keyValuePairs));
+            }
+
             this.stopWatch.Reset();
             this.stopWatch.Start();
             int id = this.service.Update(recordParameters, keyValuePairs);
@@ -167,6 +187,16 @@ namespace FileCabinetApp.Services
         /// </returns>
         public List<int> Delete(string key, string value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             this.stopWatch.Reset();
             this.stopWatch.Start();
             var result = this.service.Delete(key, value);
@@ -185,6 +215,11 @@ namespace FileCabinetApp.Services
         /// <param name="exceptions">The exceptions.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions)
         {
+            if (snapshot == null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
             this.stopWatch.Reset();
             this.stopWatch.Start();
             this.service.Restore(snapshot, out exceptions);

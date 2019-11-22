@@ -1,4 +1,6 @@
-﻿namespace FileCabinetApp.CommandHandlers
+﻿using System;
+
+namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>
     /// Abstract command handler.
@@ -30,6 +32,11 @@
         /// </returns>
         public virtual AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (this.nextHandler != null)
             {
                 return this.nextHandler.Handle(request);

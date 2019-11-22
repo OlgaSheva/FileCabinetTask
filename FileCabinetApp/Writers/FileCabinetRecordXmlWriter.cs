@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
 
@@ -17,7 +18,7 @@ namespace FileCabinetApp.Writers
         /// <param name="writer">The writer.</param>
         public FileCabinetRecordXmlWriter(StreamWriter writer)
         {
-            this.writer = writer;
+            this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
         /// <summary>
@@ -27,6 +28,16 @@ namespace FileCabinetApp.Writers
         /// <param name="doc">The document.</param>
         public static void Write(FileCabinetRecord fileCabinetRecord, XDocument doc)
         {
+            if (fileCabinetRecord == null)
+            {
+                throw new ArgumentNullException(nameof(fileCabinetRecord));
+            }
+
+            if (doc == null)
+            {
+                throw new ArgumentNullException(nameof(doc));
+            }
+
             XElement record = new XElement("record");
             doc.Root.Add(record);
             record.Add(

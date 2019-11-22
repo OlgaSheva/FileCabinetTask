@@ -36,7 +36,7 @@ namespace FileCabinetApp.Memoizers
         /// <returns>Memoizer object.</returns>
         public static Memoizer GetMemoizer(IFileCabinetService fileCabinetService)
         {
-            service = fileCabinetService;
+            service = fileCabinetService ?? throw new ArgumentNullException(nameof(fileCabinetService));
             return Lazy.Value;
         }
 
@@ -48,6 +48,11 @@ namespace FileCabinetApp.Memoizers
         /// <returns>Select records.</returns>
         public IEnumerable<FileCabinetRecord> Select(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
         {
+            if (keyValuePairs == null)
+            {
+                throw new ArgumentNullException(nameof(keyValuePairs));
+            }
+
             var tuple = Tuple.Create(keyValuePairs, condition);
             if (!this.MemoizerDictionary.TryGetValue(tuple, out List<FileCabinetRecord> results))
             {

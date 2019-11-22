@@ -35,6 +35,11 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (request.Command == "update")
             {
                 this.Update(request.Parameters);

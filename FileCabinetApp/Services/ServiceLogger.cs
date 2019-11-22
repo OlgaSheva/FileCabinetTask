@@ -21,7 +21,7 @@ namespace FileCabinetApp.Services
         /// <param name="service">The service.</param>
         public ServiceLogger(IFileCabinetService service)
         {
-            this.service = service;
+            this.service = service ?? throw new ArgumentNullException(nameof(service));
             this.logger = NLog.LogManager.GetCurrentClassLogger();
         }
 
@@ -181,6 +181,11 @@ namespace FileCabinetApp.Services
         /// <param name="exceptions">The exceptions.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions)
         {
+            if (snapshot == null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
             this.service.Restore(snapshot, out exceptions);
         }
 
@@ -194,6 +199,16 @@ namespace FileCabinetApp.Services
         /// </returns>
         public List<int> Delete(string key, string value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Calling Delete() where {key} = '{value}'");
             var ids = this.service.Delete(key, value);
