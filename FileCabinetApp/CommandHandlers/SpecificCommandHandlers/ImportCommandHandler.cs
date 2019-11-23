@@ -54,6 +54,11 @@ namespace FileCabinetApp.CommandHandlers
         private void Import(string parameters)
         {
             string[] comands = parameters.Split(' ');
+            if (comands.Length != 2)
+            {
+                throw new ArgumentException("Invalid operation. Example: import xml d:/records.xml", nameof(parameters));
+            }
+
             string fileFormat = comands[FormatPosition];
             string filePath = comands[PathPosition];
             const string csvFormat = "csv";

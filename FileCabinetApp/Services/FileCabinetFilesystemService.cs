@@ -18,6 +18,7 @@ namespace FileCabinetApp.Services
         private const int ReservedFieldLength = 2;
         private const int IdPosition = 2;
         private const int FirstNamePosition = 6;
+        private const int GenderPosition = 258;
         private const int StringInBitesLength = 120;
         private const int DecimalInBitesLength = 16;
         private readonly FileStream fileStream;
@@ -82,6 +83,7 @@ namespace FileCabinetApp.Services
             }
 
             this.validator.ValidateParameters(rec);
+            this.fileStream.Seek(0, SeekOrigin.End);
             this.CreateFileCabinetRecord(rec, id);
         }
 
@@ -250,13 +252,21 @@ namespace FileCabinetApp.Services
                         var recordParameters = new RecordParameters(
                             record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
                         this.validator.ValidateParameters(recordParameters);
-                        this.WriteToTheBinaryFile(record);
+                        if (this.idpositionPairs.ContainsKey(record.Id))
+                        {
+                            this.RemoveFromDictionaries(record.Id);
+                            this.fileStream.Seek(-GenderPosition, SeekOrigin.Current);
+                            this.idpositionPairs.Remove(record.Id);
+                        }
+
                         if (!this.idpositionPairs.ContainsKey(record.Id))
                         {
-                            position = this.fileStream.Position - RecordInBytesLength;
+                            position = this.fileStream.Position;
                             this.idpositionPairs.Add(record.Id, position);
                             this.AddToDictionaries(recordParameters, position);
                         }
+
+                        this.WriteToTheBinaryFile(record);
                     }
                     catch (ArgumentException ex)
                     {
@@ -550,7 +560,6 @@ namespace FileCabinetApp.Services
 
         private void WriteToTheBinaryFile(FileCabinetRecord record)
         {
-            this.fileStream.Seek(0, SeekOrigin.End);
             using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
             {
                 var byteId = BitConverter.GetBytes(record.Id);
@@ -706,76 +715,6 @@ namespace FileCabinetApp.Services
             }
 
             newRecordParameters = new RecordParameters(pfirstname, plastname, pdateofbirth, pgender, poffice, psalary);
-        }
-
-        private void GetIdAndPositionOfSearchRecord(Dictionary<string, string> keyValuePairs, out int id, out long position)
-        {
-            id = 0;
-            position = 0;
-            string firstname;
-            string lastname;
-            List<long> firstnameList = new List<long>(), lastnameList = new List<long>(), firstAndLastNameList = new List<long>();
-            if (keyValuePairs["ID"] != null)
-            {
-                id = int.Parse(keyValuePairs["ID"], NumberStyles.Integer, CultureInfo.InvariantCulture);
-                position = this.idpositionPairs[id];
-            }
-            else if ((firstname = keyValuePairs["FIRSTNAME"]) != null)
-            {
-                if (this.firstNameDictionary.TryGetValue(firstname, out firstnameList))
-                {
-                    lastname = keyValuePairs["LASTNAME"];
-                    if (firstnameList.Count == 1 && lastname == null)
-                    {
-                        position = firstnameList[0];
-                    }
-                    else if (lastname != null)
-                    {
-                        if (this.lastNameDictionary.TryGetValue(lastname, out lastnameList))
-                        {
-                            foreach (var fnp in firstnameList)
-                            {
-                                foreach (var lnp in lastnameList)
-                                {
-                                    if (fnp == lnp)
-                                    {
-                                        firstAndLastNameList.Add(fnp);
-                                    }
-                                }
-                            }
-
-                            if (firstAndLastNameList.Count == 1)
-                            {
-                                position = firstAndLastNameList[0];
-                            }
-                            else if (firstAndLastNameList.Count > 1)
-                            {
-                                throw new ArgumentException("There are several entries with such parameters.");
-                            }
-                        }
-                        else
-                        {
-                            throw new ArgumentException("There are no entries with such parameters.");
-                        }
-                    }
-                    else if (firstAndLastNameList.Count > 1 && lastname == null)
-                    {
-                        throw new ArgumentException("There are several entries with such parameters.");
-                    }
-                    else
-                    {
-                        throw new ArgumentException("There are no entries with such parameters.");
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Record whith firstname = '{firstname}' does not exist.");
-                }
-            }
-            else
-            {
-                throw new ArgumentException("There are no entries with such parameters.");
-            }
         }
 
         private List<int> GetIdsOfRecordsThatMathForKeyValue(string key, string value, out dynamic dictionary, out dynamic searchKey)
