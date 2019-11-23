@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FileCabinetApp.Memoizers;
@@ -51,38 +52,8 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             }
         }
 
-        private void Delete(string parameters)
+        private static void Print(List<int> ids)
         {
-            if (parameters == null)
-            {
-                throw new ArgumentNullException(nameof(parameters), "You need to specify the parameters.");
-            }
-
-            if (!parameters.Contains("where", StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new ArgumentException("The request is not valid. For example: delete where id = '1'", nameof(parameters));
-            }
-
-            var words = parameters
-                .Split(this.Separator.ToArray())
-                .Where(s => s.Length > 0)
-                .ToList();
-
-            if (words.Count > 3)
-            {
-                throw new ArgumentException("The command accepts only one parameter. For example: delete where id = '1'");
-            }
-
-            string key = null;
-            string value = null;
-            if (words[0].Equals("where", StringComparison.InvariantCultureIgnoreCase))
-            {
-                key = words[1];
-                value = words[2];
-            }
-
-            var ids = this.Service.Delete(key, value);
-
             if (ids.Count == 1)
             {
                 write($"Record #{ids[0]} is deleted.");
@@ -108,6 +79,39 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             {
                 write("There are no entries with this parameter.");
             }
+        }
+
+        private void Delete(string parameters)
+        {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters), "You need to specify the parameters.");
+            }
+
+            if (!parameters.Contains("where", StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new ArgumentException("The request is not valid. For example: delete where id = '1'", nameof(parameters));
+            }
+
+            var words = parameters
+                .Split(this.Separator.ToArray())
+                .Where(s => s.Length > 0)
+                .ToList();
+            if (words.Count > 3)
+            {
+                throw new ArgumentException("The command accepts only one parameter. For example: delete where id = '1'");
+            }
+
+            string key = null;
+            string value = null;
+            if (words[0].Equals("where", StringComparison.InvariantCultureIgnoreCase))
+            {
+                key = words[1];
+                value = words[2];
+            }
+
+            var ids = this.Service.Delete(key, value);
+            Print(ids);
         }
     }
 }

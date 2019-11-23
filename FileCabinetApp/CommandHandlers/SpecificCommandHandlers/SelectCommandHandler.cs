@@ -57,6 +57,17 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
         private void Select(string parameters)
         {
+            if (parameters.Contains("or", StringComparison.InvariantCultureIgnoreCase)
+                && parameters.Contains("and", StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new ArgumentException(
+                    "This method supports only AND or only OR condition. Example: select id, firstname, lastname where firstname = 'John' and lastname = 'Doe' and dateofbirth = '02/02/2000'",
+                    nameof(parameters));
+            }
+
+            SearchCondition condition = parameters.Contains("and", StringComparison.InvariantCultureIgnoreCase)
+                ? SearchCondition.And
+                : SearchCondition.Or;
             var words = parameters
                 .Split(this.Separator.ToArray())
                 .Where(s => s.Length > 0)
@@ -64,7 +75,6 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             var keyValuePairs = new List<KeyValuePair<string, string>>(2);
             int i = 0;
             List<string> columns = new List<string>();
-            SearchCondition condition = SearchCondition.Or; // 'And' or 'Or'
             while (i < words.Count && !words[i].Equals("where", StringComparison.InvariantCultureIgnoreCase))
             {
                 columns.Add(words[i++]);
@@ -74,10 +84,6 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             {
                 keyValuePairs.Add(new KeyValuePair<string, string>(words[i].ToUpperInvariant(), words[i + 1]));
                 i += 2;
-                if (i < words.Count)
-                {
-                    condition = words[i].Equals("and", StringComparison.InvariantCulture) ? SearchCondition.And : SearchCondition.Or;
-                }
             }
 
             if (columns.Count == 0)

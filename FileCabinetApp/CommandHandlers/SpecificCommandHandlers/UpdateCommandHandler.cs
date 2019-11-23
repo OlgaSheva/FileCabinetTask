@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
+using FileCabinetApp.Enums;
+using FileCabinetApp.Extensions;
 using FileCabinetApp.Memoizers;
 using FileCabinetApp.Services;
 
@@ -52,6 +55,35 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             }
         }
 
+        private static void Print(List<int> ids)
+        {
+            if (ids.Count == 1)
+            {
+                write($"Record #{ids[0]} is update.");
+            }
+            else if (ids.Count > 1)
+            {
+                var sb = new StringBuilder();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    if (i < ids.Count - 1)
+                    {
+                        sb.Append($"#{ids[i]}, ");
+                    }
+                    else
+                    {
+                        sb.Append($"#{ids[i]}");
+                    }
+                }
+
+                write($"Records {sb} are updated.");
+            }
+            else
+            {
+                write("There are no entries with this parameter.");
+            }
+        }
+
         private void Update(string parameters)
         {
             if (parameters == null)
@@ -64,6 +96,13 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             {
                 throw new ArgumentException(
                     "Invalid command. Example: update set firstname = 'John', lastname = 'Doe' , dateofbirth = '5/18/1986' where id = '1'",
+                    nameof(parameters));
+            }
+
+            if (parameters.Contains("or", StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new ArgumentException(
+                    "This method supports only AND condition. Example: update set DateOfBirth = '5/18/1986' where FirstName='Stan' and LastName='Smith'",
                     nameof(parameters));
             }
 
@@ -80,13 +119,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             string key;
             string value;
             FileCabinetRecord desiredRecord = new FileCabinetRecord();
-            Dictionary<string, string> keyValuePairs = new Dictionary<string, string>()
-            {
-                { "ID", null },
-                { "FIRSTNAME", null },
-                { "LASTNAME", null },
-                { "DATEOFBIRTH", null },
-            };
+            var keyValuePairs = new List<KeyValuePair<string, string>>();
             if (words[0].Equals("set", StringComparison.InvariantCultureIgnoreCase))
             {
                 int i = 1;
@@ -129,12 +162,12 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
                 while (++i < words.Count)
                 {
-                    keyValuePairs[words[i].ToUpperInvariant()] = words[i + 1];
+                    keyValuePairs.Add(new KeyValuePair<string, string>(words[i].ToUpperInvariant(), words[i + 1]));
                     i += 2;
                 }
 
-                int id = this.Service.Update(setRecord, keyValuePairs);
-                write($"Record #{id} has been updated.");
+                List<int> ids = this.Service.Update(this.Service.GetRecords().Where(keyValuePairs, SearchCondition.And), setRecord, keyValuePairs);
+                Print(ids);
             }
             else
             {

@@ -29,12 +29,13 @@ namespace FileCabinetApp.Services
         int GetStat(out int deletedRecordsCount);
 
         /// <summary>
-        /// Updates the specified record parameters.
+        /// Updates the specified records to update.
         /// </summary>
+        /// <param name="recordsToUpdate">The records to update.</param>
         /// <param name="recordParameters">The record parameters.</param>
         /// <param name="keyValuePairs">The key value pairs.</param>
-        /// <returns>Updated record id.</returns>
-        int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs);
+        /// <returns>IDs of updated records.</returns>
+        List<int> Update(IEnumerable<FileCabinetRecord> recordsToUpdate, RecordParameters recordParameters, List<KeyValuePair<string, string>> keyValuePairs);
 
         /// <summary>
         /// Gets the records.

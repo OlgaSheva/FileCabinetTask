@@ -111,33 +111,28 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Updates the specified record parameters.
+        /// Updates the specified records to update.
         /// </summary>
-        /// <param name="recordParameters">The record parameters with new parameters.</param>
-        /// <param name="keyValuePairs">The key value pairs for search.</param>
+        /// <param name="recordsToUpdate">The records to update.</param>
+        /// <param name="recordParameters">The record parameters.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
         /// <returns>
-        /// Updated record id.
+        /// IDs of updated records.
         /// </returns>
         /// <exception cref="ArgumentNullException">
+        /// recordsToUpdate
+        /// or
         /// recordParameters
         /// or
         /// keyValuePairs.
         /// </exception>
-        /// <exception cref="ArgumentException">
-        /// There are several entries with such parameters.
-        /// or
-        /// There are no entries with such parameters.
-        /// or
-        /// There are no entries with such parameters.
-        /// or
-        /// Record whith firstname = '{firstname}' does not exist.
-        /// or
-        /// There are no entries with such parameters.
-        /// or
-        /// Record #{id} does not exist.
-        /// </exception>
-        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        public List<int> Update(IEnumerable<FileCabinetRecord> recordsToUpdate, RecordParameters recordParameters, List<KeyValuePair<string, string>> keyValuePairs)
         {
+            if (recordsToUpdate == null)
+            {
+                throw new ArgumentNullException(nameof(recordsToUpdate));
+            }
+
             if (recordParameters == null)
             {
                 throw new ArgumentNullException(nameof(recordParameters));
@@ -148,10 +143,16 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(keyValuePairs));
             }
 
-            int id = this.GetIdOfUpdatedRecord(keyValuePairs);
-            this.UpdateRecord(recordParameters, id);
+            List<int> ids = new List<int>();
+            int id;
+            foreach (var record in recordsToUpdate)
+            {
+                id = record.Id;
+                this.UpdateRecord(recordParameters, id);
+                ids.Add(id);
+            }
 
-            return id;
+            return ids;
         }
 
         /// <summary>

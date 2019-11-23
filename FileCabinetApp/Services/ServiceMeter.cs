@@ -73,15 +73,28 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Updates the specified record parameters.
+        /// Updates the specified records to update.
         /// </summary>
+        /// <param name="recordsToUpdate">The records to update.</param>
         /// <param name="recordParameters">The record parameters.</param>
         /// <param name="keyValuePairs">The key value pairs.</param>
         /// <returns>
-        /// Updated record id.
+        /// IDs of updated records.
         /// </returns>
-        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        /// <exception cref="ArgumentNullException">
+        /// recordsToUpdate
+        /// or
+        /// recordParameters
+        /// or
+        /// keyValuePairs.
+        /// </exception>
+        public List<int> Update(IEnumerable<FileCabinetRecord> recordsToUpdate, RecordParameters recordParameters, List<KeyValuePair<string, string>> keyValuePairs)
         {
+            if (recordsToUpdate == null)
+            {
+                throw new ArgumentNullException(nameof(recordsToUpdate));
+            }
+
             if (recordParameters == null)
             {
                 throw new ArgumentNullException(nameof(recordParameters));
@@ -94,13 +107,13 @@ namespace FileCabinetApp.Services
 
             this.stopWatch.Reset();
             this.stopWatch.Start();
-            int id = this.service.Update(recordParameters, keyValuePairs);
+            List<int> ids = this.service.Update(recordsToUpdate, recordParameters, keyValuePairs);
 
             this.stopWatch.Stop();
             this.ticks = this.stopWatch.ElapsedTicks;
 
             this.write($"Update method execution duration is {this.ticks} ticks.");
-            return id;
+            return ids;
         }
 
         /// <summary>

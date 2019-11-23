@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using FileCabinetApp.Enums;
 
@@ -73,20 +74,28 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Updates the specified record parameters.
+        /// Updates the specified records to update.
         /// </summary>
+        /// <param name="recordsToUpdate">The records to update.</param>
         /// <param name="recordParameters">The record parameters.</param>
         /// <param name="keyValuePairs">The key value pairs.</param>
         /// <returns>
-        /// Updated record id.
+        /// IDs of updated records.
         /// </returns>
         /// <exception cref="ArgumentNullException">
+        /// recordsToUpdate
+        /// or
         /// recordParameters
         /// or
         /// keyValuePairs.
         /// </exception>
-        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        public List<int> Update(IEnumerable<FileCabinetRecord> recordsToUpdate, RecordParameters recordParameters, List<KeyValuePair<string, string>> keyValuePairs)
         {
+            if (recordsToUpdate == null)
+            {
+                throw new ArgumentNullException(nameof(recordsToUpdate));
+            }
+
             if (recordParameters == null)
             {
                 throw new ArgumentNullException(nameof(recordParameters));
@@ -101,10 +110,10 @@ namespace FileCabinetApp.Services
                 $"Calling Update() with parameters FirstNme = '{recordParameters?.FirstName}', LastName = '{recordParameters.LastName}', " +
                 $"DateOfBirth = '{recordParameters.DateOfBirth}', Gender = '{recordParameters.Gender}', " +
                 $"Office = '{recordParameters.Office}', Salary = '{recordParameters.Salary}'");
-            int id = this.service.Update(recordParameters, keyValuePairs);
+            List<int> ids = this.service.Update(recordsToUpdate, recordParameters, keyValuePairs);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Update() update the record {id}.'");
-            return id;
+                $"Update() update the record {ids.Select(x => $"#{x} ")}.'");
+            return ids;
         }
 
         /// <summary>

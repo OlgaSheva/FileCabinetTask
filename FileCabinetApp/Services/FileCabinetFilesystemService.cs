@@ -86,31 +86,28 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Updates the specified record parameters.
+        /// Updates the specified records to update.
         /// </summary>
+        /// <param name="recordsToUpdate">The records to update.</param>
         /// <param name="recordParameters">The record parameters.</param>
         /// <param name="keyValuePairs">The key value pairs.</param>
         /// <returns>
-        /// Updated record id.
+        /// IDs of updated records.
         /// </returns>
         /// <exception cref="ArgumentNullException">
+        /// recordsToUpdate
+        /// or
         /// recordParameters
         /// or
         /// keyValuePairs.
         /// </exception>
-        /// <exception cref="ArgumentException">
-        /// There are several entries with such parameters.
-        /// or
-        /// There are no entries with such parameters.
-        /// or
-        /// There are no entries with such parameters.
-        /// or
-        /// Record whith firstname = '{firstname}' does not exist.
-        /// or
-        /// There are no entries with such parameters.
-        /// </exception>
-        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        public List<int> Update(IEnumerable<FileCabinetRecord> recordsToUpdate, RecordParameters recordParameters, List<KeyValuePair<string, string>> keyValuePairs)
         {
+            if (recordsToUpdate == null)
+            {
+                throw new ArgumentNullException(nameof(recordsToUpdate));
+            }
+
             if (recordParameters == null)
             {
                 throw new ArgumentNullException(nameof(recordParameters));
@@ -121,11 +118,19 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(keyValuePairs));
             }
 
-            this.GetIdAndPositionOfSearchRecord(keyValuePairs, out int id, out long position);
-            this.GetRecordWithNewParameters(recordParameters, out id, position, out RecordParameters newRecordParameters);
-            this.EditRecord(id, newRecordParameters);
+            List<int> ids = new List<int>();
+            int id;
+            long position;
+            foreach (var record in recordsToUpdate)
+            {
+                id = record.Id;
+                position = this.idpositionPairs[id];
+                this.GetRecordWithNewParameters(recordParameters, out id, position, out RecordParameters newRecordParameters);
+                this.EditRecord(id, newRecordParameters);
+                ids.Add(id);
+            }
 
-            return id;
+            return ids;
         }
 
         /// <summary>
