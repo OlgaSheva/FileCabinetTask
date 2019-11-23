@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using System.Xml.Linq;
 
 namespace FileCabinetApp.Writers
@@ -10,17 +9,6 @@ namespace FileCabinetApp.Writers
     /// </summary>
     internal class FileCabinetRecordXmlWriter
     {
-        private readonly StreamWriter writer;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileCabinetRecordXmlWriter"/> class.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        public FileCabinetRecordXmlWriter(StreamWriter writer)
-        {
-            this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
-        }
-
         /// <summary>
         /// Writes the specified file cabinet record.
         /// </summary>

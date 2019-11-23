@@ -253,22 +253,6 @@ namespace FileCabinetApp.Printer
             return typeof(T).GetProperties().Select(x => x.PropertyType).ToArray();
         }
 
-        private string ToMarkDownString(char delimiter)
-        {
-            var builder = new StringBuilder();
-            var columnLengths = this.ColumnLengths();
-            var format = this.Format(columnLengths, delimiter);
-            var columnHeaders = string.Format(CultureInfo.InvariantCulture, format, this.Columns.ToArray());
-            var results = this.Rows.Select(row => string.Format(CultureInfo.InvariantCulture, format, row)).ToList();
-            var divider = Regex.Replace(columnHeaders, @"[^|]", "-");
-
-            builder.AppendLine(columnHeaders);
-            builder.AppendLine(divider);
-            results.ForEach(row => builder.AppendLine(row));
-
-            return builder.ToString();
-        }
-
         private string Format(List<int> columnLengths, char delimiter = '|')
         {
             var columnAlignment = Enumerable.Range(0, this.Columns.Count)

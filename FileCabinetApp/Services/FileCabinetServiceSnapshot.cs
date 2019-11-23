@@ -83,7 +83,6 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            var xmlWriter = new FileCabinetRecordXmlWriter(writer);
             XElement records = new XElement("records");
             var doc = new XDocument(
                new XDeclaration("1.0", "utf-16", "yes"),

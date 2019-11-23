@@ -2158,12 +2158,6 @@
             File cabinet record xml writer.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Writers.FileCabinetRecordXmlWriter.#ctor(System.IO.StreamWriter)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.Writers.FileCabinetRecordXmlWriter"/> class.
-            </summary>
-            <param name="writer">The writer.</param>
-        </member>
         <member name="M:FileCabinetApp.Writers.FileCabinetRecordXmlWriter.Write(FileCabinetApp.FileCabinetRecord,System.Xml.Linq.XDocument)">
             <summary>
             Writes the specified file cabinet record.

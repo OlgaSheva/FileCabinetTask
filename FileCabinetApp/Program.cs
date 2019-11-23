@@ -200,48 +200,5 @@ namespace FileCabinetApp
 
             Console.WriteLine(ConsoleTable.From<FileCabinetRecord>(records, columns).ToString());
         }
-
-        private static ConsoleTable GetConsoleTable(List<string> columns, IEnumerable<FileCabinetRecord> records)
-        {
-            ConsoleTable consoleTable = new ConsoleTable(columns.ToArray());
-            foreach (var record in records)
-            {
-                object[] parameters = new object[columns.Count];
-                int i = 0;
-                foreach (var c in columns)
-                {
-                    switch (c)
-                    {
-                        case "id":
-                            parameters[i++] = record.Id;
-                            break;
-                        case "firstname":
-                            parameters[i++] = record.FirstName;
-                            break;
-                        case "lastname":
-                            parameters[i++] = record.LastName;
-                            break;
-                        case "dateofbirth":
-                            parameters[i++] = record.DateOfBirth;
-                            break;
-                        case "gender":
-                            parameters[i++] = record.Gender;
-                            break;
-                        case "office":
-                            parameters[i++] = record.Office;
-                            break;
-                        case "salary":
-                            parameters[i++] = record.Salary;
-                            break;
-                        default:
-                            throw new ArgumentException($"The '{c}' parameter does not exist.");
-                    }
-                }
-
-                consoleTable.AddRow(parameters);
-            }
-
-            return consoleTable;
-        }
     }
 }
