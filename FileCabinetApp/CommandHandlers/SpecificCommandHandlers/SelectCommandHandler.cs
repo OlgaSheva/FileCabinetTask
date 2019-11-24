@@ -72,7 +72,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
                 .Split(this.Separator.ToArray())
                 .Where(s => s.Length > 0)
                 .ToList();
-            var keyValuePairs = new List<KeyValuePair<string, string>>(2);
+            var keyValuePairs = new List<KeyValuePair<string, string>>();
             int i = 0;
             List<string> columns = new List<string>();
             while (i < words.Count && !words[i].Equals("where", StringComparison.InvariantCultureIgnoreCase))
@@ -103,7 +103,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             IEnumerable<FileCabinetRecord> records = null;
             if (this.Service is FileCabinetMemoryService)
             {
-                records = Memoizer.GetMemoizer(this.Service).Select(keyValuePairs, condition);
+                records = Memoizer.GetMemoizer(this.Service).Select(parameters, keyValuePairs, condition);
             }
             else
             {

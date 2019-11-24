@@ -43,7 +43,11 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             if (request.Command == "delete")
             {
                 this.Delete(request.Parameters);
-                Memoizer.GetMemoizer(this.Service).MemoizerDictionary.Clear();
+                if (this.Service is FileCabinetMemoryService)
+                {
+                    Memoizer.GetMemoizer(this.Service).MemoizerDictionary.Clear();
+                }
+
                 return null;
             }
             else

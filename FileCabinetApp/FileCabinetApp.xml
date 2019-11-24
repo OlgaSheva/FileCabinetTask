@@ -775,13 +775,15 @@
             <param name="fileCabinetService">The file cabinet service.</param>
             <returns>Memoizer object.</returns>
         </member>
-        <member name="M:FileCabinetApp.Memoizers.Memoizer.Select(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
+        <member name="M:FileCabinetApp.Memoizers.Memoizer.Select(System.String,System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}},FileCabinetApp.Enums.SearchCondition)">
             <summary>
-            Selects the specified key value pairs.
+            Selects the specified parameters.
             </summary>
+            <param name="parameters">The parameters.</param>
             <param name="keyValuePairs">The key value pairs.</param>
             <param name="condition">The condition.</param>
             <returns>Select records.</returns>
+            <exception cref="T:System.ArgumentNullException">keyValuePairs.</exception>
         </member>
         <member name="T:FileCabinetApp.Printer.Alignment">
             <summary>
