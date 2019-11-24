@@ -324,16 +324,18 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Purges the specified deleted records count.
+        /// Purges the specified records count.
         /// </summary>
-        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <param name="recordsCount">The records count.</param>
-        public void Purge(out int deletedRecordsCount, out int recordsCount)
+        /// <returns>
+        /// deleted records count.
+        /// </returns>
+        public int Purge(out int recordsCount)
         {
             this.fileStream.Seek(0, SeekOrigin.Begin);
             int count = (int)(this.fileStream.Length / RecordInBytesLength);
             recordsCount = count;
-            deletedRecordsCount = 0;
+            int deletedRecordsCount = 0;
             byte[] buffer = new byte[RecordInBytesLength];
             Queue<long> deletedRecordPositions = new Queue<long>();
             long lastDeletedRecordStart = -1;
@@ -387,6 +389,7 @@ namespace FileCabinetApp.Services
             }
 
             this.fileStream.SetLength(lastAliveRecordEnd);
+            return deletedRecordsCount;
         }
 
         private static byte[] GetBytes(decimal dec)

@@ -75,10 +75,10 @@ namespace FileCabinetApp.Services
         List<int> Delete(string key, string value);
 
         /// <summary>
-        /// Purges the specified deleted records count.
+        /// Purges the specified records count.
         /// </summary>
-        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <param name="recordsCount">The records count.</param>
-        void Purge(out int deletedRecordsCount, out int recordsCount);
+        /// <returns>deleted records count.</returns>
+        int Purge(out int recordsCount);
     }
 }

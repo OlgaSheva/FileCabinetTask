@@ -275,14 +275,17 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Do nothing.
+        /// Purges the specified records count.
         /// </summary>
-        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <param name="recordsCount">The records count.</param>
-        public void Purge(out int deletedRecordsCount, out int recordsCount)
+        /// <returns>
+        /// deleted records count.
+        /// </returns>
+        public int Purge(out int recordsCount)
         {
-            deletedRecordsCount = 0;
+            int deletedRecordsCount = 0;
             recordsCount = this.list.Count;
+            return deletedRecordsCount;
         }
 
         private void EditRecord(int id, RecordParameters rec)
@@ -463,27 +466,24 @@ namespace FileCabinetApp
             if (this.IsThereARecordWithThisId(id, out long indexInList))
             {
                 int index = (int)indexInList;
+                var newRecordParameters = new RecordParameters(
+                        recordParameters.FirstName ?? this.list[index].FirstName,
+                        recordParameters.LastName ?? this.list[index].LastName,
+                        (!recordParameters.DateOfBirth.Equals(default(DateTime))) ? recordParameters.DateOfBirth : this.list[index].DateOfBirth,
+                        (!recordParameters.Gender.Equals(default(char))) ? recordParameters.Gender : this.list[index].Gender,
+                        (recordParameters.Office != -1) ? recordParameters.Office : this.list[index].Office,
+                        (recordParameters.Salary != -1) ? recordParameters.Salary : this.list[index].Salary);
+                this.validator.ValidateParameters(newRecordParameters);
+
                 this.RemoveFromDictionaries(index);
 
-                this.list[index].FirstName = recordParameters.FirstName ?? this.list[index].FirstName;
-                this.list[index].LastName = recordParameters.LastName ?? this.list[index].LastName;
-                this.list[index].DateOfBirth = (!recordParameters.DateOfBirth.Equals(default(DateTime)))
-                    ? recordParameters.DateOfBirth : this.list[index].DateOfBirth;
-                this.list[index].Gender = (!recordParameters.Gender.Equals(default(char)))
-                    ? recordParameters.Gender : this.list[index].Gender;
-                this.list[index].Office = (recordParameters.Office != -1)
-                    ? recordParameters.Office : this.list[index].Office;
-                this.list[index].Salary = (recordParameters.Salary != -1)
-                    ? recordParameters.Salary : this.list[index].Salary;
+                this.list[index].FirstName = newRecordParameters.FirstName;
+                this.list[index].LastName = newRecordParameters.LastName;
+                this.list[index].DateOfBirth = newRecordParameters.DateOfBirth;
+                this.list[index].Gender = newRecordParameters.Gender;
+                this.list[index].Office = newRecordParameters.Office;
+                this.list[index].Salary = newRecordParameters.Salary;
 
-                var newRecordParameters = new RecordParameters(
-                        this.list[index].FirstName,
-                        this.list[index].LastName,
-                        this.list[index].DateOfBirth,
-                        this.list[index].Gender,
-                        this.list[index].Office,
-                        this.list[index].Salary);
-                this.validator.ValidateParameters(newRecordParameters);
                 this.EditDictionaries(newRecordParameters, index);
             }
             else

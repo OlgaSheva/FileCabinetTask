@@ -174,20 +174,23 @@ namespace FileCabinetApp.Services
             => this.service.MakeSnapshot();
 
         /// <summary>
-        /// Purges the specified deleted records count.
+        /// Purges the specified records count.
         /// </summary>
-        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <param name="recordsCount">The records count.</param>
-        public void Purge(out int deletedRecordsCount, out int recordsCount)
+        /// <returns>
+        /// deleted records count.
+        /// </returns>
+        public int Purge(out int recordsCount)
         {
             this.stopWatch.Reset();
             this.stopWatch.Start();
-            this.service.Purge(out deletedRecordsCount, out recordsCount);
+            int deletedRecordsCount = this.service.Purge(out recordsCount);
 
             this.stopWatch.Stop();
             this.ticks = this.stopWatch.ElapsedTicks;
 
             this.write($"Purge method execution duration is {this.ticks} ticks.");
+            return deletedRecordsCount;
         }
 
         /// <summary>

@@ -49,7 +49,7 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Purge(string parameters)
         {
-            this.Service.Purge(out int deletedRecordsCount, out int recordsCount);
+            int deletedRecordsCount = this.Service.Purge(out int recordsCount);
             write($"Data file processing is completed: {deletedRecordsCount} of {recordsCount} records were purged.");
         }
     }

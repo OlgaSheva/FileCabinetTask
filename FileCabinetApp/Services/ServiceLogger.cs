@@ -112,7 +112,7 @@ namespace FileCabinetApp.Services
                 $"Office = '{recordParameters.Office}', Salary = '{recordParameters.Salary}'");
             List<int> ids = this.service.Update(recordsToUpdate, recordParameters, keyValuePairs);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Update() update the record {ids.Select(x => $"#{x} ")}.'");
+                $"Update() update the record.'");
             return ids;
         }
 
@@ -170,17 +170,20 @@ namespace FileCabinetApp.Services
             => this.service.MakeSnapshot();
 
         /// <summary>
-        /// Purges the specified deleted records count.
+        /// Purges the specified records count.
         /// </summary>
-        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <param name="recordsCount">The records count.</param>
-        public void Purge(out int deletedRecordsCount, out int recordsCount)
+        /// <returns>
+        /// deleted records count.
+        /// </returns>
+        public int Purge(out int recordsCount)
         {
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Calling Purge()");
-            this.service.Purge(out deletedRecordsCount, out recordsCount);
+            int deletedRecordsCount = this.service.Purge(out recordsCount);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Purge() done defragmentation");
+            return deletedRecordsCount;
         }
 
         /// <summary>

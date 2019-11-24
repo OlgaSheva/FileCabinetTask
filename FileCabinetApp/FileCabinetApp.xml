@@ -1071,12 +1071,14 @@
             There are no records with {key} = '{value}'.
             </exception>
         </member>
-        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Purge(System.Int32@,System.Int32@)">
+        <member name="M:FileCabinetApp.Services.FileCabinetFilesystemService.Purge(System.Int32@)">
             <summary>
-            Purges the specified deleted records count.
+            Purges the specified records count.
             </summary>
-            <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+            <returns>
+            deleted records count.
+            </returns>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetServiceSnapshot">
             <summary>
@@ -1206,12 +1208,12 @@
             <param name="value">The value.</param>
             <returns>Deleted records id.</returns>
         </member>
-        <member name="M:FileCabinetApp.Services.IFileCabinetService.Purge(System.Int32@,System.Int32@)">
+        <member name="M:FileCabinetApp.Services.IFileCabinetService.Purge(System.Int32@)">
             <summary>
-            Purges the specified deleted records count.
+            Purges the specified records count.
             </summary>
-            <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+            <returns>deleted records count.</returns>
         </member>
         <member name="T:FileCabinetApp.Services.ServiceLogger">
             <summary>
@@ -1296,12 +1298,14 @@
             The file cabinet service snapshot.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.Services.ServiceLogger.Purge(System.Int32@,System.Int32@)">
+        <member name="M:FileCabinetApp.Services.ServiceLogger.Purge(System.Int32@)">
             <summary>
-            Purges the specified deleted records count.
+            Purges the specified records count.
             </summary>
-            <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+            <returns>
+            deleted records count.
+            </returns>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceLogger.Restore(FileCabinetApp.Services.FileCabinetServiceSnapshot,System.Collections.Generic.Dictionary{System.Int32,System.String}@)">
             <summary>
@@ -1398,12 +1402,14 @@
             The file cabinet service snapshot.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.Services.ServiceMeter.Purge(System.Int32@,System.Int32@)">
+        <member name="M:FileCabinetApp.Services.ServiceMeter.Purge(System.Int32@)">
             <summary>
-            Purges the specified deleted records count.
+            Purges the specified records count.
             </summary>
-            <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+            <returns>
+            deleted records count.
+            </returns>
         </member>
         <member name="M:FileCabinetApp.Services.ServiceMeter.Delete(System.String,System.String)">
             <summary>
@@ -1524,12 +1530,14 @@
               <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.Purge(System.Int32@,System.Int32@)">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Purge(System.Int32@)">
             <summary>
-            Do nothing.
+            Purges the specified records count.
             </summary>
-            <param name="deletedRecordsCount">The deleted records count.</param>
             <param name="recordsCount">The records count.</param>
+            <returns>
+            deleted records count.
+            </returns>
         </member>
         <member name="T:FileCabinetApp.Validators.Configuration.ValidatorSettings">
             <summary>

@@ -54,10 +54,15 @@ namespace FileCabinetApp.Memoizers
             }
 
             var tuple = Tuple.Create(keyValuePairs, condition);
-            if (!this.MemoizerDictionary.TryGetValue(tuple, out List<FileCabinetRecord> results))
+            List<FileCabinetRecord> results;
+            if (!this.MemoizerDictionary.ContainsKey(tuple)) //.TryGetValue(tuple., out List<FileCabinetRecord> results))
             {
                 results = service.GetRecords().Where(keyValuePairs, condition).ToList();
                 this.MemoizerDictionary.Add(tuple, results);
+            }
+            else
+            {
+                results = this.MemoizerDictionary.GetValueOrDefault(tuple);
             }
 
             return results;
