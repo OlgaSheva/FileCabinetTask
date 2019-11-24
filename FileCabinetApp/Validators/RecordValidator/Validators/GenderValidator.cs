@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace FileCabinetApp.Validators.RecordValidator
 {
@@ -38,7 +39,6 @@ namespace FileCabinetApp.Validators.RecordValidator
         /// <exception cref="ArgumentException">gender - The {nameof(gender)} can be only {exc}.</exception>
         public void ValidateParameters(RecordParameters parameters)
         {
-            var gender = parameters.Gender;
             bool flag = true;
             foreach (var g in this.gender)
             {
@@ -50,13 +50,13 @@ namespace FileCabinetApp.Validators.RecordValidator
 
             if (flag)
             {
-                string exc = null;
+                StringBuilder exc = null;
                 foreach (var g in this.gender)
                 {
-                    exc += g + " ";
+                    exc.Append(g + " ");
                 }
 
-                throw new ArgumentException(nameof(gender), $"The {nameof(gender)} can be only {exc}.");
+                throw new ArgumentException(nameof(parameters.Gender), $"The {nameof(parameters.Gender)} can be only {exc.ToString()}.");
             }
         }
     }

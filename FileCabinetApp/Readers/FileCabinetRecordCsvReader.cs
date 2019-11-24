@@ -39,7 +39,7 @@ namespace FileCabinetApp.Readers
                 FileCabinetRecord record = null;
                 try
                 {
-                    record = new FileCabinetRecord()
+                    record = new FileCabinetRecord
                     {
                         Id = int.Parse(elements[0], CultureInfo.InvariantCulture),
                         FirstName = textInfo.ToTitleCase(textInfo.ToLower(elements[1])),

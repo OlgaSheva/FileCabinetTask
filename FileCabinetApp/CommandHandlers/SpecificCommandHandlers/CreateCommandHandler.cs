@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using FileCabinetApp.Converters;
 using FileCabinetApp.Services;
 using FileCabinetApp.Validators.InputValidator;
@@ -14,8 +13,8 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private static Action<string> write;
-        private static IInputConverter converter;
-        private static IInputValidator validator;
+        private readonly IInputConverter converter;
+        private readonly IInputValidator validator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateCommandHandler"/> class.
@@ -28,8 +27,8 @@ namespace FileCabinetApp.CommandHandlers
             IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator, Action<string> writeDelegate)
             : base(fileCabinetService)
         {
-            converter = inputConverter;
-            validator = inputValidator;
+            this.converter = inputConverter;
+            this.validator = inputValidator;
             write = writeDelegate;
         }
 
@@ -49,7 +48,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (request.Command == "create")
             {
-                this.Create(request.Parameters);
+                this.Create();
                 return null;
             }
             else
@@ -87,23 +86,21 @@ namespace FileCabinetApp.CommandHandlers
             while (true);
         }
 
-        private static (string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
+        private (string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
             ParameterEntry()
         {
-            var firstAndLastName = new CultureInfo("ru-RU").TextInfo;
+            Func<string, Tuple<bool, string>> firstNameValidator = this.validator.FirstNameValidator;
+            Func<string, Tuple<bool, string>> lastNameValidator = this.validator.LastNameValidator;
+            Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = this.validator.DateOfBirthValidator;
+            Func<char, Tuple<bool, string>> genderValidator = this.validator.GenderValidator;
+            Func<short, Tuple<bool, string>> officeValidator = this.validator.OfficeValidator;
+            Func<decimal, Tuple<bool, string>> salaryValidator = this.validator.SalaryValidator;
 
-            Func<string, Tuple<bool, string>> firstNameValidator = validator.FirstNameValidator;
-            Func<string, Tuple<bool, string>> lastNameValidator = validator.LastNameValidator;
-            Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = validator.DateOfBirthValidator;
-            Func<char, Tuple<bool, string>> genderValidator = validator.GenderValidator;
-            Func<short, Tuple<bool, string>> officeValidator = validator.OfficeValidator;
-            Func<decimal, Tuple<bool, string>> salaryValidator = validator.SalaryValidator;
-
-            Func<string, Tuple<bool, string, string>> stringConverter = converter.StringConverter;
-            Func<string, Tuple<bool, string, DateTime>> dateConverter = converter.DateConverter;
-            Func<string, Tuple<bool, string, char>> charConverter = converter.CharConverter;
-            Func<string, Tuple<bool, string, short>> shortConverter = converter.ShortConverter;
-            Func<string, Tuple<bool, string, decimal>> decimalConverter = converter.DecimalConverter;
+            Func<string, Tuple<bool, string, string>> stringConverter = this.converter.StringConverter;
+            Func<string, Tuple<bool, string, DateTime>> dateConverter = this.converter.DateConverter;
+            Func<string, Tuple<bool, string, char>> charConverter = this.converter.CharConverter;
+            Func<string, Tuple<bool, string, short>> shortConverter = this.converter.ShortConverter;
+            Func<string, Tuple<bool, string, decimal>> decimalConverter = this.converter.DecimalConverter;
 
             write("First name: ");
             var firstName = ReadInput(stringConverter, firstNameValidator);
@@ -126,9 +123,9 @@ namespace FileCabinetApp.CommandHandlers
             return (firstName, lastName, dateOfBirth, gender, office, salary);
         }
 
-        private void Create(string parameters)
+        private void Create()
         {
-            var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
+            var (firstName, lastName, dateOfBirth, gender, office, salary) = this.ParameterEntry();
 
             int recordId = 0;
             try

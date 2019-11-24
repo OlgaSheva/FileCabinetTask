@@ -67,10 +67,10 @@ namespace FileCabinetGenerator
             DateTime maxDate = new DateTime(2005, 1, 1);
             int daysDiff = Convert.ToInt32(maxDate.Subtract(minDate).TotalDays + 1);
 
-            FileCabinetRecord record = new FileCabinetRecord()
+            FileCabinetRecord record = new FileCabinetRecord
             {
                 Id = startId + index,
-                FullName = new Name()
+                FullName = new Name
                 {
                     FirstName = "Fn" + random.Next(0, 10000),
                     LastName = "Ln" + random.Next(0, 10000),

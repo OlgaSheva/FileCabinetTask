@@ -38,7 +38,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (request.Command == "stat")
             {
-                this.Stat(request.Parameters);
+                this.Stat();
                 return null;
             }
             else
@@ -47,7 +47,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private void Stat(string parameters)
+        private void Stat()
         {
             var recordsCount = this.Service.GetStat(out int deletedRecordsCount);
             write($"{recordsCount} record(s). Number of deleted records: {deletedRecordsCount}.");

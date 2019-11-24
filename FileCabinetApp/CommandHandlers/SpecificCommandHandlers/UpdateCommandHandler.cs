@@ -122,7 +122,6 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             decimal salary = -1;
             string key;
             string value;
-            FileCabinetRecord desiredRecord = new FileCabinetRecord();
             var keyValuePairs = new List<KeyValuePair<string, string>>();
             if (words[0].Equals("set", StringComparison.InvariantCultureIgnoreCase))
             {

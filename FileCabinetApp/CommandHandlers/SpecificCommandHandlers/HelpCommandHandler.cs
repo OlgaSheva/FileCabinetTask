@@ -14,67 +14,67 @@ namespace FileCabinetApp.CommandHandlers
         private static Action<string> write;
         private static string[][] helpMessages = new string[][]
         {
-            new string[]
+            new[]
             {
                 "help",
                 "prints the help screen",
                 "The 'help' command prints the help screen.",
             },
-            new string[]
+            new[]
             {
                 "exit",
                 "exits the application",
                 "The 'exit' command exits the application.",
             },
-            new string[]
+            new[]
             {
                 "stat",
                 "shows statistics by records",
                 "The 'stat' command shows statistics by records",
             },
-            new string[]
+            new[]
             {
                 "create",
                 "creates a new record",
                 "The 'create' command creates a new record.",
             },
-            new string[]
+            new[]
             {
                 "insert (parameters) values (values)",
                 "inserts a new record",
                 "The 'insert' command inserts a new record.",
             },
-            new string[]
+            new[]
             {
                 "update set <parameter> = '<value>', <parameter> = '<value>', ... where  <parameter> = '<value>'",
                 "updates the record",
                 "The 'update' command updates the record.",
             },
-            new string[]
+            new[]
             {
                 "select <parameter>, <parameter>, ... where <parameter> = '<value>' or/and <parameter> = '<value>'",
                 "returns a list of records whith this parameters / all records",
                 "The 'select' command returns a list of records matching query parameters.",
             },
-            new string[]
+            new[]
             {
                 "export <csv/xml> <file adress>",
                 "exports service data to a CSV or XML file",
                 "The 'export' command exports service data to a CSV or XML file.",
             },
-            new string[]
+            new[]
             {
                 "import <csv/xml> <file adress>",
                 "imports service data from a CSV or XML file",
                 "The 'export' command imports service data from a CSV or XML file.",
             },
-            new string[]
+            new[]
             {
                 "delete where <parameter> = '<value>'",
                 "deletes a record by parameter",
                 "The 'delete' command deletes a record by parameter.",
             },
-            new string[]
+            new[]
             {
                 "purge",
                 "defragment a data file",

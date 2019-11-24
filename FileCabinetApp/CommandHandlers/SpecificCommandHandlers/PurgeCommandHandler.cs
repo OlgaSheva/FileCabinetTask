@@ -38,7 +38,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (request.Command == "purge")
             {
-                this.Purge(request.Parameters);
+                this.Purge();
                 return null;
             }
             else
@@ -47,7 +47,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private void Purge(string parameters)
+        private void Purge()
         {
             int deletedRecordsCount = this.Service.Purge(out int recordsCount);
             write($"Data file processing is completed: {deletedRecordsCount} of {recordsCount} records were purged.");

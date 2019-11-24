@@ -14,7 +14,6 @@ namespace FileCabinetApp.CommandHandlers
         private const int FormatPosition = 0;
         private const int PathPosition = 1;
         private static Action<string> write;
-        private static StreamWriter streamWriter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExportCommandHandler"/> class.
@@ -101,7 +100,7 @@ namespace FileCabinetApp.CommandHandlers
 
             void Write(string p)
             {
-                using (streamWriter = new StreamWriter(p))
+                using (StreamWriter streamWriter = new StreamWriter(p))
                 {
                     FileCabinetServiceSnapshot snapshot = this.Service.MakeSnapshot();
 

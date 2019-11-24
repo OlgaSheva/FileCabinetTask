@@ -30,7 +30,6 @@ namespace FileCabinetApp
         private static IInputConverter converter;
         private static IInputValidator validator;
         private static IFileCabinetService fileCabinetService;
-        private static string validationRules;
         private static FileStream fileStream;
 
         private static bool isRunning = true;
@@ -41,13 +40,12 @@ namespace FileCabinetApp
         /// <param name="args">Input parameters.</param>
         public static void Main(string[] args)
         {
-            validationRules = DefaultValidationRules;
+            string validationRules = DefaultValidationRules;
             ServiceType serviceType = ServiceType.Memory;
             MeterStatus meter = MeterStatus.Off;
             LoggerStatus logger = LoggerStatus.Off;
 
             var parser = new Parser(with => with.CaseInsensitiveEnumValues = true);
-            var result = parser.ParseArguments<Options>(args);
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
                    {

@@ -288,34 +288,6 @@ namespace FileCabinetApp
             return deletedRecordsCount;
         }
 
-        private void EditRecord(int id, RecordParameters rec)
-        {
-            if (id < 0)
-            {
-                throw new ArgumentException($"The {nameof(id)} can't be less than zero.", nameof(id));
-            }
-
-            if (!this.IsThereARecordWithThisId(id, out long indexInList))
-            {
-                throw new ArgumentException($"The {nameof(id)} doesn't exist.", nameof(id));
-            }
-
-            int index = (int)indexInList;
-            this.validator.ValidateParameters(
-                new RecordParameters(rec.FirstName, rec.LastName, rec.DateOfBirth, rec.Gender, rec.Office, rec.Salary));
-
-            this.RemoveFromDictionaries(index);
-
-            this.list[index].FirstName = rec.FirstName;
-            this.list[index].LastName = rec.LastName;
-            this.list[index].DateOfBirth = rec.DateOfBirth;
-            this.list[index].Gender = rec.Gender;
-            this.list[index].Office = rec.Office;
-            this.list[index].Salary = rec.Salary;
-
-            this.EditDictionaries(rec, index);
-        }
-
         private void CreateFileCabinetRecord(RecordParameters rec, int id)
         {
             this.validator.ValidateParameters(rec);
@@ -391,23 +363,6 @@ namespace FileCabinetApp
             }
 
             return newList;
-        }
-
-        private List<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
-        {
-            var dateList = new List<FileCabinetRecord>();
-            foreach (var item in this.list)
-            {
-                if (DateTime.TryParse(dateOfBirth, out DateTime date))
-                {
-                    if (DateTime.Compare(item.DateOfBirth, date) == 0)
-                    {
-                        dateList.Add(item);
-                    }
-                }
-            }
-
-            return dateList;
         }
 
         private void AddToDictionaries(FileCabinetRecord record)
