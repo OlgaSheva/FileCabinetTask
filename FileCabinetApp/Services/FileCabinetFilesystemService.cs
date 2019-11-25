@@ -14,13 +14,19 @@ namespace FileCabinetApp.Services
     /// <seealso cref="FileCabinetApp.Services.IFileCabinetService" />
     public class FileCabinetFilesystemService : IFileCabinetService
     {
-        private const int RecordInBytesLength = 278;
-        private const int ReservedFieldLength = 2;
-        private const int IdPosition = 2;
-        private const int FirstNamePosition = 6;
-        private const int GenderPosition = 258;
-        private const int StringInBitesLength = 120;
-        private const int DecimalInBitesLength = 16;
+        private const int RecordInBytesLength // 278
+            = (sizeof(byte) * 2) // status
+            + sizeof(int) // id
+            + (NameInBytesLength * 2) // first and last name
+            + (sizeof(int) * 3) // dateofbirth
+            + sizeof(char) // gender
+            + sizeof(short) // office
+            + sizeof(decimal); // salary
+
+        private const int StatusInBytesLength = sizeof(byte) * 2;
+        private const int FirstNamePosition = StatusInBytesLength + sizeof(int);
+        private const int GenderPosition = FirstNamePosition + (NameInBytesLength * 2);
+        private const int NameInBytesLength = 120;
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
         private SortedDictionary<int, long> idpositionPairs;
@@ -349,9 +355,9 @@ namespace FileCabinetApp.Services
             {
                 while (count-- > 0)
                 {
-                    if (reader.ReadBytes(ReservedFieldLength)[0] == 1)
+                    if (reader.ReadBytes(StatusInBytesLength)[0] == 1)
                     {
-                        this.fileStream.Seek(-ReservedFieldLength, SeekOrigin.Current);
+                        this.fileStream.Seek(-StatusInBytesLength, SeekOrigin.Current);
                         deletedRecordPositions.Enqueue(this.fileStream.Position);
                         deletedRecordsCount++;
                         this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
@@ -422,17 +428,17 @@ namespace FileCabinetApp.Services
 
         private static RecordParameters GetRecordParametersFromFile(BinaryReader binaryReader)
         {
-            binaryReader.ReadBytes(ReservedFieldLength);
+            binaryReader.ReadBytes(StatusInBytesLength);
             binaryReader.ReadInt32();
             return new RecordParameters(
                 System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                                binaryReader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim(),
                 System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                                binaryReader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim(),
                 new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
                 binaryReader.ReadChar(),
                 binaryReader.ReadInt16(),
-                ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)));
+                ToDecimal(binaryReader.ReadBytes(sizeof(decimal))));
         }
 
         private FileCabinetRecord GetFileCabinetRecordFromFile(BinaryReader binaryReader, long position)
@@ -443,18 +449,18 @@ namespace FileCabinetApp.Services
             }
 
             this.fileStream.Seek(position, SeekOrigin.Begin);
-            binaryReader.ReadBytes(ReservedFieldLength);
+            binaryReader.ReadBytes(StatusInBytesLength);
             return new FileCabinetRecord
             {
                 Id = binaryReader.ReadInt32(),
                 FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                                binaryReader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim(),
                 LastName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
+                                binaryReader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim(),
                 DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
                 Gender = binaryReader.ReadChar(),
                 Office = binaryReader.ReadInt16(),
-                Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
+                Salary = ToDecimal(binaryReader.ReadBytes(sizeof(decimal))),
             };
         }
 
@@ -540,7 +546,7 @@ namespace FileCabinetApp.Services
             {
                 while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
-                    if (reader.ReadBytes(ReservedFieldLength)[0] == 0)
+                    if (reader.ReadBytes(StatusInBytesLength)[0] == 0)
                     {
                         id = reader.ReadInt32();
                         this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
@@ -555,7 +561,7 @@ namespace FileCabinetApp.Services
                     }
                     else
                     {
-                        this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
+                        this.fileStream.Seek(-StatusInBytesLength + RecordInBytesLength, SeekOrigin.Current);
                     }
                 }
             }
@@ -620,9 +626,9 @@ namespace FileCabinetApp.Services
             using (var reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
                 firstName = System.Text.UnicodeEncoding.Unicode.GetString(
-                            reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                            reader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim();
                 lastName = System.Text.UnicodeEncoding.Unicode.GetString(
-                            reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                            reader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim();
                 dateOfBirth = new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             }
 
@@ -660,7 +666,7 @@ namespace FileCabinetApp.Services
             {
                 this.fileStream.Seek(position, SeekOrigin.Begin);
                 var existRecordsParameters = GetRecordParametersFromFile(reader);
-                this.fileStream.Seek(position + (long)IdPosition, SeekOrigin.Begin);
+                this.fileStream.Seek(position + (long)StatusInBytesLength, SeekOrigin.Begin);
                 id = reader.ReadInt32();
                 if (recordParameters.FirstName != null)
                 {
@@ -773,7 +779,7 @@ namespace FileCabinetApp.Services
                 {
                     this.fileStream.Seek(position, SeekOrigin.Begin);
                     this.fileStream.WriteByte(1);
-                    this.fileStream.Seek(position + ReservedFieldLength, SeekOrigin.Begin);
+                    this.fileStream.Seek(position + StatusInBytesLength, SeekOrigin.Begin);
                     int id = -1;
                     using (var reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
                     {
