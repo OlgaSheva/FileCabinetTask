@@ -224,11 +224,12 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ExitCommandHandler.#ctor(System.IO.FileStream,System.Action{System.Boolean})">
+        <member name="M:FileCabinetApp.CommandHandlers.ExitCommandHandler.#ctor(System.IO.FileStream,System.Action{System.String},System.Action{System.Boolean})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ExitCommandHandler"/> class.
             </summary>
             <param name="fileStream">The file stream.</param>
+            <param name="writeDelegate">The write delegate.</param>
             <param name="isRunningAction">The is running action.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.ExitCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
@@ -333,10 +334,11 @@
             </summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.SimilarCommandHandler.#ctor">
+        <member name="M:FileCabinetApp.CommandHandlers.SimilarCommandHandler.#ctor(System.Action{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.SimilarCommandHandler"/> class.
             </summary>
+            <param name="writeDelegate">The write delegate.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.SimilarCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -962,6 +964,64 @@
             Reads all.
             </summary>
             <returns>List of records.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Services.Extensions.BinaryReaderExtensions">
+            <summary>
+            Extensions to binary reader.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Services.Extensions.BinaryReaderExtensions.IsTheRecordDelete(System.IO.BinaryReader,System.IO.FileStream)">
+            <summary>
+            Gets the record status.
+            </summary>
+            <param name="reader">The reader.</param>
+            <param name="fileStream">The file stream.</param>
+            <returns>Record status: false - is deleted, true - is alive.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            reader
+            or
+            fileStream.
+            </exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.Extensions.BinaryReaderExtensions.GetId(System.IO.BinaryReader,System.IO.FileStream)">
+            <summary>
+            Gets the identifier.
+            </summary>
+            <param name="reader">The reader.</param>
+            <param name="fileStream">The file stream.</param>
+            <returns>Record ID.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            reader
+            or
+            fileStream.
+            </exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.Extensions.BinaryReaderExtensions.GetRecordParameters(System.IO.BinaryReader,System.IO.FileStream)">
+            <summary>
+            Gets the record parameters.
+            </summary>
+            <param name="reader">The reader.</param>
+            <param name="fileStream">The file stream.</param>
+            <returns>Records parameters.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            reader
+            or
+            fileStream.
+            </exception>
+        </member>
+        <member name="M:FileCabinetApp.Services.Extensions.BinaryReaderExtensions.GetFileCabinetRecordFromFile(System.IO.BinaryReader,System.IO.FileStream,System.Int64)">
+            <summary>
+            Gets the file cabinet record from file.
+            </summary>
+            <param name="reader">The reader.</param>
+            <param name="fileStream">The file stream.</param>
+            <param name="position">The position.</param>
+            <returns>File cabinet record.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            reader
+            or
+            fileStream.
+            </exception>
         </member>
         <member name="T:FileCabinetApp.Services.FileCabinetFilesystemService">
             <summary>

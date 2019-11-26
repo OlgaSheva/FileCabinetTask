@@ -9,13 +9,16 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.CommandHandlerBase" />
     internal class SimilarCommandHandler : CommandHandlerBase
     {
+        private static Action<string> write;
         private readonly List<string> commandList;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimilarCommandHandler"/> class.
         /// </summary>
-        public SimilarCommandHandler()
+        /// <param name="writeDelegate">The write delegate.</param>
+        public SimilarCommandHandler(Action<string> writeDelegate)
         {
+            write = writeDelegate;
             this.commandList = new List<string>
             {
                 "create",
@@ -46,7 +49,7 @@ namespace FileCabinetApp.CommandHandlers
                 throw new ArgumentNullException(nameof(request));
             }
 
-            Console.WriteLine($"'{request.Command}' is not a command. See 'help'.");
+            write($"'{request.Command}' is not a command. See 'help'.");
             List<string> similarCommands = new List<string>();
             foreach (var command in this.commandList)
             {
@@ -59,15 +62,15 @@ namespace FileCabinetApp.CommandHandlers
 
             if (similarCommands.Count == 1)
             {
-                Console.WriteLine("The most similar commands is");
-                Console.WriteLine($"\t\t{similarCommands[0]}");
+                write("The most similar commands is");
+                write($"\t\t{similarCommands[0]}");
             }
             else if (similarCommands.Count > 1)
             {
-                Console.WriteLine("The most similar commands are");
+                write("The most similar commands are");
                 foreach (var command in similarCommands)
                 {
-                    Console.WriteLine($"\t\t{command}");
+                    write($"\t\t{command}");
                 }
             }
 

@@ -94,7 +94,7 @@ namespace FileCabinetApp.CommandHandlers
                 }
                 catch (FileLoadException ex)
                 {
-                    Console.WriteLine($"Export failed: can't open file {path}.", ex.Message);
+                    throw new ArgumentException($"Export failed: can't open file {path}.", ex.Message);
                 }
             }
 

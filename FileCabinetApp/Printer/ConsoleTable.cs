@@ -240,7 +240,8 @@ namespace FileCabinetApp.Printer
         private static IEnumerable<string> GetColumns<T>(List<string> listcolumns)
         {
             return listcolumns
-                .Select(column => typeof(T).GetProperty(column, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance).Name);
+                .Select(column => typeof(T).GetProperty(
+                    column, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance).Name);
         }
 
         private static object GetColumnValue<T>(object target, string column)

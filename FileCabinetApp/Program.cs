@@ -74,10 +74,10 @@ namespace FileCabinetApp
 
             var commandHandler = CreateCommandHandlers();
 
-            Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}" + Environment.NewLine +
+            Write($"File Cabinet Application, developed by {Program.DeveloperName}" + Environment.NewLine +
                               $"Using {validationRules} validation rules." + Environment.NewLine +
                               $"The {serviceType.ToString()} service.");
-            Console.WriteLine(HintMessage + Environment.NewLine);
+            Write(HintMessage + Environment.NewLine);
 
             do
             {
@@ -93,15 +93,15 @@ namespace FileCabinetApp
                 }
                 catch (ArgumentNullException anex)
                 {
-                    Console.WriteLine($"Error. {anex.Message}");
+                    Write($"Error. {anex.Message}");
                 }
                 catch (ArgumentException aex)
                 {
-                    Console.WriteLine($"Error. {aex.Message}");
+                    Write($"Error. {aex.Message}");
                 }
                 catch (InvalidOperationException ioex)
                 {
-                    Console.WriteLine($"Error. {ioex.Message}");
+                    Write($"Error. {ioex.Message}");
                 }
             }
             while (isRunning);
@@ -111,7 +111,7 @@ namespace FileCabinetApp
         {
             var recordPrinter = new Action<List<string>, IEnumerable<FileCabinetRecord>>((x, y) => DefaultRecordPrint(x, y));
 
-            var exitHandler = new ExitCommandHandler(fileStream, (x) => isRunning = x);
+            var exitHandler = new ExitCommandHandler(fileStream, Write, (x) => isRunning = x);
             var helpHandler = new HelpCommandHandler(Write);
             var createHandle = new CreateCommandHandler(fileCabinetService, converter, validator, Write);
             var insertHandle = new InsertCommandHandler(fileCabinetService, Write);
@@ -122,7 +122,7 @@ namespace FileCabinetApp
             var statHandler = new StatCommandHandler(fileCabinetService, Write);
             var purgeHadler = new PurgeCommandHandler(fileCabinetService, Write);
             var selectHandler = new SelectCommandHandler(fileCabinetService, recordPrinter);
-            var missedCommandHandler = new SimilarCommandHandler();
+            var missedCommandHandler = new SimilarCommandHandler(Write);
             helpHandler
                 .SetNext(exitHandler)
                 .SetNext(statHandler)
@@ -196,7 +196,7 @@ namespace FileCabinetApp
                     nameof(columns));
             }
 
-            Console.WriteLine(ConsoleTable.From<FileCabinetRecord>(records, columns).ToString());
+            Write(ConsoleTable.From<FileCabinetRecord>(records, columns).ToString());
         }
     }
 }
