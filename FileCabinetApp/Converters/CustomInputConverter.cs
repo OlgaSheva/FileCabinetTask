@@ -18,6 +18,11 @@ namespace FileCabinetApp.Converters
         /// </returns>
         public Tuple<bool, string, string> StringConverter(string input)
         {
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
             string output = input.Trim('"');
 
             var textInfo = new CultureInfo("ru-RU").TextInfo;
@@ -36,6 +41,11 @@ namespace FileCabinetApp.Converters
         /// </returns>
         public Tuple<bool, string, DateTime> DateConverter(string input)
         {
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
             bool flag = DateTime.TryParse(input, out DateTime date);
 
             var tuple = new Tuple<bool, string, DateTime>(flag, input, date);
@@ -51,6 +61,11 @@ namespace FileCabinetApp.Converters
         /// </returns>
         public Tuple<bool, string, char> CharConverter(string input)
         {
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
             bool flag = char.TryParse(input, out char status);
 
             var tuple = new Tuple<bool, string, char>(flag, input, status);
@@ -66,6 +81,11 @@ namespace FileCabinetApp.Converters
         /// </returns>
         public Tuple<bool, string, short> ShortConverter(string input)
         {
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
             bool flag = short.TryParse(input, out short output);
 
             var tuple = new Tuple<bool, string, short>(flag, input, output);
@@ -81,6 +101,11 @@ namespace FileCabinetApp.Converters
         /// </returns>
         public Tuple<bool, string, decimal> DecimalConverter(string input)
         {
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
             bool flag = decimal.TryParse(input, out decimal output);
 
             var tuple = new Tuple<bool, string, decimal>(flag, input, output);

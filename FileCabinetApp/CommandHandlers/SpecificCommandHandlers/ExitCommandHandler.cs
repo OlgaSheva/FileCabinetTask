@@ -9,18 +9,21 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.CommandHandlerBase" />
     internal class ExitCommandHandler : CommandHandlerBase
     {
-        private static FileStream stream;
+        private static Action<string> write;
         private readonly Action<bool> isRunningAction;
+        private readonly FileStream stream;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExitCommandHandler"/> class.
         /// </summary>
         /// <param name="fileStream">The file stream.</param>
+        /// <param name="writeDelegate">The write delegate.</param>
         /// <param name="isRunningAction">The is running action.</param>
-        public ExitCommandHandler(FileStream fileStream, Action<bool> isRunningAction)
+        public ExitCommandHandler(FileStream fileStream, Action<string> writeDelegate, Action<bool> isRunningAction)
         {
-            stream = fileStream;
+            this.stream = fileStream;
             this.isRunningAction = isRunningAction;
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -32,11 +35,16 @@ namespace FileCabinetApp.CommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (request.Command == "exit")
             {
-                Console.WriteLine("Exiting an application...");
+                write("Exiting an application...");
                 this.isRunningAction(false);
-                stream?.Close();
+                this.stream?.Close();
                 return null;
             }
             else

@@ -132,7 +132,7 @@ namespace FileCabinetApp.Validators.Configuration
             /// <value>
             /// The minimum.
             /// </value>
-            public int Min { get; set; }
+            public short Min { get; set; }
 
             /// <summary>
             /// Gets or sets determines the maximum of the parameters.
@@ -140,7 +140,7 @@ namespace FileCabinetApp.Validators.Configuration
             /// <value>
             /// The maximum.
             /// </value>
-            public int Max { get; set; }
+            public short Max { get; set; }
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace FileCabinetApp.Validators.Configuration
             /// <value>
             /// The minimum.
             /// </value>
-            public int Min { get; set; }
+            public decimal Min { get; set; }
 
             /// <summary>
             /// Gets or sets determines the maximum of the parameters.
@@ -162,7 +162,7 @@ namespace FileCabinetApp.Validators.Configuration
             /// <value>
             /// The maximum.
             /// </value>
-            public int Max { get; set; }
+            public decimal Max { get; set; }
         }
     }
 }

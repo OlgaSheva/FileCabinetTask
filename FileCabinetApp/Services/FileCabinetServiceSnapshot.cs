@@ -83,7 +83,6 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            var xmlWriter = new FileCabinetRecordXmlWriter(writer);
             XElement records = new XElement("records");
             var doc = new XDocument(
                new XDeclaration("1.0", "utf-16", "yes"),
@@ -102,8 +101,9 @@ namespace FileCabinetApp.Services
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="recordsCount">The records count.</param>
+        /// <param name="exceptions">The exseptions from reading file.</param>
         /// <exception cref="ArgumentNullException">Reader is null.</exception>
-        internal void LoadFromCSV(StreamReader reader, out int recordsCount)
+        internal void LoadFromCSV(StreamReader reader, out int recordsCount, out List<string> exceptions)
         {
             if (reader == null)
             {
@@ -111,7 +111,7 @@ namespace FileCabinetApp.Services
             }
 
             var csvReader = new FileCabinetRecordCsvReader(reader);
-            var recordsFromFile = csvReader.ReadAll();
+            var recordsFromFile = csvReader.ReadAll(out exceptions);
 
             recordsCount = recordsFromFile.Count;
             if (recordsCount == 0)

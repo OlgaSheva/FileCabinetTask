@@ -8,15 +8,15 @@ namespace FileCabinetApp.Validators.RecordValidator
     /// <seealso cref="FileCabinetApp.Validators.IRecordValidator" />
     internal class SalaryValidator : IRecordValidator
     {
-        private readonly int min;
-        private readonly int max;
+        private readonly decimal min;
+        private readonly decimal max;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SalaryValidator"/> class.
         /// </summary>
         /// <param name="min">The minimum.</param>
         /// <param name="max">The maximum.</param>
-        internal SalaryValidator(int min, int max)
+        internal SalaryValidator(decimal min, decimal max)
         {
             this.min = min;
             this.max = max;

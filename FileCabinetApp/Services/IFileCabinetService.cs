@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FileCabinetApp.Enums;
 
 namespace FileCabinetApp.Services
 {
@@ -30,20 +29,19 @@ namespace FileCabinetApp.Services
         int GetStat(out int deletedRecordsCount);
 
         /// <summary>
-        /// Updates the specified record parameters.
+        /// Updates the specified records to update.
         /// </summary>
+        /// <param name="recordsToUpdate">The records to update.</param>
         /// <param name="recordParameters">The record parameters.</param>
         /// <param name="keyValuePairs">The key value pairs.</param>
-        /// <returns>Updated record id.</returns>
-        int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs);
+        /// <returns>IDs of updated records.</returns>
+        List<int> Update(IEnumerable<FileCabinetRecord> recordsToUpdate, RecordParameters recordParameters, List<KeyValuePair<string, string>> keyValuePairs);
 
         /// <summary>
-        /// Selects the specified key value pairs.
+        /// Gets the records.
         /// </summary>
-        /// <param name="keyValuePairs">The key value pairs.</param>
-        /// <param name="condition">The condition.</param>
-        /// <returns>All records with specified parameters.</returns>
-        IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition);
+        /// <returns>All records.</returns>
+        IEnumerable<FileCabinetRecord> GetRecords();
 
         /// <summary>
         /// Determines whether [is there a record with this identifier] [the specified identifier].
@@ -77,10 +75,10 @@ namespace FileCabinetApp.Services
         List<int> Delete(string key, string value);
 
         /// <summary>
-        /// Purges the specified deleted records count.
+        /// Purges the specified records count.
         /// </summary>
-        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <param name="recordsCount">The records count.</param>
-        void Purge(out int deletedRecordsCount, out int recordsCount);
+        /// <returns>deleted records count.</returns>
+        int Purge(out int recordsCount);
     }
 }

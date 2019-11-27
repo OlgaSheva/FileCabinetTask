@@ -11,15 +11,19 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class ExportCommandHandler : ServiceCommandHandlerBase
     {
-        private static StreamWriter streamWriter;
+        private const int FormatPosition = 0;
+        private const int PathPosition = 1;
+        private static Action<string> write;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExportCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public ExportCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public ExportCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -31,6 +35,11 @@ namespace FileCabinetApp.CommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (request.Command == "export")
             {
                 this.Export(request.Parameters);
@@ -44,16 +53,26 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Export(string parameters)
         {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
             string[] commands = parameters.Split(' ');
-            string format = commands[0];
-            string path = commands[1];
+            if (commands.Length != 2)
+            {
+                throw new ArgumentException("Wrong command format. Example: export csv d:/records.csv", nameof(parameters));
+            }
+
+            string format = commands[FormatPosition];
+            string path = commands[PathPosition];
             const string yesAnswer = "y";
             const string csvFileType = "csv";
             const string xmlFileType = "xml";
 
             if (File.Exists(path))
             {
-                Console.Write($"File is exist - rewrite {path}? [Y/n] ");
+                write($"File is exist - rewrite {path}? [Y/n] ");
                 if (char.TryParse(Console.ReadLine(), out char answer))
                 {
                     if (answer.ToString(CultureInfo.InvariantCulture).Equals(yesAnswer, StringComparison.InvariantCultureIgnoreCase))
@@ -75,13 +94,13 @@ namespace FileCabinetApp.CommandHandlers
                 }
                 catch (FileLoadException ex)
                 {
-                    Console.WriteLine($"Export failed: can't open file {path}.", ex.Message);
+                    throw new ArgumentException($"Export failed: can't open file {path}.", ex.Message);
                 }
             }
 
             void Write(string p)
             {
-                using (streamWriter = new StreamWriter(p))
+                using (StreamWriter streamWriter = new StreamWriter(p))
                 {
                     FileCabinetServiceSnapshot snapshot = this.Service.MakeSnapshot();
 
@@ -89,17 +108,17 @@ namespace FileCabinetApp.CommandHandlers
                     {
                         snapshot.SaveToCSV(streamWriter);
                     }
-                    else if (commands[0] == xmlFileType)
+                    else if (commands[FormatPosition] == xmlFileType)
                     {
                         snapshot.SaveToXML(streamWriter);
                     }
                     else
                     {
-                        Console.WriteLine($"There is no {commands[0]} command.");
+                        write($"There is no {commands[FormatPosition]} command.");
                         return;
                     }
 
-                    Console.WriteLine($"All records are exported to file {p}.");
+                    write($"All records are exported to file {p}.");
                 }
             }
         }

@@ -90,7 +90,7 @@ namespace FileCabinetApp.Validators.RecordValidator
         /// <param name="min">The minimum.</param>
         /// <param name="max">The maximum.</param>
         /// <returns>This validator builder.</returns>
-        public ValidatorBuilder ValidateSalary(int min, int max)
+        public ValidatorBuilder ValidateSalary(decimal min, decimal max)
         {
             this.validators.Add(new SalaryValidator(min, max));
             return this;

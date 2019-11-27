@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -78,15 +79,26 @@ namespace FileCabinetApp.Printer
         /// </summary>
         /// <typeparam name="T">The t.</typeparam>
         /// <param name="values">The values.</param>
+        /// <param name="columnsList">The columns list.</param>
         /// <returns>Console table.</returns>
-        public static ConsoleTable From<T>(IEnumerable<T> values)
+        public static ConsoleTable From<T>(IEnumerable<T> values, List<string> columnsList)
         {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            if (columnsList == null)
+            {
+                throw new ArgumentNullException(nameof(columnsList));
+            }
+
             var table = new ConsoleTable
             {
                 ColumnTypes = GetColumnsType<T>().ToList(),
             };
 
-            var columns = GetColumns<T>();
+            var columns = GetColumns<T>(columnsList);
 
             table.AddColumn(columns);
 
@@ -178,6 +190,21 @@ namespace FileCabinetApp.Printer
         /// </returns>
         public override string ToString()
         {
+            if (this.Columns.Contains("DateOfBirth"))
+            {
+                int j = 0;
+                for (; j < this.Columns.Count; j++)
+                {
+                    if (this.Columns[j].Equals("DateOfBirth"))
+                    {
+                        for (int i = 0; i < this.Rows.Count; i++)
+                        {
+                            this.Rows[i][j] = ((DateTime)this.Rows[i][j]).ToString("MM'/'dd'/'yyyy", CultureInfo.InvariantCulture);
+                        }
+                    }
+                }
+            }
+
             var builder = new StringBuilder();
             var columnLengths = this.ColumnLengths();
             var columnAlignment = Enumerable.Range(0, this.Columns.Count)
@@ -186,10 +213,10 @@ namespace FileCabinetApp.Printer
             var format = Enumerable.Range(0, this.Columns.Count)
                 .Select(i => " | {" + i + "," + columnAlignment[i] + columnLengths[i] + "}")
                 .Aggregate((s, a) => s + a) + " |";
-            var maxRowLength = Math.Max(0, this.Rows.Any() ? this.Rows.Max(row => string.Format(CultureInfo.CurrentCulture, format, row).Length) : 0);
-            var columnHeaders = string.Format(CultureInfo.CurrentCulture, format, this.Columns.ToArray());
+            var maxRowLength = Math.Max(0, this.Rows.Any() ? this.Rows.Max(row => string.Format(CultureInfo.InvariantCulture, format, row).Length) : 0);
+            var columnHeaders = string.Format(CultureInfo.InvariantCulture, format, this.Columns.ToArray());
             var longestLine = Math.Max(maxRowLength, columnHeaders.Length);
-            var results = this.Rows.Select(row => string.Format(CultureInfo.CurrentCulture, format, row)).ToList();
+            var results = this.Rows.Select(row => string.Format(CultureInfo.InvariantCulture, format, row)).ToList();
             var divider = " " + string.Join(string.Empty, Enumerable.Repeat("-", longestLine - 1)) + " ";
 
             builder.AppendLine(divider);
@@ -204,41 +231,27 @@ namespace FileCabinetApp.Printer
             if (this.Options.EnableCount)
             {
                 builder.AppendLine(string.Empty);
-                builder.AppendFormat(CultureInfo.CurrentCulture, " Count: {0}", this.Rows.Count);
+                builder.AppendFormat(CultureInfo.InvariantCulture, " Count: {0}", this.Rows.Count);
             }
 
             return builder.ToString();
         }
 
-        private static IEnumerable<string> GetColumns<T>()
+        private static IEnumerable<string> GetColumns<T>(List<string> listcolumns)
         {
-            return typeof(T).GetProperties().Select(x => x.Name).ToArray();
+            return listcolumns
+                .Select(column => typeof(T).GetProperty(
+                    column, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance).Name);
         }
 
         private static object GetColumnValue<T>(object target, string column)
         {
-            return typeof(T).GetProperty(column).GetValue(target, null);
+            return typeof(T).GetProperty(column).GetValue(target);
         }
 
         private static IEnumerable<Type> GetColumnsType<T>()
         {
             return typeof(T).GetProperties().Select(x => x.PropertyType).ToArray();
-        }
-
-        private string ToMarkDownString(char delimiter)
-        {
-            var builder = new StringBuilder();
-            var columnLengths = this.ColumnLengths();
-            var format = this.Format(columnLengths, delimiter);
-            var columnHeaders = string.Format(CultureInfo.CurrentCulture, format, this.Columns.ToArray());
-            var results = this.Rows.Select(row => string.Format(CultureInfo.CurrentCulture, format, row)).ToList();
-            var divider = Regex.Replace(columnHeaders, @"[^|]", "-");
-
-            builder.AppendLine(columnHeaders);
-            builder.AppendLine(divider);
-            results.ForEach(row => builder.AppendLine(row));
-
-            return builder.ToString();
         }
 
         private string Format(List<int> columnLengths, char delimiter = '|')
@@ -247,7 +260,7 @@ namespace FileCabinetApp.Printer
                 .Select(this.GetNumberAlignment)
                 .ToList();
 
-            var delimiterStr = delimiter == char.MinValue ? string.Empty : delimiter.ToString(CultureInfo.CurrentCulture);
+            var delimiterStr = delimiter == char.MinValue ? string.Empty : delimiter.ToString(CultureInfo.InvariantCulture);
             var format = (Enumerable.Range(0, this.Columns.Count)
                 .Select(i => " " + delimiterStr + " {" + i + "," + columnAlignment[i] + columnLengths[i] + "}")
                 .Aggregate((s, a) => s + a) + " " + delimiterStr).Trim();
@@ -256,22 +269,13 @@ namespace FileCabinetApp.Printer
 
         private string GetNumberAlignment(int i)
         {
-            if (this.Columns[i].ToString().Equals("firstname", StringComparison.InvariantCultureIgnoreCase)
-                || this.Columns[i].ToString().Equals("lastname", StringComparison.InvariantCultureIgnoreCase)
-                || this.Columns[i].ToString().Equals("gender", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return this.ColumnTypes != null
-                      && numericTypes.Contains(this.ColumnTypes[i])
-                   ? string.Empty
-                   : "-";
-            }
-            else
-            {
-                return this.ColumnTypes != null
-                       && numericTypes.Contains(this.ColumnTypes[i])
-                    ? "-"
-                    : string.Empty;
-            }
+            return this.ColumnTypes != null
+                  && numericTypes.Contains(this.ColumnTypes[i])
+                  && (this.ColumnTypes[i].Equals(typeof(int))
+                    || this.ColumnTypes[i].Equals(typeof(short))
+                    || this.ColumnTypes[i].Equals(typeof(decimal)))
+               ? string.Empty
+               : "-";
         }
 
         private List<int> ColumnLengths()

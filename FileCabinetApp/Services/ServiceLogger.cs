@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using FileCabinetApp.Enums;
 
@@ -21,7 +22,7 @@ namespace FileCabinetApp.Services
         /// <param name="service">The service.</param>
         public ServiceLogger(IFileCabinetService service)
         {
-            this.service = service;
+            this.service = service ?? throw new ArgumentNullException(nameof(service));
             this.logger = NLog.LogManager.GetCurrentClassLogger();
         }
 
@@ -73,20 +74,28 @@ namespace FileCabinetApp.Services
         }
 
         /// <summary>
-        /// Updates the specified record parameters.
+        /// Updates the specified records to update.
         /// </summary>
+        /// <param name="recordsToUpdate">The records to update.</param>
         /// <param name="recordParameters">The record parameters.</param>
         /// <param name="keyValuePairs">The key value pairs.</param>
         /// <returns>
-        /// Updated record id.
+        /// IDs of updated records.
         /// </returns>
         /// <exception cref="ArgumentNullException">
+        /// recordsToUpdate
+        /// or
         /// recordParameters
         /// or
         /// keyValuePairs.
         /// </exception>
-        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        public List<int> Update(IEnumerable<FileCabinetRecord> recordsToUpdate, RecordParameters recordParameters, List<KeyValuePair<string, string>> keyValuePairs)
         {
+            if (recordsToUpdate == null)
+            {
+                throw new ArgumentNullException(nameof(recordsToUpdate));
+            }
+
             if (recordParameters == null)
             {
                 throw new ArgumentNullException(nameof(recordParameters));
@@ -101,36 +110,23 @@ namespace FileCabinetApp.Services
                 $"Calling Update() with parameters FirstNme = '{recordParameters?.FirstName}', LastName = '{recordParameters.LastName}', " +
                 $"DateOfBirth = '{recordParameters.DateOfBirth}', Gender = '{recordParameters.Gender}', " +
                 $"Office = '{recordParameters.Office}', Salary = '{recordParameters.Salary}'");
-            int id = this.service.Update(recordParameters, keyValuePairs);
+            List<int> ids = this.service.Update(recordsToUpdate, recordParameters, keyValuePairs);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Update() update the record {id}.'");
-            return id;
+                $"Update() update the record.'");
+            return ids;
         }
 
         /// <summary>
         /// Selects the specified key value pairs.
         /// </summary>
-        /// <param name="keyValuePairs">The key value pairs.</param>
-        /// <param name="condition">The condition.</param>
         /// <returns>
-        /// All records with specified parameters.
+        /// All records.
         /// </returns>
-        public IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            if (keyValuePairs == null)
-            {
-                throw new ArgumentNullException(nameof(keyValuePairs));
-            }
-
-            StringBuilder sb = new StringBuilder();
-            foreach (var kv in keyValuePairs)
-            {
-                sb.Append($"{kv.Key} - '{kv.Value}' ");
-            }
-
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
-                $"Calling Select() with parameters {sb}");
-            var result = this.service.SelectRecords(keyValuePairs, condition);
+                $"Calling Select() with parameters");
+            var result = this.service.GetRecords();
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Select() returned records");
             return result;
@@ -174,17 +170,20 @@ namespace FileCabinetApp.Services
             => this.service.MakeSnapshot();
 
         /// <summary>
-        /// Purges the specified deleted records count.
+        /// Purges the specified records count.
         /// </summary>
-        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <param name="recordsCount">The records count.</param>
-        public void Purge(out int deletedRecordsCount, out int recordsCount)
+        /// <returns>
+        /// deleted records count.
+        /// </returns>
+        public int Purge(out int recordsCount)
         {
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Calling Purge()");
-            this.service.Purge(out deletedRecordsCount, out recordsCount);
+            int deletedRecordsCount = this.service.Purge(out recordsCount);
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Purge() done defragmentation");
+            return deletedRecordsCount;
         }
 
         /// <summary>
@@ -194,6 +193,11 @@ namespace FileCabinetApp.Services
         /// <param name="exceptions">The exceptions.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot, out Dictionary<int, string> exceptions)
         {
+            if (snapshot == null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
             this.service.Restore(snapshot, out exceptions);
         }
 
@@ -207,6 +211,16 @@ namespace FileCabinetApp.Services
         /// </returns>
         public List<int> Delete(string key, string value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             this.logger.Info($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - " +
                 $"Calling Delete() where {key} = '{value}'");
             var ids = this.service.Delete(key, value);

@@ -25,10 +25,11 @@ namespace FileCabinetApp
         private const string DefaultValidationRules = "default";
         private const string DeveloperName = "Olga Kripulevich";
 
+        private static readonly Action<string> Write = Console.WriteLine;
+
         private static IInputConverter converter;
         private static IInputValidator validator;
         private static IFileCabinetService fileCabinetService;
-        private static string validationRules;
         private static FileStream fileStream;
 
         private static bool isRunning = true;
@@ -39,13 +40,12 @@ namespace FileCabinetApp
         /// <param name="args">Input parameters.</param>
         public static void Main(string[] args)
         {
-            validationRules = DefaultValidationRules;
+            string validationRules = DefaultValidationRules;
             ServiceType serviceType = ServiceType.Memory;
             MeterStatus meter = MeterStatus.Off;
             LoggerStatus logger = LoggerStatus.Off;
 
             var parser = new Parser(with => with.CaseInsensitiveEnumValues = true);
-            var result = parser.ParseArguments<Options>(args);
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
                    {
@@ -64,7 +64,7 @@ namespace FileCabinetApp
 
             if (meter == MeterStatus.On)
             {
-                fileCabinetService = new ServiceMeter(fileCabinetService);
+                fileCabinetService = new ServiceMeter(fileCabinetService, Write);
             }
 
             if (logger == LoggerStatus.On)
@@ -74,10 +74,10 @@ namespace FileCabinetApp
 
             var commandHandler = CreateCommandHandlers();
 
-            Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}" + Environment.NewLine +
+            Write($"File Cabinet Application, developed by {Program.DeveloperName}" + Environment.NewLine +
                               $"Using {validationRules} validation rules." + Environment.NewLine +
                               $"The {serviceType.ToString()} service.");
-            Console.WriteLine(HintMessage + Environment.NewLine);
+            Write(HintMessage + Environment.NewLine);
 
             do
             {
@@ -91,9 +91,17 @@ namespace FileCabinetApp
                 {
                     commandHandler.Handle(new AppCommandRequest(command, parameters));
                 }
-                catch (ArgumentException ex)
+                catch (ArgumentNullException anex)
                 {
-                    Console.WriteLine($"Error. {ex.Message}");
+                    Write($"Error. {anex.Message}");
+                }
+                catch (ArgumentException aex)
+                {
+                    Write($"Error. {aex.Message}");
+                }
+                catch (InvalidOperationException ioex)
+                {
+                    Write($"Error. {ioex.Message}");
                 }
             }
             while (isRunning);
@@ -103,18 +111,18 @@ namespace FileCabinetApp
         {
             var recordPrinter = new Action<List<string>, IEnumerable<FileCabinetRecord>>((x, y) => DefaultRecordPrint(x, y));
 
-            var exitHandler = new ExitCommandHandler(fileStream, (x) => isRunning = x);
-            var helpHandler = new HelpCommandHandler();
-            var createHandle = new CreateCommandHandler(fileCabinetService, converter, validator);
-            var insertHandle = new InsertCommandHandler(fileCabinetService);
-            var updateHandler = new UpdateCommandHandler(fileCabinetService);
-            var exportHandler = new ExportCommandHandler(fileCabinetService);
-            var importHandler = new ImportCommandHandler(fileCabinetService);
-            var deleteHandler = new DeleteCommandHandler(fileCabinetService);
-            var statHandler = new StatCommandHandler(fileCabinetService);
-            var purgeHadler = new PurgeCommandHandler(fileCabinetService);
+            var exitHandler = new ExitCommandHandler(fileStream, Write, (x) => isRunning = x);
+            var helpHandler = new HelpCommandHandler(Write);
+            var createHandle = new CreateCommandHandler(fileCabinetService, converter, validator, Write);
+            var insertHandle = new InsertCommandHandler(fileCabinetService, Write);
+            var updateHandler = new UpdateCommandHandler(fileCabinetService, Write);
+            var exportHandler = new ExportCommandHandler(fileCabinetService, Write);
+            var importHandler = new ImportCommandHandler(fileCabinetService, Write);
+            var deleteHandler = new DeleteCommandHandler(fileCabinetService, Write);
+            var statHandler = new StatCommandHandler(fileCabinetService, Write);
+            var purgeHadler = new PurgeCommandHandler(fileCabinetService, Write);
             var selectHandler = new SelectCommandHandler(fileCabinetService, recordPrinter);
-            var missedCommandHandler = new SimilarCommandHandler();
+            var missedCommandHandler = new SimilarCommandHandler(Write);
             helpHandler
                 .SetNext(exitHandler)
                 .SetNext(statHandler)
@@ -130,18 +138,19 @@ namespace FileCabinetApp
             return helpHandler;
         }
 
-        private static IFileCabinetService CreateServise(string validationRules, ServiceType serviceType, out IInputConverter converter, out IInputValidator validator)
+        private static IFileCabinetService CreateServise(
+            string validationRules, ServiceType serviceType, out IInputConverter converter, out IInputValidator validator)
         {
             const string dataFilePath = "cabinet-records.db";
 
             switch (validationRules)
             {
                 case CustomValidationType:
-                    validator = new CustomInputValidator();
+                    validator = InputValidatorBuilder.CreateCustom();
                     converter = new CustomInputConverter();
                     break;
                 case DefaultValidationRules:
-                    validator = new DefaultInputValidator();
+                    validator = InputValidatorBuilder.CreateDefault();
                     converter = new DefaultInputConverter();
                     break;
                 default:
@@ -187,45 +196,7 @@ namespace FileCabinetApp
                     nameof(columns));
             }
 
-            ConsoleTable consoleTable = new ConsoleTable(columns.ToArray());
-            foreach (var record in records)
-            {
-                object[] parameters = new object[columns.Count];
-                int i = 0;
-                foreach (var c in columns)
-                {
-                    switch (c)
-                    {
-                        case "id":
-                            parameters[i++] = record.Id;
-                            break;
-                        case "firstname":
-                            parameters[i++] = record.FirstName;
-                            break;
-                        case "lastname":
-                            parameters[i++] = record.LastName;
-                            break;
-                        case "dateofbirth":
-                            parameters[i++] = record.DateOfBirth;
-                            break;
-                        case "gender":
-                            parameters[i++] = record.Gender;
-                            break;
-                        case "office":
-                            parameters[i++] = record.Office;
-                            break;
-                        case "salary":
-                            parameters[i++] = record.Salary;
-                            break;
-                        default:
-                            throw new ArgumentException($"The '{c}' parameter does not exist.");
-                    }
-                }
-
-                consoleTable.AddRow(parameters);
-            }
-
-            Console.WriteLine(consoleTable.ToString());
+            Write(ConsoleTable.From<FileCabinetRecord>(records, columns).ToString());
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using FileCabinetApp.Enums;
+using FileCabinetApp.Services.Extensions;
 using FileCabinetApp.Validators;
 
 namespace FileCabinetApp.Services
@@ -15,12 +15,19 @@ namespace FileCabinetApp.Services
     /// <seealso cref="FileCabinetApp.Services.IFileCabinetService" />
     public class FileCabinetFilesystemService : IFileCabinetService
     {
-        private const int RecordInBytesLength = 278;
-        private const int ReservedFieldLength = 2;
-        private const int IdPosition = 2;
-        private const int FirstNamePosition = 6;
-        private const int StringInBitesLength = 120;
-        private const int DecimalInBitesLength = 16;
+        private const int RecordInBytesLength // 278
+            = (sizeof(byte) * 2) // status
+            + sizeof(int) // id
+            + (NameInBytesLength * 2) // first and last name
+            + (sizeof(int) * 3) // dateofbirth
+            + sizeof(char) // gender
+            + sizeof(short) // office
+            + sizeof(decimal); // salary
+
+        private const int StatusInBytesLength = sizeof(byte) * 2;
+        private const int FirstNamePosition = StatusInBytesLength + sizeof(int);
+        private const int GenderPosition = FirstNamePosition + (NameInBytesLength * 2) + (sizeof(int) * 3);
+        private const int NameInBytesLength = 120;
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
         private SortedDictionary<int, long> idpositionPairs;
@@ -38,7 +45,8 @@ namespace FileCabinetApp.Services
             this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream));
             this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
 
-            this.IdAndPositionSortedListGenerator();
+            this.fileStream.SetLength(0);
+            this.FillAllDictionaries();
         }
 
         /// <summary>
@@ -82,35 +90,33 @@ namespace FileCabinetApp.Services
             }
 
             this.validator.ValidateParameters(rec);
+            this.fileStream.Seek(0, SeekOrigin.End);
             this.CreateFileCabinetRecord(rec, id);
         }
 
         /// <summary>
-        /// Updates the specified record parameters.
+        /// Updates the specified records to update.
         /// </summary>
+        /// <param name="recordsToUpdate">The records to update.</param>
         /// <param name="recordParameters">The record parameters.</param>
         /// <param name="keyValuePairs">The key value pairs.</param>
         /// <returns>
-        /// Updated record id.
+        /// IDs of updated records.
         /// </returns>
         /// <exception cref="ArgumentNullException">
+        /// recordsToUpdate
+        /// or
         /// recordParameters
         /// or
         /// keyValuePairs.
         /// </exception>
-        /// <exception cref="ArgumentException">
-        /// There are several entries with such parameters.
-        /// or
-        /// There are no entries with such parameters.
-        /// or
-        /// There are no entries with such parameters.
-        /// or
-        /// Record whith firstname = '{firstname}' does not exist.
-        /// or
-        /// There are no entries with such parameters.
-        /// </exception>
-        public int Update(RecordParameters recordParameters, Dictionary<string, string> keyValuePairs)
+        public List<int> Update(IEnumerable<FileCabinetRecord> recordsToUpdate, RecordParameters recordParameters, List<KeyValuePair<string, string>> keyValuePairs)
         {
+            if (recordsToUpdate == null)
+            {
+                throw new ArgumentNullException(nameof(recordsToUpdate));
+            }
+
             if (recordParameters == null)
             {
                 throw new ArgumentNullException(nameof(recordParameters));
@@ -121,265 +127,34 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(keyValuePairs));
             }
 
-            int id = 0;
-            long position = 0;
-            string firstname;
-            string lastname;
-            List<long> firstnameList = new List<long>(),
-                       lastnameList = new List<long>(),
-                       firstAndLastNameList = new List<long>();
-            if (keyValuePairs["id"] != null)
+            List<int> ids = new List<int>();
+            int id;
+            long position;
+            foreach (var record in recordsToUpdate)
             {
-                id = int.Parse(keyValuePairs["id"], NumberStyles.Integer, CultureInfo.CurrentCulture);
+                id = record.Id;
                 position = this.idpositionPairs[id];
-            }
-            else if ((firstname = keyValuePairs["firstname"]) != null)
-            {
-                if (this.firstNameDictionary.TryGetValue(firstname, out firstnameList))
-                {
-                    lastname = keyValuePairs["lastname"];
-                    if (firstnameList.Count == 1 && lastname == null)
-                    {
-                        position = firstnameList[0];
-                    }
-                    else if (lastname != null)
-                    {
-                        if (this.lastNameDictionary.TryGetValue(lastname, out lastnameList))
-                        {
-                            foreach (var fnp in firstnameList)
-                            {
-                                foreach (var lnp in lastnameList)
-                                {
-                                    if (fnp == lnp)
-                                    {
-                                        firstAndLastNameList.Add(fnp);
-                                    }
-                                }
-                            }
-
-                            if (firstAndLastNameList.Count == 1)
-                            {
-                                position = firstAndLastNameList[0];
-                            }
-                            else if (firstAndLastNameList.Count > 1)
-                            {
-                                throw new ArgumentException("There are several entries with such parameters.");
-                            }
-                        }
-                        else
-                        {
-                            throw new ArgumentException("There are no entries with such parameters.");
-                        }
-                    }
-                    else if (firstAndLastNameList.Count > 1 && lastname == null)
-                    {
-                        throw new ArgumentException("There are several entries with such parameters.");
-                    }
-                    else
-                    {
-                        throw new ArgumentException("There are no entries with such parameters.");
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Record whith firstname = '{firstname}' does not exist.");
-                }
-            }
-            else
-            {
-                throw new ArgumentException("There are no entries with such parameters.");
+                this.GetRecordWithNewParameters(recordParameters, out id, position, out RecordParameters newRecordParameters);
+                this.EditRecord(id, newRecordParameters);
+                ids.Add(id);
             }
 
-            string pfirstname = null;
-            string plastname = null;
-            DateTime pdateofbirth = default(DateTime);
-            char pgender = default(char);
-            short poffice = -1;
-            decimal psalary = -1;
-
-            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
-            using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
-            {
-                this.fileStream.Seek(position, SeekOrigin.Begin);
-                var existRecordsParameters = GetRecordParametersFromFile(reader);
-                this.fileStream.Seek(position + (long)IdPosition, SeekOrigin.Begin);
-                id = reader.ReadInt32();
-                if (recordParameters.FirstName != null)
-                {
-                    pfirstname = recordParameters.FirstName;
-                }
-                else
-                {
-                    pfirstname = existRecordsParameters.FirstName;
-                }
-
-                if (recordParameters.LastName != null)
-                {
-                    plastname = recordParameters.LastName;
-                }
-                else
-                {
-                    plastname = existRecordsParameters.LastName;
-                }
-
-                if (recordParameters.DateOfBirth != default(DateTime))
-                {
-                    pdateofbirth = recordParameters.DateOfBirth;
-                }
-                else
-                {
-                    pdateofbirth = existRecordsParameters.DateOfBirth;
-                }
-
-                if (recordParameters.Gender != default(char))
-                {
-                    pgender = recordParameters.Gender;
-                }
-                else
-                {
-                    pgender = existRecordsParameters.Gender;
-                }
-
-                if (recordParameters.Office != -1)
-                {
-                    poffice = recordParameters.Office;
-                }
-                else
-                {
-                    poffice = existRecordsParameters.Office;
-                }
-
-                if (recordParameters.Salary != -1)
-                {
-                    psalary = recordParameters.Salary;
-                }
-                else
-                {
-                    psalary = existRecordsParameters.Salary;
-                }
-            }
-
-            var newRecordParameters = new RecordParameters(pfirstname, plastname, pdateofbirth, pgender, poffice, psalary);
-            this.EditRecord(id, newRecordParameters);
-            return id;
+            return ids;
         }
 
         /// <summary>
-        /// Selects the specified key value pairs.
+        /// Gets the records.
         /// </summary>
-        /// <param name="keyValuePairs">The key value pairs.</param>
-        /// <param name="condition">The condition.</param>
-        /// <returns>All records with specified parameters.</returns>
-        /// <exception cref="ArgumentNullException">keyValuePairs is null.</exception>
-        /// <exception cref="InvalidOperationException">The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.</exception>
-        /// <exception cref="ArgumentException">The record with {key} = '{value}' doesn't exist.</exception>
-        public IEnumerable<FileCabinetRecord> SelectRecords(List<KeyValuePair<string, string>> keyValuePairs, SearchCondition condition)
+        /// <returns>
+        /// All records.
+        /// </returns>
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            if (keyValuePairs == null)
+            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                throw new ArgumentNullException(nameof(keyValuePairs));
-            }
-
-            List<long> positions = new List<long>();
-            if (keyValuePairs.Count == 0)
-            {
-                positions.AddRange(this.idpositionPairs.Values);
-            }
-            else
-            {
-                string key;
-                string value;
-                foreach (var criterion in keyValuePairs)
+                foreach (var item in this.idpositionPairs)
                 {
-                    key = criterion.Key;
-                    value = criterion.Value;
-                    try
-                    {
-                        switch (key)
-                        {
-                            case "id":
-                                int id = int.Parse(value, CultureInfo.CurrentCulture);
-                                if (this.idpositionPairs.TryGetValue(id, out long p))
-                                {
-                                    positions.Add(p);
-                                }
-
-                                break;
-                            case "firstname":
-                                if (condition.Equals(SearchCondition.Or))
-                                {
-                                    positions.AddRange(this.firstNameDictionary[value]);
-                                }
-                                else
-                                {
-                                    if (positions.Count == 0)
-                                    {
-                                        positions.AddRange(this.firstNameDictionary[value]);
-                                    }
-                                    else
-                                    {
-                                        positions = positions.Intersect(this.firstNameDictionary[value]).ToList();
-                                    }
-                                }
-
-                                break;
-                            case "lastname":
-                                if (condition.Equals(SearchCondition.Or))
-                                {
-                                    positions.AddRange(this.lastNameDictionary[value]);
-                                }
-                                else
-                                {
-                                    if (positions.Count == 0)
-                                    {
-                                        positions.AddRange(this.lastNameDictionary[value]);
-                                    }
-                                    else
-                                    {
-                                        positions = positions.Intersect(this.lastNameDictionary[value]).ToList();
-                                    }
-                                }
-
-                                break;
-                            case "dateofbirth":
-                                if (DateTime.TryParse(value, out DateTime date))
-                                {
-                                    if (condition.Equals(SearchCondition.Or))
-                                    {
-                                        positions.AddRange(this.dateOfBirthDictionary[date]);
-                                    }
-                                    else
-                                    {
-                                        if (positions.Count == 0)
-                                        {
-                                            positions.AddRange(this.dateOfBirthDictionary[date]);
-                                        }
-                                        else
-                                        {
-                                            positions = positions.Intersect(this.dateOfBirthDictionary[date]).ToList();
-                                        }
-                                    }
-                                }
-
-                                break;
-                            default:
-                                throw new InvalidOperationException(
-                                    $"The {key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.");
-                        }
-                    }
-                    catch (KeyNotFoundException knfex)
-                    {
-                        throw new ArgumentException($"The record with {key} = '{value}' doesn't exist.", knfex.Message);
-                    }
-                }
-            }
-
-            using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
-            {
-                foreach (var position in positions)
-                {
-                    this.fileStream.Seek(position, SeekOrigin.Begin);
-                    yield return GetFileCabinetRecordFromFile(binaryReader);
+                    yield return reader.GetFileCabinetRecordFromFile(this.fileStream, item.Value);
                 }
             }
         }
@@ -425,7 +200,7 @@ namespace FileCabinetApp.Services
         /// <returns>The file cabinet service snapshot.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            var snapshot = new FileCabinetServiceSnapshot();
+            var snapshot = new FileCabinetServiceSnapshot(this.GetRecords().ToList());
             return snapshot;
         }
 
@@ -447,7 +222,7 @@ namespace FileCabinetApp.Services
             var recordsFromFile = snapshot.FileCabinetRecords.ToList();
             using (BinaryReader binaryReader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
-                this.IdAndPositionSortedListGenerator();
+                this.FillAllDictionaries();
 
                 bool flag = false;
                 int existId = -1;
@@ -481,16 +256,23 @@ namespace FileCabinetApp.Services
                             throw new ArgumentException(nameof(record.Id));
                         }
 
-                        var r = new RecordParameters(
+                        var recordParameters = new RecordParameters(
                             record.FirstName, record.LastName, record.DateOfBirth, record.Gender, record.Office, record.Salary);
-                        this.validator.ValidateParameters(r);
-                        this.WriteToTheBinaryFile(record);
+                        this.validator.ValidateParameters(recordParameters);
+                        if (this.idpositionPairs.ContainsKey(record.Id))
+                        {
+                            this.RemoveFromDictionaries(record.Id);
+                            this.idpositionPairs.Remove(record.Id);
+                        }
+
                         if (!this.idpositionPairs.ContainsKey(record.Id))
                         {
-                            position = this.fileStream.Position - RecordInBytesLength;
+                            position = this.fileStream.Position;
                             this.idpositionPairs.Add(record.Id, position);
-                            this.AddToDictionaries(r, position);
+                            this.AddToDictionaries(recordParameters, position);
                         }
+
+                        this.WriteToTheBinaryFile(record);
                     }
                     catch (ArgumentException ex)
                     {
@@ -530,120 +312,87 @@ namespace FileCabinetApp.Services
                 throw new ArgumentNullException(nameof(value));
             }
 
-            var ids = new List<int>();
+            List<int> ids;
             dynamic dictionary;
             dynamic searchKey;
-            switch (key.ToLower(CultureInfo.CurrentCulture))
+            try
             {
-                case "id":
-                    searchKey = int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                    dictionary = new Dictionary<int, List<long>>()
-                        { { (int)searchKey, new List<long>() { this.idpositionPairs[searchKey] } }, };
-                    break;
-                case "firstname":
-                    dictionary = this.firstNameDictionary;
-                    searchKey = value;
-                    break;
-                case "lastname":
-                    dictionary = this.lastNameDictionary;
-                    searchKey = value;
-                    break;
-                case "dateofbirth":
-                    dictionary = this.dateOfBirthDictionary;
-                    searchKey = DateTime.Parse(value, CultureInfo.InvariantCulture);
-                    break;
-                default:
-                    throw new ArgumentException($"Search by key '{key}' does not supported.", nameof(key));
+                ids = this.GetIdsOfRecordsThatMathForKeyValue(key, value, out dictionary, out searchKey);
             }
-
-            if (dictionary.TryGetValue(searchKey, out List<long> positionList))
-            {
-                foreach (var position in positionList)
-                {
-                    this.fileStream.Seek(position, SeekOrigin.Begin);
-                    this.fileStream.WriteByte(1);
-                    this.fileStream.Seek(position + ReservedFieldLength, SeekOrigin.Begin);
-                    int id = -1;
-                    using (var reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
-                    {
-                        id = reader.ReadInt32();
-                        ids.Add(id);
-                    }
-                }
-
-                foreach (var id in ids)
-                {
-                    this.RemoveFromDictionaries(id);
-                    this.idpositionPairs.Remove(id);
-                }
-            }
-            else
+            catch (KeyNotFoundException)
             {
                 throw new ArgumentException($"There are no records with {key} = '{value}'.");
             }
+
+            this.RemoveRecords(ids, dictionary, searchKey);
 
             return ids;
         }
 
         /// <summary>
-        /// Purges the specified deleted records count.
+        /// Purges the specified records count.
         /// </summary>
-        /// <param name="deletedRecordsCount">The deleted records count.</param>
         /// <param name="recordsCount">The records count.</param>
-        public void Purge(out int deletedRecordsCount, out int recordsCount)
+        /// <returns>
+        /// deleted records count.
+        /// </returns>
+        public int Purge(out int recordsCount)
         {
             this.fileStream.Seek(0, SeekOrigin.Begin);
             int count = (int)(this.fileStream.Length / RecordInBytesLength);
             recordsCount = count;
-            deletedRecordsCount = 0;
+            int deletedRecordsCount = 0;
             byte[] buffer = new byte[RecordInBytesLength];
             Queue<long> deletedRecordPositions = new Queue<long>();
-            long lastDeletedRecordStart = -1;
+            long lastDeletedRecordStartPosition = -1;
             int deadRecordsCount = 0;
-            long lastAliveRecordEnd = 0;
+            long lastAliveRecordEndPosition = 0;
             int id;
+            RecordParameters recordParameters;
 
             using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             using (BinaryWriter writer = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
             {
                 while (count-- > 0)
                 {
-                    if (reader.ReadBytes(ReservedFieldLength)[0] == 1)
+                    if (reader.IsTheRecordDelete(this.fileStream))
                     {
-                        this.fileStream.Seek(-ReservedFieldLength, SeekOrigin.Current);
                         deletedRecordPositions.Enqueue(this.fileStream.Position);
                         deletedRecordsCount++;
                         this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
                     }
                     else
                     {
-                        id = reader.ReadInt32();
-                        this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
-                        if (deletedRecordPositions.TryDequeue(out lastDeletedRecordStart))
+                        id = reader.GetId(this.fileStream);
+                        recordParameters = reader.GetRecordParameters(this.fileStream);
+                        if (deletedRecordPositions.TryDequeue(out lastDeletedRecordStartPosition))
                         {
                             buffer = reader.ReadBytes(RecordInBytesLength);
                             this.fileStream.Seek(-RecordInBytesLength, SeekOrigin.Current);
                             deletedRecordPositions.Enqueue(this.fileStream.Position);
                             this.fileStream.WriteByte(1); // deleted
 
-                            deadRecordsCount = (int)((this.fileStream.Position - lastAliveRecordEnd) / RecordInBytesLength);
-                            this.idpositionPairs[id] = lastDeletedRecordStart;
-                            this.fileStream.Seek(lastDeletedRecordStart, SeekOrigin.Begin);
+                            deadRecordsCount = (int)((this.fileStream.Position - lastAliveRecordEndPosition) / RecordInBytesLength);
+                            this.RemoveFromDictionaries(id);
+                            this.idpositionPairs[id] = lastDeletedRecordStartPosition;
+                            this.AddToDictionaries(recordParameters, lastDeletedRecordStartPosition);
+                            this.fileStream.Seek(lastDeletedRecordStartPosition, SeekOrigin.Begin);
                             writer.Write(buffer, 0, RecordInBytesLength);
 
-                            lastAliveRecordEnd = this.fileStream.Position;
+                            lastAliveRecordEndPosition = this.fileStream.Position;
                             this.fileStream.Seek(RecordInBytesLength * deadRecordsCount, SeekOrigin.Current);
                         }
                         else
                         {
                             this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
-                            lastAliveRecordEnd = this.fileStream.Position;
+                            lastAliveRecordEndPosition = this.fileStream.Position;
                         }
                     }
                 }
             }
 
-            this.fileStream.SetLength(lastAliveRecordEnd);
+            this.fileStream.SetLength(lastAliveRecordEndPosition);
+            return deletedRecordsCount;
         }
 
         private static byte[] GetBytes(decimal dec)
@@ -656,59 +405,6 @@ namespace FileCabinetApp.Services
             }
 
             return bytes.ToArray();
-        }
-
-        private static decimal ToDecimal(byte[] bytes)
-        {
-            if (bytes.Length != 16)
-            {
-                throw new ArgumentException("A decimal must be created from exactly 16 bytes.", nameof(bytes));
-            }
-
-            int[] bits = new int[4];
-            for (int i = 0; i <= 15; i += 4)
-            {
-                bits[i / 4] = BitConverter.ToInt32(bytes, i);
-            }
-
-            return new decimal(bits);
-        }
-
-        private static FileCabinetRecord GetFileCabinetRecordFromFile(BinaryReader binaryReader)
-        {
-            if (binaryReader == null)
-            {
-                throw new ArgumentNullException(nameof(binaryReader));
-            }
-
-            binaryReader.ReadBytes(ReservedFieldLength);
-            return new FileCabinetRecord
-            {
-                Id = binaryReader.ReadInt32(),
-                FirstName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                LastName = System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                DateOfBirth = new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
-                Gender = binaryReader.ReadChar(),
-                Office = binaryReader.ReadInt16(),
-                Salary = ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)),
-            };
-        }
-
-        private static RecordParameters GetRecordParametersFromFile(BinaryReader binaryReader)
-        {
-            binaryReader.ReadBytes(ReservedFieldLength);
-            binaryReader.ReadInt32();
-            return new RecordParameters(
-                System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim(),
-                new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
-                binaryReader.ReadChar(),
-                binaryReader.ReadInt16(),
-                ToDecimal(binaryReader.ReadBytes(DecimalInBitesLength)));
         }
 
         private void EditRecord(int id, RecordParameters parameters)
@@ -778,7 +474,7 @@ namespace FileCabinetApp.Services
             this.AddToDictionaries(rec, recordPosition);
         }
 
-        private void IdAndPositionSortedListGenerator()
+        private void FillAllDictionaries()
         {
             this.idpositionPairs = new SortedDictionary<int, long>();
             this.firstNameDictionary = new Dictionary<string, List<long>>();
@@ -793,30 +489,26 @@ namespace FileCabinetApp.Services
             {
                 while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
-                    if (reader.ReadBytes(ReservedFieldLength)[0] == 0)
+                    if (!reader.IsTheRecordDelete(this.fileStream))
                     {
-                        id = reader.ReadInt32();
-                        this.fileStream.Seek(-FirstNamePosition, SeekOrigin.Current);
+                        id = reader.GetId(this.fileStream);
                         position = this.fileStream.Position;
                         if (!this.idpositionPairs.Keys.Contains(id))
                         {
                             this.idpositionPairs.Add(id, position);
                         }
 
-                        var parameters = GetRecordParametersFromFile(reader);
+                        var parameters = reader.GetRecordParameters(this.fileStream);
                         this.AddToDictionaries(parameters, position);
                     }
-                    else
-                    {
-                        this.fileStream.Seek(-ReservedFieldLength + RecordInBytesLength, SeekOrigin.Current);
-                    }
+
+                    this.fileStream.Seek(RecordInBytesLength, SeekOrigin.Current);
                 }
             }
         }
 
         private void WriteToTheBinaryFile(FileCabinetRecord record)
         {
-            this.fileStream.Seek(0, SeekOrigin.End);
             using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
             {
                 var byteId = BitConverter.GetBytes(record.Id);
@@ -867,18 +559,20 @@ namespace FileCabinetApp.Services
         private void RemoveFromDictionaries(int id)
         {
             long recordPositon = this.idpositionPairs[id];
-            this.fileStream.Seek(recordPositon + FirstNamePosition, SeekOrigin.Begin);
             string firstName;
             string lastName;
             DateTime dateOfBirth;
+            this.fileStream.Seek(recordPositon + FirstNamePosition, SeekOrigin.Begin);
             using (var reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
             {
                 firstName = System.Text.UnicodeEncoding.Unicode.GetString(
-                            reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                            reader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim();
                 lastName = System.Text.UnicodeEncoding.Unicode.GetString(
-                            reader.ReadBytes(StringInBitesLength), 0, StringInBitesLength).Trim();
+                            reader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim();
                 dateOfBirth = new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             }
+
+            this.fileStream.Seek(-GenderPosition, SeekOrigin.Current);
 
             this.firstNameDictionary[firstName].Remove(recordPositon);
             this.lastNameDictionary[lastName].Remove(recordPositon);
@@ -897,6 +591,103 @@ namespace FileCabinetApp.Services
             if (this.dateOfBirthDictionary[dateOfBirth].Count == 0)
             {
                 this.dateOfBirthDictionary.Remove(dateOfBirth);
+            }
+        }
+
+        private void GetRecordWithNewParameters(RecordParameters recordParameters, out int id, long position, out RecordParameters newRecordParameters)
+        {
+            string pfirstname = null;
+            string plastname = null;
+            DateTime pdateofbirth = default(DateTime);
+            char pgender = default(char);
+            short poffice = -1;
+            decimal psalary = -1;
+
+            using (BinaryReader reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+            using (BinaryWriter writeBinay = new BinaryWriter(this.fileStream, Encoding.Unicode, true))
+            {
+                this.fileStream.Seek(position, SeekOrigin.Begin);
+                var existRecordsParameters = reader.GetRecordParameters(this.fileStream);
+                id = reader.GetId(this.fileStream);
+
+                pfirstname = recordParameters.FirstName ?? existRecordsParameters.FirstName;
+                plastname = recordParameters.LastName ?? existRecordsParameters.LastName;
+                pdateofbirth = recordParameters.DateOfBirth != default(DateTime) ? recordParameters.DateOfBirth : existRecordsParameters.DateOfBirth;
+                pgender = recordParameters.Gender != default(char) ? recordParameters.Gender : existRecordsParameters.Gender;
+                poffice = recordParameters.Office != -1 ? recordParameters.Office : existRecordsParameters.Office;
+                psalary = recordParameters.Salary != -1 ? recordParameters.Salary : existRecordsParameters.Salary;
+            }
+
+            newRecordParameters = new RecordParameters(pfirstname, plastname, pdateofbirth, pgender, poffice, psalary);
+        }
+
+        private List<int> GetIdsOfRecordsThatMathForKeyValue(string key, string value, out dynamic dictionary, out dynamic searchKey)
+        {
+            List<int> ids = new List<int>();
+            switch (key.ToUpperInvariant())
+            {
+                case "ID":
+                    if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int id))
+                    {
+                        searchKey = id;
+                        dictionary = new Dictionary<int, List<long>>()
+                        { { (int)searchKey, new List<long>() { this.idpositionPairs[searchKey] } }, };
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Wrong id format.", nameof(value));
+                    }
+
+                    break;
+                case "FIRSTNAME":
+                    dictionary = this.firstNameDictionary;
+                    searchKey = value;
+                    break;
+                case "LASTNAME":
+                    dictionary = this.lastNameDictionary;
+                    searchKey = value;
+                    break;
+                case "DATEOFBIRTH":
+                    if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                    {
+                        searchKey = date;
+                        dictionary = this.dateOfBirthDictionary;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("You can use only the MM.DD.YYYY, MM/DD/YYYY, YYYY-MM-DD, format", nameof(value));
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentException($"Search by key '{key}' does not supported. Only 'Id', 'FirstName', 'LastName' and 'DateOfBirth'", nameof(key));
+            }
+
+            return ids;
+        }
+
+        private void RemoveRecords(List<int> ids, dynamic dictionary, dynamic searchKey)
+        {
+            if (dictionary.TryGetValue(searchKey, out List<long> positionList))
+            {
+                foreach (var position in positionList)
+                {
+                    this.fileStream.Seek(position, SeekOrigin.Begin);
+                    this.fileStream.WriteByte(1);
+                    this.fileStream.Seek(position + StatusInBytesLength, SeekOrigin.Begin);
+                    int id = -1;
+                    using (var reader = new BinaryReader(this.fileStream, Encoding.Unicode, true))
+                    {
+                        id = reader.ReadInt32();
+                        ids.Add(id);
+                    }
+                }
+
+                foreach (var id in ids)
+                {
+                    this.RemoveFromDictionaries(id);
+                    this.idpositionPairs.Remove(id);
+                }
             }
         }
     }

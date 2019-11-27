@@ -32,7 +32,7 @@ namespace FileCabinetApp.CommandLineOptions
         /// <value>
         /// The meter.
         /// </value>
-        [Option("use-stopwatch", Default = MeterStatus.On, HelpText = "Defines meter rules: On or Off.")]
+        [Option("use-stopwatch", Default = MeterStatus.Off, HelpText = "Defines meter rules: On or Off.")]
         public MeterStatus Meter { get; set; }
 
         /// <summary>

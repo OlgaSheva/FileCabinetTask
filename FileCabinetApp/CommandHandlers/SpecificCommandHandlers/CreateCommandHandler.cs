@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using FileCabinetApp.Converters;
 using FileCabinetApp.Services;
 using FileCabinetApp.Validators.InputValidator;
@@ -13,8 +12,9 @@ namespace FileCabinetApp.CommandHandlers
     internal class CreateCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
-        private static IInputConverter converter;
-        private static IInputValidator validator;
+        private static Action<string> write;
+        private readonly IInputConverter converter;
+        private readonly IInputValidator validator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateCommandHandler"/> class.
@@ -22,12 +22,14 @@ namespace FileCabinetApp.CommandHandlers
         /// <param name="fileCabinetService">The file cabinet service.</param>
         /// <param name="inputConverter">The input converter.</param>
         /// <param name="inputValidator">The input validator.</param>
+        /// <param name="writeDelegate">The write delegate.</param>
         public CreateCommandHandler(
-            IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator)
+            IFileCabinetService fileCabinetService, IInputConverter inputConverter, IInputValidator inputValidator, Action<string> writeDelegate)
             : base(fileCabinetService)
         {
-            converter = inputConverter;
-            validator = inputValidator;
+            this.converter = inputConverter;
+            this.validator = inputValidator;
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -39,9 +41,14 @@ namespace FileCabinetApp.CommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (request.Command == "create")
             {
-                this.Create(request.Parameters);
+                this.Create();
                 return null;
             }
             else
@@ -61,7 +68,7 @@ namespace FileCabinetApp.CommandHandlers
 
                 if (!conversionResult.Item1)
                 {
-                    Console.WriteLine($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
+                    write($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
                     continue;
                 }
 
@@ -70,7 +77,7 @@ namespace FileCabinetApp.CommandHandlers
                 var validationResult = validator(value);
                 if (!validationResult.Item1)
                 {
-                    Console.WriteLine($"Validation failed: {validationResult.Item2}. Please, correct your input.");
+                    write($"Validation failed: {validationResult.Item2}. Please, correct your input.");
                     continue;
                 }
 
@@ -79,65 +86,63 @@ namespace FileCabinetApp.CommandHandlers
             while (true);
         }
 
-        private static (string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
+        private (string firstName, string lastName, DateTime dateOfBirth, char gender, short office, decimal salary)
             ParameterEntry()
         {
-            var firstAndLastName = new CultureInfo("ru-RU").TextInfo;
+            Func<string, Tuple<bool, string>> firstNameValidator = this.validator.FirstNameValidator;
+            Func<string, Tuple<bool, string>> lastNameValidator = this.validator.LastNameValidator;
+            Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = this.validator.DateOfBirthValidator;
+            Func<char, Tuple<bool, string>> genderValidator = this.validator.GenderValidator;
+            Func<short, Tuple<bool, string>> officeValidator = this.validator.OfficeValidator;
+            Func<decimal, Tuple<bool, string>> salaryValidator = this.validator.SalaryValidator;
 
-            Func<string, Tuple<bool, string>> firstNameValidator = validator.FirstNameValidator;
-            Func<string, Tuple<bool, string>> lastNameValidator = validator.LastNameValidator;
-            Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = validator.DateOfBirthValidator;
-            Func<char, Tuple<bool, string>> genderValidator = validator.GenderValidator;
-            Func<short, Tuple<bool, string>> officeValidator = validator.OfficeValidator;
-            Func<decimal, Tuple<bool, string>> salaryValidator = validator.SalaryValidator;
+            Func<string, Tuple<bool, string, string>> stringConverter = this.converter.StringConverter;
+            Func<string, Tuple<bool, string, DateTime>> dateConverter = this.converter.DateConverter;
+            Func<string, Tuple<bool, string, char>> charConverter = this.converter.CharConverter;
+            Func<string, Tuple<bool, string, short>> shortConverter = this.converter.ShortConverter;
+            Func<string, Tuple<bool, string, decimal>> decimalConverter = this.converter.DecimalConverter;
 
-            Func<string, Tuple<bool, string, string>> stringConverter = converter.StringConverter;
-            Func<string, Tuple<bool, string, DateTime>> dateConverter = converter.DateConverter;
-            Func<string, Tuple<bool, string, char>> charConverter = converter.CharConverter;
-            Func<string, Tuple<bool, string, short>> shortConverter = converter.ShortConverter;
-            Func<string, Tuple<bool, string, decimal>> decimalConverter = converter.DecimalConverter;
-
-            Console.Write("First name: ");
+            write("First name: ");
             var firstName = ReadInput(stringConverter, firstNameValidator);
 
-            Console.Write("Last name: ");
+            write("Last name: ");
             var lastName = ReadInput(stringConverter, lastNameValidator);
 
-            Console.Write("Date of birth: ");
+            write("Date of birth: ");
             var dateOfBirth = ReadInput(dateConverter, dateOfBirthValidator);
 
-            Console.Write("Gender M (male) / F (female) / O (other) / U (unknown): ");
+            write("Gender M (male) / F (female) / O (other) / U (unknown): ");
             var gender = ReadInput(charConverter, genderValidator);
 
-            Console.Write("Office: ");
+            write("Office: ");
             var office = ReadInput(shortConverter, officeValidator);
 
-            Console.Write("Salary: ");
+            write("Salary: ");
             var salary = ReadInput(decimalConverter, salaryValidator);
 
             return (firstName, lastName, dateOfBirth, gender, office, salary);
         }
 
-        private void Create(string parameters)
+        private void Create()
         {
-            var (firstName, lastName, dateOfBirth, gender, office, salary) = ParameterEntry();
+            var (firstName, lastName, dateOfBirth, gender, office, salary) = this.ParameterEntry();
 
             int recordId = 0;
             try
             {
                 RecordParameters record = new RecordParameters(firstName, lastName, dateOfBirth, gender, office, salary);
                 recordId = this.Service.CreateRecord(record);
-                Console.WriteLine($"Record #{recordId} is created.");
+                write($"Record #{recordId} is created.");
             }
             catch (ArgumentNullException anex)
             {
-                Console.WriteLine($"Record wasn't created. {anex.Message}");
-                Console.WriteLine(HintMessage);
+                write($"Record wasn't created. {anex.Message}");
+                write(HintMessage);
             }
             catch (ArgumentException aex)
             {
-                Console.WriteLine($"Record wasn't created. {aex.Message}");
-                Console.WriteLine(HintMessage);
+                write($"Record wasn't created. {aex.Message}");
+                write(HintMessage);
             }
         }
     }

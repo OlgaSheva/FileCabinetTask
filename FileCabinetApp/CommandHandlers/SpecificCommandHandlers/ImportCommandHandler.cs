@@ -11,13 +11,19 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class ImportCommandHandler : ServiceCommandHandlerBase
     {
+        private const int FormatPosition = 0;
+        private const int PathPosition = 1;
+        private static Action<string> write;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImportCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public ImportCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public ImportCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -29,6 +35,11 @@ namespace FileCabinetApp.CommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (request.Command == "import")
             {
                 this.Import(request.Parameters);
@@ -43,14 +54,19 @@ namespace FileCabinetApp.CommandHandlers
         private void Import(string parameters)
         {
             string[] comands = parameters.Split(' ');
-            string fileFormat = comands[0];
-            string filePath = comands[1];
+            if (comands.Length != 2)
+            {
+                throw new ArgumentException("Invalid operation. Example: import xml d:/records.xml", nameof(parameters));
+            }
+
+            string fileFormat = comands[FormatPosition];
+            string filePath = comands[PathPosition];
             const string csvFormat = "csv";
             const string xmlFormat = "xml";
 
             if (!File.Exists(filePath))
             {
-                Console.WriteLine($"Import error: file {filePath} is not exist.");
+                write($"Import error: file {filePath} is not exist.");
                 return;
             }
 
@@ -65,13 +81,13 @@ namespace FileCabinetApp.CommandHandlers
                         this.ImportFromXMLFile(filePath);
                         break;
                     default:
-                        Console.WriteLine($"Unknown file format '{fileFormat}'.");
+                        write($"Unknown file format '{fileFormat}'.");
                         break;
                 }
             }
             catch (ArgumentException)
             {
-                Console.WriteLine("Records were not imported.");
+                write("Records were not imported.");
             }
         }
 
@@ -79,19 +95,25 @@ namespace FileCabinetApp.CommandHandlers
         {
             FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot();
             Dictionary<int, string> exceptions = new Dictionary<int, string>();
+            List<string> lineExceptions = new List<string>();
             int recordsCount = 0;
             using (StreamReader reader = new StreamReader(filePath))
             {
-                snapshot.LoadFromCSV(reader, out recordsCount);
+                snapshot.LoadFromCSV(reader, out recordsCount, out lineExceptions);
                 this.Service.Restore(snapshot, out exceptions);
+            }
+
+            foreach (var lex in lineExceptions)
+            {
+                write(lex);
             }
 
             foreach (var ex in exceptions)
             {
-                Console.WriteLine($"Record #{ex.Key} was not imported.");
+                write($"Record #{ex.Key} was not imported.");
             }
 
-            Console.WriteLine($"{recordsCount - exceptions.Count} records were imported from {filePath}.");
+            write($"{recordsCount - exceptions.Count} records were imported from {filePath}.");
         }
 
         private void ImportFromXMLFile(string filePath)
@@ -107,10 +129,10 @@ namespace FileCabinetApp.CommandHandlers
 
             foreach (var ex in exceptions)
             {
-                Console.WriteLine($"Record #{ex.Key} was not imported.");
+                write($"Record #{ex.Key} was not imported.");
             }
 
-            Console.WriteLine($"{recordsCount - exceptions.Count} records were imported from {filePath}.");
+            write($"{recordsCount - exceptions.Count} records were imported from {filePath}.");
         }
     }
 }

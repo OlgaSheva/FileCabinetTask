@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
+using FileCabinetApp.Enums;
+using FileCabinetApp.Extensions;
 using FileCabinetApp.Memoizers;
 using FileCabinetApp.Services;
 
@@ -13,13 +16,17 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class UpdateCommandHandler : ServiceCommandHandlerBase
     {
+        private static Action<string> write;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public UpdateCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public UpdateCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -31,10 +38,19 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (request.Command == "update")
             {
                 this.Update(request.Parameters);
-                Memoizer.GetMemoizer(this.Service).MemoizerDictionary.Clear();
+                if (this.Service is FileCabinetMemoryService)
+                {
+                    Memoizer.GetMemoizer(this.Service).MemoizerDictionary.Clear();
+                }
+
                 return null;
             }
             else
@@ -43,10 +59,61 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             }
         }
 
+        private static void Print(List<int> ids)
+        {
+            if (ids.Count == 1)
+            {
+                write($"Record #{ids[0]} is update.");
+            }
+            else if (ids.Count > 1)
+            {
+                var sb = new StringBuilder();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    if (i < ids.Count - 1)
+                    {
+                        sb.Append($"#{ids[i]}, ");
+                    }
+                    else
+                    {
+                        sb.Append($"#{ids[i]}");
+                    }
+                }
+
+                write($"Records {sb} are updated.");
+            }
+            else
+            {
+                write("There are no entries with this parameter.");
+            }
+        }
+
         private void Update(string parameters)
         {
-            var words = parameters.Split(
-                new char[] { ' ', ',', ':', ';', '-', '=', '(', ')', '\'', '!', '?', '\t' }).Where(s => s.Length > 0).ToList();
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            if (!parameters.Contains("set", StringComparison.InvariantCulture)
+                || !parameters.Contains("where", StringComparison.InvariantCulture))
+            {
+                throw new ArgumentException(
+                    "Invalid command. Example: update set firstname = 'John', lastname = 'Doe' , dateofbirth = '5/18/1986' where id = '1'",
+                    nameof(parameters));
+            }
+
+            if (parameters.Contains("or", StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new ArgumentException(
+                    "This method supports only AND condition. Example: update set DateOfBirth = '5/18/1986' where FirstName='Stan' and LastName='Smith'",
+                    nameof(parameters));
+            }
+
+            var words = parameters
+                .Split(this.Separator.ToArray())
+                .Where(s => s.Length > 0)
+                .ToList();
             string firstname = null;
             string lastname = null;
             DateTime dateofbirth = default(DateTime);
@@ -55,39 +122,36 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             decimal salary = -1;
             string key;
             string value;
-            FileCabinetRecord desiredRecord = new FileCabinetRecord();
-            Dictionary<string, string> keyValuePairs = new Dictionary<string, string>()
-            {
-                { "id", null },
-                { "firstname", null },
-                { "lastname", null },
-                { "dateofbirth", null },
-            };
+            var keyValuePairs = new List<KeyValuePair<string, string>>();
             if (words[0].Equals("set", StringComparison.InvariantCultureIgnoreCase))
             {
                 int i = 1;
                 do
                 {
-                    key = words[i].ToLower(CultureInfo.CurrentCulture);
+                    key = words[i].ToUpperInvariant();
                     value = words[i + 1];
                     switch (key)
                     {
-                        case "firstname":
+                        case "FIRSTNAME":
                             firstname = value;
                             break;
-                        case "lastname":
+                        case "LASTNAME":
                             lastname = value;
                             break;
-                        case "dateofbirth":
-                            dateofbirth = DateTime.Parse(value, CultureInfo.InvariantCulture);
+                        case "DATEOFBIRTH":
+                            if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                            {
+                                dateofbirth = date;
+                            }
+
                             break;
-                        case "gender":
+                        case "GENDER":
                             gender = char.Parse(value);
                             break;
-                        case "office":
+                        case "OFFICE":
                             office = short.Parse(value, CultureInfo.InvariantCulture);
                             break;
-                        case "salary":
+                        case "SALARY":
                             salary = decimal.Parse(value, CultureInfo.InvariantCulture);
                             break;
                         default:
@@ -101,12 +165,12 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
                 while (++i < words.Count)
                 {
-                    keyValuePairs[words[i].ToLower(CultureInfo.CurrentCulture)] = words[i + 1];
+                    keyValuePairs.Add(new KeyValuePair<string, string>(words[i].ToUpperInvariant(), words[i + 1]));
                     i += 2;
                 }
 
-                int id = this.Service.Update(setRecord, keyValuePairs);
-                Console.WriteLine($"Record #{id} has been updated.");
+                List<int> ids = this.Service.Update(this.Service.GetRecords().Where(keyValuePairs, SearchCondition.And), setRecord, keyValuePairs);
+                Print(ids);
             }
             else
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FileCabinetApp.Memoizers;
@@ -12,13 +13,17 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
     /// <seealso cref="FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
     internal class DeleteCommandHandler : ServiceCommandHandlerBase
     {
+        private static Action<string> write;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteCommandHandler"/> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        public DeleteCommandHandler(IFileCabinetService service)
+        /// <param name="writeDelegate">The write delegate.</param>
+        public DeleteCommandHandler(IFileCabinetService service, Action<string> writeDelegate)
             : base(service)
         {
+            write = writeDelegate;
         }
 
         /// <summary>
@@ -30,10 +35,19 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
         /// </returns>
         public override AppCommandRequest Handle(AppCommandRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (request.Command == "delete")
             {
                 this.Delete(request.Parameters);
-                Memoizer.GetMemoizer(this.Service).MemoizerDictionary.Clear();
+                if (this.Service is FileCabinetMemoryService)
+                {
+                    Memoizer.GetMemoizer(this.Service).MemoizerDictionary.Clear();
+                }
+
                 return null;
             }
             else
@@ -42,25 +56,13 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             }
         }
 
-        private void Delete(string parameters)
+        private static void Print(List<int> ids)
         {
-            var words = parameters.Split(
-                new char[] { ' ', ',', '.', ':', ';', '-', '=', '(', ')', '\'', '!', '?', '\t' }).Where(s => s.Length > 0).ToList();
-            string key = null;
-            string value = null;
-            if (words[0].Equals("where", StringComparison.InvariantCultureIgnoreCase))
-            {
-                key = words[1];
-                value = words[2];
-            }
-
-            var ids = this.Service.Delete(key, value);
-
             if (ids.Count == 1)
             {
-                Console.WriteLine($"Record #{ids[0]} is deleted.");
+                write($"Record #{ids[0]} is deleted.");
             }
-            else if (ids.Count > 0)
+            else if (ids.Count > 1)
             {
                 var sb = new StringBuilder();
                 for (int i = 0; i < ids.Count; i++)
@@ -75,12 +77,45 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
                     }
                 }
 
-                Console.WriteLine($"Records {sb} are deleted.");
+                write($"Records {sb} are deleted.");
             }
             else
             {
-                Console.WriteLine("There are no entries with this parameter.");
+                write("There are no entries with this parameter.");
             }
+        }
+
+        private void Delete(string parameters)
+        {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters), "You need to specify the parameters.");
+            }
+
+            if (!parameters.Contains("where", StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new ArgumentException("The request is not valid. For example: delete where id = '1'", nameof(parameters));
+            }
+
+            var words = parameters
+                .Split(this.Separator.ToArray())
+                .Where(s => s.Length > 0)
+                .ToList();
+            if (words.Count > 3)
+            {
+                throw new ArgumentException("The command accepts only one parameter. For example: delete where id = '1'");
+            }
+
+            string key = null;
+            string value = null;
+            if (words[0].Equals("where", StringComparison.InvariantCultureIgnoreCase))
+            {
+                key = words[1];
+                value = words[2];
+            }
+
+            var ids = this.Service.Delete(key, value);
+            Print(ids);
         }
     }
 }

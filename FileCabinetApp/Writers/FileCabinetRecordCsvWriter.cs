@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -17,7 +18,7 @@ namespace FileCabinetApp.Writers
         /// <param name="writer">The writer.</param>
         public FileCabinetRecordCsvWriter(StreamWriter writer)
         {
-            this.writer = writer;
+            this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
         /// <summary>
@@ -26,6 +27,11 @@ namespace FileCabinetApp.Writers
         /// <param name="record">The record.</param>
         public void Write(FileCabinetRecord record)
         {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             var builder = new StringBuilder();
             builder.Append($"{record.Id},");
             builder.Append($"{record.FirstName},");

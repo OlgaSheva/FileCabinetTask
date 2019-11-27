@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FileCabinetApp.Services;
 
 namespace FileCabinetApp.CommandHandlers
@@ -18,6 +19,31 @@ namespace FileCabinetApp.CommandHandlers
         {
             this.Service = fileCabinetService ?? throw new ArgumentNullException(nameof(fileCabinetService));
         }
+
+        /// <summary>
+        /// Gets the separator.
+        /// </summary>
+        /// <value>
+        /// The separator.
+        /// </value>
+        protected List<char> Separator { get; } = new List<char>() { ' ', ',', ':', ';', '-', '=', '(', ')', '\'', '!', '?', '\t' };
+
+        /// <summary>
+        /// Gets the names of record elements.
+        /// </summary>
+        /// <value>
+        /// The names of record elements.
+        /// </value>
+        protected List<string> NamesOfRecordElements { get; } = new List<string>
+                {
+                    "ID",
+                    "FIRSTNAME",
+                    "LASTNAME",
+                    "DATEOFBIRTH",
+                    "GENDER",
+                    "OFFICE",
+                    "SALARY",
+                };
 
         /// <summary>
         /// Gets or sets the service.
