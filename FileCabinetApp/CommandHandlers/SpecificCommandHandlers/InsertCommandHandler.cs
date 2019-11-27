@@ -86,11 +86,7 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
             try
             {
-                this.values.Clear();
-                for (int i = 0; i <= RecordsParametersCount; i++)
-                {
-                    this.values.Add(words[i], words[i + RecordsParametersCount + 2]);
-                }
+                this.FillInValues(words);
 
                 RecordParameters recordParameters = new RecordParameters(
                     CultureInfo.InvariantCulture.TextInfo.ToTitleCase(this.values["FIRSTNAME"].ToLowerInvariant()),
@@ -116,6 +112,29 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             {
                 write($"Record wasn't created. {ofex.Message}");
                 write(HintMessage);
+            }
+        }
+
+        private void FillInValues(List<string> words)
+        {
+            this.values.Clear();
+            for (int i = 0; i <= RecordsParametersCount; i++)
+            {
+                bool flag = true;
+                foreach (var name in this.NamesOfRecordElements)
+                {
+                    if (words[i].Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        flag = false;
+                    }
+                }
+
+                if (flag)
+                {
+                    throw new ArgumentException($"The '{words[i]}' is not valid record property name.", nameof(words));
+                }
+
+                this.values.Add(words[i], words[i + RecordsParametersCount + 2]);
             }
         }
     }

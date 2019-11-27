@@ -29,6 +29,23 @@ namespace FileCabinetApp.CommandHandlers
         protected List<char> Separator { get; } = new List<char>() { ' ', ',', ':', ';', '-', '=', '(', ')', '\'', '!', '?', '\t' };
 
         /// <summary>
+        /// Gets the names of record elements.
+        /// </summary>
+        /// <value>
+        /// The names of record elements.
+        /// </value>
+        protected List<string> NamesOfRecordElements { get; } = new List<string>
+                {
+                    "ID",
+                    "FIRSTNAME",
+                    "LASTNAME",
+                    "DATEOFBIRTH",
+                    "GENDER",
+                    "OFFICE",
+                    "SALARY",
+                };
+
+        /// <summary>
         /// Gets or sets the service.
         /// </summary>
         /// <value>

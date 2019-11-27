@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using FileCabinetApp.Enums;
 using FileCabinetApp.Extensions;
@@ -88,16 +87,11 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
 
             if (columns.Count == 0)
             {
-                columns = new List<string>
-                {
-                    "ID",
-                    "FIRSTNAME",
-                    "LASTNAME",
-                    "DATEOFBIRTH",
-                    "GENDER",
-                    "OFFICE",
-                    "SALARY",
-                };
+                columns = this.NamesOfRecordElements;
+            }
+            else
+            {
+                this.IsValid(columns);
             }
 
             IEnumerable<FileCabinetRecord> records = null;
@@ -111,6 +105,27 @@ namespace FileCabinetApp.CommandHandlers.SpecificCommandHandlers
             }
 
             this.printer(columns, records);
+        }
+
+        private void IsValid(List<string> columns)
+        {
+            bool flag = true;
+            foreach (var column in columns)
+            {
+                flag = true;
+                foreach (var dc in this.NamesOfRecordElements)
+                {
+                    if (column.Equals(dc, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        flag = false;
+                    }
+                }
+
+                if (flag)
+                {
+                    throw new ArgumentException(nameof(column), $"Parameter '{column}' is not valid.");
+                }
+            }
         }
     }
 }

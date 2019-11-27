@@ -133,6 +133,11 @@ namespace FileCabinetApp.Services.Extensions
                 throw new ArgumentNullException(nameof(fileStream));
             }
 
+            if (position < 0)
+            {
+                throw new ArgumentException($"The {nameof(position)} cannot be less than zero.", nameof(position));
+            }
+
             fileStream.Seek(position, SeekOrigin.Begin);
             reader.ReadBytes(StatusInBytesLength);
             return new FileCabinetRecord
@@ -145,38 +150,22 @@ namespace FileCabinetApp.Services.Extensions
                 DateOfBirth = new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32()),
                 Gender = reader.ReadChar(),
                 Office = reader.ReadInt16(),
-                Salary = ToDecimal(reader.ReadBytes(sizeof(decimal))),
+                Salary = reader.ReadDecimal(),
             };
         }
 
-        private static RecordParameters GetRecordParametersFromFile(BinaryReader binaryReader, FileStream fileStream)
+        private static RecordParameters GetRecordParametersFromFile(BinaryReader reader, FileStream fileStream)
         {
             fileStream.Seek((sizeof(byte) * 2) + sizeof(int), SeekOrigin.Current);
             return new RecordParameters(
                 System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim(),
+                                reader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim(),
                 System.Text.UnicodeEncoding.Unicode.GetString(
-                                binaryReader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim(),
-                new DateTime(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32()),
-                binaryReader.ReadChar(),
-                binaryReader.ReadInt16(),
-                ToDecimal(binaryReader.ReadBytes(sizeof(decimal))));
-        }
-
-        private static decimal ToDecimal(byte[] bytes)
-        {
-            if (bytes.Length != 16)
-            {
-                throw new ArgumentException("A decimal must be created from exactly 16 bytes.", nameof(bytes));
-            }
-
-            int[] bits = new int[4];
-            for (int i = 0; i <= 15; i += 4)
-            {
-                bits[i / 4] = BitConverter.ToInt32(bytes, i);
-            }
-
-            return new decimal(bits);
+                                reader.ReadBytes(NameInBytesLength), 0, NameInBytesLength).Trim(),
+                new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32()),
+                reader.ReadChar(),
+                reader.ReadInt16(),
+                reader.ReadDecimal());
         }
     }
 }

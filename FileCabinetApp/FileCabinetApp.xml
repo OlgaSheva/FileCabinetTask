@@ -97,6 +97,14 @@
             The separator.
             </value>
         </member>
+        <member name="P:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.NamesOfRecordElements">
+            <summary>
+            Gets the names of record elements.
+            </summary>
+            <value>
+            The names of record elements.
+            </value>
+        </member>
         <member name="P:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.Service">
             <summary>
             Gets or sets the service.
