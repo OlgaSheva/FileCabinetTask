@@ -1,5 +1,6 @@
 ﻿using System;
 using FileCabinetApp.Converters;
+using FileCabinetApp.Memoizers;
 using FileCabinetApp.Services;
 using FileCabinetApp.Validators.InputValidator;
 
@@ -49,6 +50,11 @@ namespace FileCabinetApp.CommandHandlers
             if (request.Command == "create")
             {
                 this.Create();
+                if (this.Service is FileCabinetMemoryService)
+                {
+                    Memoizer.GetMemoizer(this.Service).MemoizerDictionary.Clear();
+                }
+
                 return null;
             }
             else

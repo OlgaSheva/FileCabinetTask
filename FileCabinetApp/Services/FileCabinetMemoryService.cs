@@ -96,7 +96,14 @@ namespace FileCabinetApp
             }
 
             this.validator.ValidateParameters(rec);
-            this.CreateFileCabinetRecord(rec, id);
+            if (!this.IsThereARecordWithThisId(id))
+            {
+                this.CreateFileCabinetRecord(rec, id);
+            }
+            else
+            {
+                throw new ArgumentException($"The record #{id} is already exist.", nameof(id));
+            }
         }
 
         /// <summary>
@@ -267,6 +274,26 @@ namespace FileCabinetApp
                 if (this.list[i].Id == id)
                 {
                     index = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether [is there a record with this identifier] [the specified identifier].
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>
+        ///   <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsThereARecordWithThisId(int id)
+        {
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                if (this.list[i].Id == id)
+                {
                     return true;
                 }
             }

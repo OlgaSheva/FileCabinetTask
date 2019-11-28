@@ -50,7 +50,7 @@ namespace FileCabinetApp.Validators.RecordValidator
 
             if (flag)
             {
-                StringBuilder exc = null;
+                StringBuilder exc = new StringBuilder();
                 foreach (var g in this.gender)
                 {
                     exc.Append(g + " ");

@@ -48,7 +48,7 @@ namespace FileCabinetApp.Converters
 
             bool flag = DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
 
-            var tuple = new Tuple<bool, string, DateTime>(flag, input, date);
+            var tuple = new Tuple<bool, string, DateTime>(flag, "You can use only the MM.DD.YYYY, MM/DD/YYYY, YYYY-MM-DD, format", date);
             return tuple;
         }
 
@@ -68,7 +68,7 @@ namespace FileCabinetApp.Converters
 
             bool flag = char.TryParse(input, out char status);
 
-            var tuple = new Tuple<bool, string, char>(flag, input, status);
+            var tuple = new Tuple<bool, string, char>(flag, "Should be a char", status);
             return tuple;
         }
 
@@ -88,7 +88,7 @@ namespace FileCabinetApp.Converters
 
             bool flag = short.TryParse(input, out short output);
 
-            var tuple = new Tuple<bool, string, short>(flag, input, output);
+            var tuple = new Tuple<bool, string, short>(flag, "Should be a number", output);
             return tuple;
         }
 
@@ -108,7 +108,7 @@ namespace FileCabinetApp.Converters
 
             bool flag = decimal.TryParse(input, out decimal output);
 
-            var tuple = new Tuple<bool, string, decimal>(flag, input, output);
+            var tuple = new Tuple<bool, string, decimal>(flag, "Should be a decimal number", output);
             return tuple;
         }
     }

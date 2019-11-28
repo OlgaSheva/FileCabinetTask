@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 
 namespace FileCabinetApp.Validators.InputValidator
 {
@@ -108,7 +109,9 @@ namespace FileCabinetApp.Validators.InputValidator
         public Tuple<bool, string> DateOfBirthValidator(DateTime dateOfBirth)
         {
             bool flag = (dateOfBirth <= this.MaxDate) && (dateOfBirth >= this.MinDate);
-            return new Tuple<bool, string>(flag, dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
+            return new Tuple<bool, string>(
+                flag,
+                $"The minimum date should be {this.MinDate.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, the maximum date is {this.MaxDate.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
         }
 
         /// <summary>
@@ -124,7 +127,9 @@ namespace FileCabinetApp.Validators.InputValidator
                 && (firstName.Length > this.FirstNameMinLength)
                 && (firstName.Length <= this.FirstNameMaxLength)
                 && !string.IsNullOrWhiteSpace(firstName);
-            return new Tuple<bool, string>(flag, firstName);
+            return new Tuple<bool, string>(
+                flag,
+                $"Value shouldn't be null or contain only spaces and have minimum length {this.FirstNameMinLength} characters, maximum length {this.FirstNameMaxLength} characters");
         }
 
         /// <summary>
@@ -137,15 +142,17 @@ namespace FileCabinetApp.Validators.InputValidator
         public Tuple<bool, string> GenderValidator(char gender)
         {
             bool flag = false;
+            StringBuilder sb = new StringBuilder();
             foreach (var g in this.Gender)
             {
+                sb.Append($"{g} ");
                 if (g == gender)
                 {
                     flag = true;
                 }
             }
 
-            return new Tuple<bool, string>(flag, gender.ToString(CultureInfo.InvariantCulture));
+            return new Tuple<bool, string>(flag, $"Gender can be only {sb.ToString().Trim()}");
         }
 
         /// <summary>
@@ -161,7 +168,9 @@ namespace FileCabinetApp.Validators.InputValidator
                 && (lastName.Length > this.LastNameMinLength)
                 && (lastName.Length <= this.LastNameMaxLength)
                 && !string.IsNullOrWhiteSpace(lastName);
-            return new Tuple<bool, string>(flag, lastName);
+            return new Tuple<bool, string>(
+                flag,
+                $"Value shouldn't be null or contain only spaces and have minimum length {this.LastNameMinLength} characters, maximum length {this.LastNameMaxLength} characters");
         }
 
         /// <summary>
@@ -175,7 +184,7 @@ namespace FileCabinetApp.Validators.InputValidator
         {
             bool flag = office >= this.MinOffice
                 && office < this.MaxOffice;
-            return new Tuple<bool, string>(flag, office.ToString(CultureInfo.InvariantCulture));
+            return new Tuple<bool, string>(flag, $"Value should be between {this.MinOffice} and {this.MaxOffice}");
         }
 
         /// <summary>
@@ -189,7 +198,7 @@ namespace FileCabinetApp.Validators.InputValidator
         {
             bool flag = salary >= this.MinSalary
                 && salary <= this.MaxSalary;
-            return new Tuple<bool, string>(flag, salary.ToString(CultureInfo.InvariantCulture));
+            return new Tuple<bool, string>(flag, $"Value should be between {this.MinSalary} and {this.MaxSalary}");
         }
     }
 }
