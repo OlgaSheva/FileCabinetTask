@@ -90,8 +90,15 @@ namespace FileCabinetApp.Services
             }
 
             this.validator.ValidateParameters(rec);
-            this.fileStream.Seek(0, SeekOrigin.End);
-            this.CreateFileCabinetRecord(rec, id);
+            if (!this.IsThereARecordWithThisId(id))
+            {
+                this.fileStream.Seek(0, SeekOrigin.End);
+                this.CreateFileCabinetRecord(rec, id);
+            }
+            else
+            {
+                throw new ArgumentException($"The record #{id} is already exist.", nameof(id));
+            }
         }
 
         /// <summary>
@@ -405,6 +412,16 @@ namespace FileCabinetApp.Services
             }
 
             return bytes.ToArray();
+        }
+
+        private bool IsThereARecordWithThisId(int id)
+        {
+            if (this.idpositionPairs.ContainsKey(id))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void EditRecord(int id, RecordParameters parameters)

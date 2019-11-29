@@ -1600,15 +1600,6 @@
               <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.IsThereARecordWithThisId(System.Int32)">
-            <summary>
-            Determines whether [is there a record with this identifier] [the specified identifier].
-            </summary>
-            <param name="id">The identifier.</param>
-            <returns>
-              <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
-            </returns>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.Purge(System.Int32@)">
             <summary>
             Purges the specified records count.

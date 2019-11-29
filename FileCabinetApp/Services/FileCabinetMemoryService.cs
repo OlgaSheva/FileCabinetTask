@@ -282,26 +282,6 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Determines whether [is there a record with this identifier] [the specified identifier].
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns>
-        ///   <c>true</c> if [is there a record with this identifier] [the specified identifier]; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsThereARecordWithThisId(int id)
-        {
-            for (int i = 0; i < this.list.Count; i++)
-            {
-                if (this.list[i].Id == id)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Purges the specified records count.
         /// </summary>
         /// <param name="recordsCount">The records count.</param>
@@ -313,6 +293,19 @@ namespace FileCabinetApp
             int deletedRecordsCount = 0;
             recordsCount = this.list.Count;
             return deletedRecordsCount;
+        }
+
+        private bool IsThereARecordWithThisId(int id)
+        {
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                if (this.list[i].Id == id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void CreateFileCabinetRecord(RecordParameters rec, int id)
