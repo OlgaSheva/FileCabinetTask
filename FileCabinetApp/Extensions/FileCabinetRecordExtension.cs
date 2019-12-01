@@ -100,9 +100,31 @@ namespace FileCabinetApp.Extensions
                         }
 
                         break;
+                    case "GENDER":
+                        if (char.TryParse(kv.Value, out char gender))
+                        {
+                            filterExpressions.Add(MakeBinary(kv.Key, gender, Record));
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Gender '{kv.Value}' is not valid.");
+                        }
+
+                        break;
+                    case "OFFICE":
+                        if (short.TryParse(kv.Value, out short office))
+                        {
+                            filterExpressions.Add(MakeBinary(kv.Key, office, Record));
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Office '{kv.Value}' is not valid.");
+                        }
+
+                        break;
                     default:
                         throw new InvalidOperationException(
-                            $"The {kv.Key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName' or 'DateOfBirth'.");
+                            $"The {kv.Key} isn't a search parameter name. Only 'Id', 'FirstName', 'LastName', 'DateOfBirth', 'Gender' or 'Office'.");
                 }
             }
 
